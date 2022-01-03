@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
 import styles from 'styles/layouts/index.module.scss'
 
-const Home: NextPage = () => {
+const Index: NextPage = () => {
   return <div></div>
 }
 
-export default Home
+export default Index
