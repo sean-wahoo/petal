@@ -11,6 +11,19 @@ const Login: NextPage = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
+  const onLoginSubmit: () => Promise<void> = async () => {
+    try {
+      const data = await fetch('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      if (data.status === 500) throw new Error('Request Failed')
+      const res = await data.json()
+    } catch (e: any) {
+      console.log(e)
+    }
+  }
+
   return (
     <main className={styles.login}>
       <h1>Login to ConnectHigh</h1>
@@ -18,7 +31,7 @@ const Login: NextPage = () => {
         className={styles.login__inputArea}
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
           e.preventDefault()
-          console.log({ email, password })
+          onLoginSubmit()
         }}
       >
         <div className={styles.login__inputGroup}>
