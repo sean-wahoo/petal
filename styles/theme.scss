@@ -1,0 +1,38 @@
+/* @forward 'styles/layouts/login.module'; */
+
+$sm: 480px;
+$md: 768px;
+$lg: 1024px;
+$xl: 1280px;
+
+@mixin small {
+  @media screen and (max-width: $sm) {
+    @content;
+  }
+}
+@mixin medium {
+  @media screen and (max-width: $md) {
+    @content;
+  }
+}
+@mixin large {
+  @media screen and (max-width: $lg) {
+    @content;
+  }
+}
+@mixin huge {
+  @media screen and (max-width: $xl) {
+    @content;
+  }
+}
+
+@mixin dark() {
+  @media (prefers-color-scheme: dark) {
+    @at-root #{selector-nest(':root:not([data-theme=light]):not([data-theme=dark])', &)} {
+      @content;
+    }
+  }
+  @at-root #{selector-nest(':root[data-theme=dark]', &)} {
+    @content;
+  }
+}
