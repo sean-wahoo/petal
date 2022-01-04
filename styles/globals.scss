@@ -1,8 +1,31 @@
 @use 'styles/theme';
 
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 @mixin dark-mode {
   @media (prefers-color-scheme: dark) {
     --primary-bg: #{theme.$bg--dark};
+    --text-color: #{theme.$text--dark};
+    --text-accent: #{theme.$text-accent--dark};
+    --input-bg: #{theme.$input-bg--dark};
+    --bg-shapes: url(#{theme.$bg-shapes--dark});
   }
 }
 %dark-mode {
@@ -14,22 +37,13 @@
 }
 :root {
   --primary-bg: #{theme.$bg--light};
+  --text-color: #{theme.$text--light};
+  --text-accent: #{theme.$text-accent--light};
+  --accent-bg: #{theme.$accent-bg};
+  --accent-1: #{theme.$accent-1};
+  --accent-2: #{theme.$accent-2};
+  --accent-3: #{theme.$accent-3};
+  --input-bg: #{theme.$input-bg--light};
+  --bg-shapes: url(#{theme.$bg-shapes--light});
   @include dark-mode;
-}
-
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
 }
