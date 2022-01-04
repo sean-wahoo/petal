@@ -1,3 +1,22 @@
+@use 'styles/theme';
+
+@mixin dark-mode {
+  @media (prefers-color-scheme: dark) {
+    --primary-bg: #{theme.$bg--dark};
+  }
+}
+%dark-mode {
+  @include dark-mode;
+}
+
+.dark-mode {
+  @extend %dark-mode;
+}
+:root {
+  --primary-bg: #{theme.$bg--light};
+  @include dark-mode;
+}
+
 html,
 body {
   padding: 0;

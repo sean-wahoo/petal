@@ -26,13 +26,8 @@ $xl: 1280px;
   }
 }
 
-@mixin dark() {
-  @media (prefers-color-scheme: dark) {
-    @at-root #{selector-nest(':root:not([data-theme=light]):not([data-theme=dark])', &)} {
-      @content;
-    }
-  }
-  @at-root #{selector-nest(':root[data-theme=dark]', &)} {
-    @content;
-  }
-}
+// light
+$bg--light: #f8f8f8;
+
+// dark
+$bg--dark: #111111;
