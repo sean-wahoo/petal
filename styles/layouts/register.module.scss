@@ -28,6 +28,16 @@
         font-size: 1.1rem;
         margin-bottom: 0.4rem;
       }
+      div {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+
+        .register__showPasswordIcon {
+          margin-left: -1.6rem;
+          cursor: pointer;
+        }
+      }
 
       input {
         background: var(--input-bg);
