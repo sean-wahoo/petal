@@ -1,13 +1,13 @@
-import { Client } from 'pg'
+import mysql from 'mysql2/promise'
+import bluebird from 'bluebird'
 
-const client = new Client({
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  host: process.env.PGHOST,
-  port: process.env.PGPORT as any,
-  database: process.env.PGDATABASE,
-
-  ssl: { rejectUnauthorized: false },
+const connection = await mysql.createConnection({
+  user: process.env.DBUSER,
+  host: process.env.DBHOST,
+  password: process.env.DBPASSWORD,
+  database: process.env.DBNAME,
+  port: 3306,
+  Promise: bluebird,
 })
 
-export default client
+export default connection
