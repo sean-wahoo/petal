@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-export default function login(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json({ name: 'John Doe' })
+import connection from 'lib/db'
+export default async function login(req: NextApiRequest, res: NextApiResponse) {
+  await connection.connect()
+  const results = await connection.query('desc users')
+  console.log(results)
 }
