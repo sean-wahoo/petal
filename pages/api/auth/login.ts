@@ -13,7 +13,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     const { email, password }: LoginData = JSON.parse(req.body)
 
     if (email.length === 0 || password.length === 0) {
-      throw new Error('Please provide a username and password!')
+      throw new Error('Please provide a email and password!')
     }
 
     const emailPattern =
