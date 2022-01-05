@@ -11,14 +11,25 @@ const Login: NextPage = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
-  const onLoginSubmit: () => Promise<void> = async () => {
+  interface SuccessLogin {
+    user_id: string
+    session_token: string
+  }
+
+  interface FailureLogin {
+    error_code: string
+    error_message: string
+  }
+
+  const onLoginSubmit: () => void = async () => {
     try {
       const data = await fetch('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       })
       if (data.status === 500) throw new Error('Request Failed')
-      const res = await data.json()
+      const res: SuccessLogin | FailureLogin = await data.json()
+      console.log(res)
     } catch (e: any) {
       console.log(e)
     }
@@ -53,6 +64,7 @@ const Login: NextPage = () => {
               type={visible ? 'text' : 'password'}
               id='password'
               value={password}
+              minLength={8}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.currentTarget.value)
               }}
