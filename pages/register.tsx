@@ -3,6 +3,8 @@ import { useState } from 'react'
 import styles from 'styles/layouts/register.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import Cookies from 'universal-cookie'
+import Router from 'next/router'
 
 const Register: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false)
@@ -11,7 +13,7 @@ const Register: NextPage = () => {
 
   interface SuccessRegister {
     user_id: string
-    session_token: string
+    session_id: string
   }
 
   interface FailureRegister {
@@ -25,9 +27,13 @@ const Register: NextPage = () => {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       })
+      console.log(data)
       if (data.status === 500) throw new Error('Request Failed')
-      const res: SuccessRegister | FailureRegister = await data.json()
+      const res: SuccessRegister & FailureRegister = await data.json()
       console.log({ res })
+      const cookies = new Cookies()
+      cookies.set('session_id', res.session_id)
+      Router.reload()
     } catch (e: any) {
       console.log({ e })
     }
