@@ -52,7 +52,13 @@ const Login: NextPage = () => {
             value={email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.currentTarget.value)
+              e.currentTarget.setCustomValidity(
+                e.currentTarget.value.includes('.')
+                  ? ''
+                  : 'Please provide a valid email address'
+              )
             }}
+            placeholder='email@address.com'
             id='email'
             className={styles.login__emailInput}
           />
@@ -64,6 +70,7 @@ const Login: NextPage = () => {
               type={visible ? 'text' : 'password'}
               id='password'
               value={password}
+              placeholder='super secret password'
               minLength={8}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.currentTarget.value)
