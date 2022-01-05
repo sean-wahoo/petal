@@ -9,6 +9,30 @@ const Register: NextPage = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
+  interface SuccessRegister {
+    user_id: string
+    session_token: string
+  }
+
+  interface FailureRegister {
+    error_code: string
+    error_message: string
+  }
+
+  const onRegisterSubmit: () => void = async () => {
+    try {
+      const data = await fetch('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      if (data.status === 500) throw new Error('Request Failed')
+      const res: SuccessRegister | FailureRegister = await data.json()
+      console.log({ res })
+    } catch (e: any) {
+      console.log({ e })
+    }
+  }
+
   return (
     <main className={styles.register}>
       <h1>Register to ConnectHigh</h1>
@@ -16,7 +40,7 @@ const Register: NextPage = () => {
         className={styles.register__inputArea}
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
           e.preventDefault()
-          console.log({ email, password })
+          onRegisterSubmit()
         }}
       >
         <div className={styles.register__inputGroup}>
@@ -24,9 +48,16 @@ const Register: NextPage = () => {
           <input
             type='email'
             value={email}
+            required
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.currentTarget.value)
+              e.currentTarget.setCustomValidity(
+                e.currentTarget.value.includes('.')
+                  ? ''
+                  : 'Please provide a valid email address'
+              )
             }}
+            placeholder='email@address.com'
             id='email'
             className={styles.register__emailInput}
           />
@@ -37,13 +68,15 @@ const Register: NextPage = () => {
             <input
               type={visible ? 'text' : 'password'}
               id='password'
+              required
+              minLength={8}
+              placeholder='super secret password'
               value={password}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.currentTarget.value)
               }}
               className={styles.register__passwordInput}
             />
-
             <FontAwesomeIcon
               icon={visible ? faEyeSlash : faEye}
               className={styles.register__showPasswordIcon}

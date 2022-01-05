@@ -51,6 +51,13 @@
         &:focus-within {
           border-bottom: 2px solid var(--accent-1);
         }
+
+        &:invalid:not(:placeholder-shown) {
+          border-bottom: 2px solid red;
+        }
+        &:valid:not(:placeholder-shown) {
+          border-bottom: 2px solid green;
+        }
       }
     }
     .register__registerButton {
