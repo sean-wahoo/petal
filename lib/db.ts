@@ -8,6 +8,7 @@ const connection = await mysql.createConnection({
   database: process.env.DBNAME,
   port: 3306,
   Promise: bluebird,
+  rowsAsArray: true,
 })
 
 export default connection
