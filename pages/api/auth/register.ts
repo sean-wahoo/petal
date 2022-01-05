@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { updateSession } from 'lib/session'
 import connection from 'lib/db'
 import bcrypt from 'bcrypt'
 import { nanoid } from 'nanoid/async'
@@ -10,6 +11,11 @@ export default async function register(
   interface RegisterData {
     email: string
     password: string
+  }
+
+  interface ReturnData {
+    user_id: string
+    session_id: string
   }
 
   try {
@@ -26,7 +32,6 @@ export default async function register(
     if (!email.toLowerCase().match(emailPattern)) {
       throw new Error('Please provide a valid email address!')
     }
-
     const [[[numRowsWithEmail]]]: any = await connection.query(
       'SELECT COUNT(*) FROM users WHERE email = ?',
       [email]
@@ -45,15 +50,9 @@ export default async function register(
       [user_id, email, hash]
     )
 
-    await fetch(`${process.env.REDISURL}/hmset/${user_id}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.REDISTOKEN}`,
-      },
-      body: JSON.stringify({ user_id, email }),
-    })
+    const session_id = await updateSession(user_id, email)
 
-    return res.status(200).json({ user_id, email })
+    return res.status(200).json({ user_id, session_id })
   } catch (e: any) {
     console.log(e)
     res.status(500).json({ error_code: e.code, error_message: e.message })
