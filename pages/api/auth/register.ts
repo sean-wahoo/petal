@@ -44,6 +44,16 @@ export default async function register(
       'INSERT INTO users(user_id, email, password) VALUES (?, ?, ?)',
       [user_id, email, hash]
     )
+
+    await fetch(`${process.env.REDISURL}/hmset/${user_id}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.REDISTOKEN}`,
+      },
+      body: JSON.stringify({ user_id, email }),
+    })
+
+    return res.status(200).json({ user_id, email })
   } catch (e: any) {
     console.log(e)
     res.status(500).json({ error_code: e.code, error_message: e.message })
