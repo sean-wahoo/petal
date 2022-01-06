@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid/async'
 interface UserSessionData {
   user_id: string
   email: string
+  session_id: string
 }
 
 const updateSession = async (
