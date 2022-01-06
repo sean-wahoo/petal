@@ -1,10 +1,18 @@
 import Redis from 'ioredis'
 import { nanoid } from 'nanoid/async'
 
+// TODO: find workaround for refreshing the page because apparently that matters
+
 interface UserSessionData {
   user_id: string
   email: string
   session_id: string
+  isError: boolean
+}
+
+interface SessionErrorData {
+  isError: boolean
+  message: string
 }
 
 const updateSession = async (
@@ -19,7 +27,9 @@ const updateSession = async (
   return session_id
 }
 
-const getSession = async (session_id: string): Promise<UserSessionData> => {
+const getSession = async (
+  session_id: string
+): Promise<UserSessionData | SessionErrorData> => {
   let all = await fetch(`${process.env.REDISAPIURL}/hgetall/${session_id}`, {
     headers: {
       Authorization: `Bearer ${process.env.REDISTOKEN}`,
@@ -27,6 +37,10 @@ const getSession = async (session_id: string): Promise<UserSessionData> => {
   })
 
   const allParsed = await all.json()
+  console.log({ session_id, allParsed })
+
+  if (allParsed.result.length === 0)
+    return { isError: true, message: 'Invalid Session ID!' }
 
   const n: number = allParsed.result.length / 2
   let arr: any = []
@@ -34,11 +48,25 @@ const getSession = async (session_id: string): Promise<UserSessionData> => {
   for (let i = 0; i < n; i++) {
     arr = [...arr, allParsed.result.splice(0, 2)]
   }
-  arr.push(['session_id', session_id])
+  arr.push(['session_id', session_id], ['isError', false])
 
+  console.log(arr)
   const obj = Object.fromEntries(arr) as UserSessionData
 
   return obj
 }
 
-export { updateSession, getSession }
+const destroySession = async (session_id: string): Promise<void> => {
+  try {
+    await fetch(`${process.env.REDISAPIURL}/del/${session_id}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.REDISTOKEN}`,
+      },
+      body: JSON.stringify({ session_id }),
+    })
+  } catch (e: any) {
+    console.log({ e })
+  }
+}
+
+export { updateSession, getSession, destroySession }
