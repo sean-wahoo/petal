@@ -8,10 +8,11 @@ interface UserSessionData {
 
 const updateSession = async (
   user_id: string,
-  email: string
+  email: string,
+  session_id?: string
 ): Promise<string> => {
   const redis = new Redis(process.env.REDISURL)
-  const session_id = await nanoid(24)
+  session_id ||= await nanoid(24)
   redis.hmset(session_id, { user_id, email })
   redis.expire(session_id, 84600)
   return session_id
