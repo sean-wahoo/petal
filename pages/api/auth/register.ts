@@ -52,7 +52,7 @@ export default async function register(
 
     const session_id = await updateSession(user_id, email)
 
-    return res.status(200).json({ user_id, session_id })
+    return res.status(200).json({ user_id, session_id } as ReturnData)
   } catch (e: any) {
     console.log(e)
     res.status(500).json({ error_code: e.code, error_message: e.message })
