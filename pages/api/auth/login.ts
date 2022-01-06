@@ -42,6 +42,12 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       throw new Error('That password is incorrect!')
     }
     const session_id = await updateSession(numRowsWithEmail[0][0], email)
+
+    await connection.query(
+      'UPDATE users SET session_id = ? WHERE user_id = ?',
+      [session_id, numRowsWithEmail[0][0]]
+    )
+
     return res
       .status(200)
       .json({ user_id: numRowsWithEmail[0][0], session_id } as ReturnData)
