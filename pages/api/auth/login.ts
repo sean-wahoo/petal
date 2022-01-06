@@ -1,9 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { updateSession } from 'lib/session'
 import connection from 'lib/db'
+import bcrypt from 'bcrypt'
+import { nanoid } from 'nanoid/async'
+
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   interface LoginData {
     email: string
     password: string
+  }
+  interface ReturnData {
+    user_id: string
+    session_id: string
   }
 
   try {
@@ -20,15 +28,25 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     if (!email.toLowerCase().match(emailPattern)) {
       throw new Error('Please provide a valid email address!')
     }
-    const [[[numRowsWithEmail]]]: any = await connection.query(
-      'SELECT COUNT(*) FROM users WHERE email = ?',
+    const [numRowsWithEmail]: any = await connection.query(
+      'SELECT user_id, password FROM users WHERE email = ?',
       [email]
     )
-    if (numRowsWithEmail === 0) {
+
+    console.log(numRowsWithEmail)
+    if (numRowsWithEmail.length === 0) {
       throw new Error('No user with that email exists!')
     }
+
+    if (!(await bcrypt.compare(password, numRowsWithEmail[0][1]))) {
+      throw new Error('That password is incorrect!')
+    }
+    const session_id = await updateSession(numRowsWithEmail[0][0], email)
+    return res
+      .status(200)
+      .json({ user_id: numRowsWithEmail[0][0], session_id } as ReturnData)
   } catch (e: any) {
-    console.log(e)
+    console.log({ e })
     res.status(500).json({ error_code: e.code, error_message: e.message })
   }
 }

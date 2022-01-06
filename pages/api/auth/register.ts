@@ -44,13 +44,12 @@ export default async function register(
     const user_id = await nanoid(11)
     const salt = await bcrypt.genSalt()
     const hash = await bcrypt.hash(password, salt)
+    const session_id = await updateSession(user_id, email)
 
     await connection.query(
-      'INSERT INTO users(user_id, email, password) VALUES (?, ?, ?)',
-      [user_id, email, hash]
+      'INSERT INTO users(user_id, email, password, session_id) VALUES (?, ?, ?, ?)',
+      [user_id, email, hash, session_id]
     )
-
-    const session_id = await updateSession(user_id, email)
 
     return res.status(200).json({ user_id, session_id } as ReturnData)
   } catch (e: any) {
