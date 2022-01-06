@@ -7,11 +7,12 @@ interface SessionData {
   session_id: string
 }
 
-export default async function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest, res: NextResponse) {
   if (!req.cookies.session_id) return NextResponse.redirect('/login')
   const session_data: SessionData = await getSession(req.cookies.session_id)
+  req.cookies.session_id.length > 0 ||
+    res.cookie('session_id', session_data.session_id)
 
-  console.log(session_data)
   const { pathname } = req.nextUrl
   if (pathname === '/register' || pathname === '/login')
     return NextResponse.redirect('/')
