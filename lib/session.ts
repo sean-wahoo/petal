@@ -20,26 +20,23 @@ const updateSession = async (
 }
 
 const getSession = async (session_id: string): Promise<UserSessionData> => {
-  let keys = await fetch(`${process.env.REDISAPIURL}/hkeys/${session_id}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.REDISTOKEN}`,
-    },
-  })
-  let vals = await fetch(`${process.env.REDISAPIURL}/hvals/${session_id}`, {
+  let all = await fetch(`${process.env.REDISAPIURL}/hgetall/${session_id}`, {
     headers: {
       Authorization: `Bearer ${process.env.REDISTOKEN}`,
     },
   })
 
-  const keysParsed = await keys.json()
-  const valsParsed = await vals.json()
+  const allParsed = await all.json()
 
-  let arr = []
-  for (let i = 0; i < keysParsed.result.length; i++) {
-    arr.push([keysParsed.result[i], valsParsed.result[i]])
+  const n: number = allParsed.result.length / 2
+  let arr: any = []
+
+  for (let i = 0; i < n; i++) {
+    arr = [...arr, allParsed.result.splice(0, 2)]
   }
+  arr.push(['session_id', session_id])
 
-  const obj: UserSessionData = Object.fromEntries(arr)
+  const obj = Object.fromEntries(arr) as UserSessionData
 
   return obj
 }
