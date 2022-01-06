@@ -3,7 +3,7 @@ import { useState } from 'react'
 import styles from 'styles/layouts/register.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-// import Cookies from 'universal-cookie'
+import Cookies from 'universal-cookie'
 import Router from 'next/router'
 
 const Register: NextPage = () => {
@@ -31,8 +31,8 @@ const Register: NextPage = () => {
       if (data.status === 500) throw new Error('Request Failed')
       const res: SuccessRegister & FailureRegister = await data.json()
       console.log({ res })
-      // const cookies = new Cookies()
-      // cookies.set('session_id', res.session_id)
+      const cookies = new Cookies()
+      cookies.set('session_id', res.session_id)
       Router.reload()
     } catch (e: any) {
       console.log({ e })

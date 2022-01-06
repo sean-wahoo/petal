@@ -3,6 +3,8 @@ import { useState } from 'react'
 import styles from 'styles/layouts/login.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import Cookies from 'universal-cookie'
+import Router from 'next/router'
 
 // TODO: add other login providers
 
@@ -13,7 +15,7 @@ const Login: NextPage = () => {
 
   interface SuccessLogin {
     user_id: string
-    session_token: string
+    session_id: string
   }
 
   interface FailureLogin {
@@ -28,10 +30,13 @@ const Login: NextPage = () => {
         body: JSON.stringify({ email, password }),
       })
       if (data.status === 500) throw new Error('Request Failed')
-      const res: SuccessLogin | FailureLogin = await data.json()
-      console.log(res)
+      console.log(data)
+      const res: SuccessLogin & FailureLogin = await data.json()
+      const cookies = new Cookies()
+      cookies.set('session_id', res.session_id)
+      Router.reload()
     } catch (e: any) {
-      console.log(e)
+      console.log({ e })
     }
   }
 
