@@ -1,19 +1,47 @@
 import Redis from 'ioredis'
 import { nanoid } from 'nanoid/async'
-import type { SessionSuccess, SessionError } from 'lib/types'
+import type { SessionSuccess, SessionError, SessionData } from 'lib/types'
 
 // TODO: find workaround for refreshing the page because apparently that matters
 
 const updateSession = async (
-  user_id: string,
-  email: string,
-  session_id?: string
-): Promise<string> => {
-  const redis = new Redis(process.env.REDISURL)
-  session_id ||= await nanoid(24)
-  redis.hmset(session_id, { user_id, email })
-  redis.expire(session_id, 84600)
-  return session_id
+  session_data: SessionData
+): Promise<string | SessionError> => {
+  try {
+    let { user_id, email, session_id } = session_data
+    session_id ||= await nanoid(24)
+    const obj: any = { user_id, email }
+
+    let data = await fetch(
+      `${process.env.REDISAPIURL}/hmset/${session_id}/session_data`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.REDISTOKEN}`,
+        },
+        body: JSON.stringify(obj),
+      }
+    )
+    data = await data.json()
+
+    let exp = await fetch(
+      `${process.env.REDISAPIURL}/expire/${session_id}/84600`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REDISTOKEN}`,
+        },
+      }
+    )
+    exp = await exp.json()
+
+    if ('error' in data || 'error' in exp)
+      throw new Error('Session failed to initialize!')
+
+    return session_id
+  } catch (e: any) {
+    console.log({ e })
+    return { is_error: true, error_code: e.code, error_message: e.message }
+  }
 }
 
 const getSession = async (
@@ -26,7 +54,6 @@ const getSession = async (
   })
 
   const allParsed = await all.json()
-  console.log({ session_id, allParsed })
 
   if (allParsed.result.length === 0)
     return {
@@ -35,16 +62,11 @@ const getSession = async (
       error_message: 'Invalid Session ID!',
     }
 
-  const n: number = allParsed.result.length / 2
-  let arr: any = []
-
-  for (let i = 0; i < n; i++) {
-    arr = [...arr, allParsed.result.splice(0, 2)]
+  const obj = {
+    ...JSON.parse(allParsed.result[1]),
+    session_id,
+    is_error: false,
   }
-  arr.push(['session_id', session_id], ['isError', false])
-
-  console.log(arr)
-  const obj = Object.fromEntries(arr) as SessionSuccess
 
   return obj
 }
