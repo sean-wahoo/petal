@@ -33,7 +33,6 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       [email]
     )
 
-    console.log(numRowsWithEmail)
     if (numRowsWithEmail.length === 0) {
       throw new Error('No user with that email exists!')
     }
