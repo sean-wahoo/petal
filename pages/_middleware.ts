@@ -1,18 +1,6 @@
+import type { SessionSuccess, SessionError } from 'lib/types'
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from 'lib/session'
-import destroySession from './api/auth/destroySession'
-
-interface SessionData {
-  user_id: string
-  email: string
-  session_id: string
-  isError: boolean
-}
-
-interface SessionErrorData {
-  isError: boolean
-  message: string
-}
+import { getSession, destroySession } from 'lib/session'
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -26,15 +14,13 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.next()
     } else return NextResponse.redirect('login')
   }
-  const session_data: SessionData | SessionErrorData = await getSession(
+  const session_data: SessionSuccess | SessionError = await getSession(
     req.cookies.session_id
   )
 
-  console.log(session_data)
   if (
-    session_data.isError &&
-    'message' in session_data &&
-    session_data.message === 'Invalid Session ID!'
+    'is_error' in session_data &&
+    session_data.error_message === 'Invalid Session ID!'
   ) {
     const session_id = req.cookies.session_id
     const dev = process.env.NODE_ENV !== 'production'

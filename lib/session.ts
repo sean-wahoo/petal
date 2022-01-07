@@ -1,19 +1,8 @@
 import Redis from 'ioredis'
 import { nanoid } from 'nanoid/async'
+import type { SessionSuccess, SessionError } from 'lib/types'
 
 // TODO: find workaround for refreshing the page because apparently that matters
-
-interface UserSessionData {
-  user_id: string
-  email: string
-  session_id: string
-  isError: boolean
-}
-
-interface SessionErrorData {
-  isError: boolean
-  message: string
-}
 
 const updateSession = async (
   user_id: string,
@@ -29,7 +18,7 @@ const updateSession = async (
 
 const getSession = async (
   session_id: string
-): Promise<UserSessionData | SessionErrorData> => {
+): Promise<SessionSuccess | SessionError> => {
   let all = await fetch(`${process.env.REDISAPIURL}/hgetall/${session_id}`, {
     headers: {
       Authorization: `Bearer ${process.env.REDISTOKEN}`,
@@ -40,7 +29,11 @@ const getSession = async (
   console.log({ session_id, allParsed })
 
   if (allParsed.result.length === 0)
-    return { isError: true, message: 'Invalid Session ID!' }
+    return {
+      is_error: true,
+      error_code: '',
+      error_message: 'Invalid Session ID!',
+    }
 
   const n: number = allParsed.result.length / 2
   let arr: any = []
@@ -51,7 +44,7 @@ const getSession = async (
   arr.push(['session_id', session_id], ['isError', false])
 
   console.log(arr)
-  const obj = Object.fromEntries(arr) as UserSessionData
+  const obj = Object.fromEntries(arr) as SessionSuccess
 
   return obj
 }

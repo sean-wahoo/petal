@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import type { LoginSuccess, LoginError } from 'lib/types'
 import { useState } from 'react'
 import styles from 'styles/layouts/login.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,16 +14,6 @@ const Login: NextPage = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
-  interface SuccessLogin {
-    user_id: string
-    session_id: string
-  }
-
-  interface FailureLogin {
-    error_code: string
-    error_message: string
-  }
-
   const onLoginSubmit: () => void = async () => {
     try {
       const data = await fetch('/api/auth/login', {
@@ -31,7 +22,7 @@ const Login: NextPage = () => {
       })
       if (data.status === 500) throw new Error('Request Failed')
       console.log(data)
-      const res: SuccessLogin & FailureLogin = await data.json()
+      const res: LoginSuccess & LoginError = await data.json()
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)
       Router.reload()

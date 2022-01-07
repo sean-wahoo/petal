@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import type { AuthData, RegisterSuccess, RegisterError } from 'lib/types'
 import { updateSession } from 'lib/session'
 import connection from 'lib/db'
 import bcrypt from 'bcrypt'
@@ -8,19 +9,9 @@ export default async function register(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  interface RegisterData {
-    email: string
-    password: string
-  }
-
-  interface ReturnData {
-    user_id: string
-    session_id: string
-  }
-
   try {
     await connection.connect()
-    const { email, password }: RegisterData = JSON.parse(req.body)
+    const { email, password }: AuthData = JSON.parse(req.body)
 
     if (email.length === 0 || password.length === 0) {
       throw new Error('Please provide an email and password!')
@@ -51,9 +42,13 @@ export default async function register(
       [user_id, email, hash, session_id]
     )
 
-    return res.status(200).json({ user_id, session_id } as ReturnData)
+    return res.status(200).json({ user_id, session_id } as RegisterSuccess)
   } catch (e: any) {
     console.log(e)
-    res.status(500).json({ error_code: e.code, error_message: e.message })
+    res.status(500).json({
+      is_error: true,
+      error_code: e.code,
+      error_message: e.message,
+    } as RegisterError)
   }
 }

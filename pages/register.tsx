@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import type { RegisterSuccess, RegisterError } from 'lib/types'
 import { useState } from 'react'
 import styles from 'styles/layouts/register.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -11,16 +12,6 @@ const Register: NextPage = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
-  interface SuccessRegister {
-    user_id: string
-    session_id: string
-  }
-
-  interface FailureRegister {
-    error_code: string
-    error_message: string
-  }
-
   const onRegisterSubmit: () => void = async () => {
     try {
       const data = await fetch('/api/auth/register', {
@@ -29,7 +20,7 @@ const Register: NextPage = () => {
       })
       console.log(data)
       if (data.status === 500) throw new Error('Request Failed')
-      const res: SuccessRegister & FailureRegister = await data.json()
+      const res: RegisterSuccess & RegisterError = await data.json()
       console.log({ res })
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)

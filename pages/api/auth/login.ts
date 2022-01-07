@@ -1,23 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import type { AuthData, LoginSuccess, LoginError } from 'lib/types'
 import { updateSession } from 'lib/session'
 import connection from 'lib/db'
 import bcrypt from 'bcrypt'
-import { nanoid } from 'nanoid/async'
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
-  interface LoginData {
-    email: string
-    password: string
-  }
-  interface ReturnData {
-    user_id: string
-    session_id: string
-  }
-
   try {
     await connection.connect()
 
-    const { email, password }: LoginData = JSON.parse(req.body)
+    const { email, password }: AuthData = JSON.parse(req.body)
 
     if (email.length === 0 || password.length === 0) {
       throw new Error('Please provide a email and password!')
@@ -49,9 +40,15 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
 
     return res
       .status(200)
-      .json({ user_id: numRowsWithEmail[0][0], session_id } as ReturnData)
+      .json({ user_id: numRowsWithEmail[0][0], session_id } as LoginSuccess)
   } catch (e: any) {
     console.log({ e })
-    res.status(500).json({ error_code: e.code, error_message: e.message })
+    res
+      .status(500)
+      .json({
+        is_error: true,
+        error_code: e.code,
+        error_message: e.message,
+      } as LoginError)
   }
 }
