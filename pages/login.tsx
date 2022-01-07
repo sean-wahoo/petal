@@ -20,8 +20,8 @@ const Login: NextPage = () => {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       })
+
       if (data.status === 500) throw new Error('Request Failed')
-      console.log(data)
       const res: LoginSuccess & LoginError = await data.json()
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)
