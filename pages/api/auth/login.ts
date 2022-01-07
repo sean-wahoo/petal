@@ -31,24 +31,23 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     if (!(await bcrypt.compare(password, numRowsWithEmail[0][1]))) {
       throw new Error('That password is incorrect!')
     }
-    const session_id = await updateSession(numRowsWithEmail[0][0], email)
+
+    const session_data = { user_id: numRowsWithEmail[0][0], email }
+    const session_id = await updateSession(session_data)
 
     await connection.query(
       'UPDATE users SET session_id = ? WHERE user_id = ?',
       [session_id, numRowsWithEmail[0][0]]
     )
-
     return res
       .status(200)
       .json({ user_id: numRowsWithEmail[0][0], session_id } as LoginSuccess)
   } catch (e: any) {
     console.log({ e })
-    res
-      .status(500)
-      .json({
-        is_error: true,
-        error_code: e.code,
-        error_message: e.message,
-      } as LoginError)
+    res.status(500).json({
+      is_error: true,
+      error_code: e.code,
+      error_message: e.message,
+    } as LoginError)
   }
 }
