@@ -14,6 +14,20 @@ interface AuthData {
   password: string
 }
 
+interface SessionData {
+  user_id: string
+  email: string
+  session_id?: string
+}
+
+interface SessionProps {
+  session: {
+    user_id: string
+    email: string
+    session_id: string
+  }
+}
+
 interface RegisterSuccess extends Success {}
 
 interface RegisterError extends Error {}
@@ -28,7 +42,17 @@ interface SessionSuccess extends Success {
 
 interface SessionError extends Error {}
 
+interface LogoutData {
+  user_id: string
+  session_id: string
+}
+
+interface LogoutSuccess extends Success {}
+
+interface LogoutError extends Error {}
+
 export type {
+  SessionProps,
   RegisterSuccess,
   RegisterError,
   LoginSuccess,
@@ -36,4 +60,8 @@ export type {
   SessionSuccess,
   SessionError,
   AuthData,
+  LogoutSuccess,
+  LogoutData,
+  SessionData,
+  LogoutError,
 }
