@@ -28,9 +28,13 @@ interface SessionProps {
   }
 }
 
-interface RegisterSuccess extends Success {}
+interface RegisterSuccess extends Success {
+  type: string
+}
 
-interface RegisterError extends Error {}
+interface RegisterError extends Error {
+  type: string
+}
 
 interface LoginSuccess extends Success {
   type: string
