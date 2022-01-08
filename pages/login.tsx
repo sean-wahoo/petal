@@ -25,7 +25,7 @@ const Login: NextPage = () => {
       const res: LoginSuccess & LoginError = await data.json()
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)
-      Router.reload()
+      'is_error' in res || Router.reload()
     } catch (e: any) {
       console.log({ e })
     }
