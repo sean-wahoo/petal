@@ -82,6 +82,7 @@ const Register: NextPage = () => {
               )
               if (error.type === 'email')
                 setError({ error_message: '', type: '' })
+              e.target.setCustomValidity('')
             }}
             ref={emailRef}
             placeholder='email@address.com'
@@ -117,6 +118,7 @@ const Register: NextPage = () => {
                 setPassword(e.currentTarget.value)
                 if (error.type === 'password') {
                   setError({ error_message: '', type: '' })
+                  e.target.setCustomValidity('')
                 }
               }}
               className={styles.register__passwordInput}
