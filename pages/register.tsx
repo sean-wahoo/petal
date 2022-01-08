@@ -11,6 +11,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import Cookies from 'universal-cookie'
 import Router from 'next/router'
 import ErrorMessage from 'components/ErrorMessage'
+import Link from 'next/link'
 
 const Register: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false)
@@ -82,7 +83,6 @@ const Register: NextPage = () => {
               )
               if (error.type === 'email')
                 setError({ error_message: '', type: '' })
-              e.target.setCustomValidity('')
             }}
             ref={emailRef}
             placeholder='email@address.com'
@@ -136,6 +136,9 @@ const Register: NextPage = () => {
         <button className={styles.register__registerButton} type='submit'>
           Register
         </button>
+        <h4 className={styles.register__linkText}>
+          Need to <Link href='/login'>Login?</Link>
+        </h4>
       </form>
     </main>
   )

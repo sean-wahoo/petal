@@ -7,6 +7,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import Cookies from 'universal-cookie'
 import Router from 'next/router'
 import ErrorMessage from 'components/ErrorMessage'
+import Link from 'next/link'
 
 // TODO: add other login providers
 
@@ -81,7 +82,6 @@ const Login: NextPage = () => {
               )
               if (error.type === 'email')
                 setError({ error_message: '', type: '' })
-              e.target.setCustomValidity('')
             }}
             placeholder='email@address.com'
             id='email'
@@ -135,6 +135,9 @@ const Login: NextPage = () => {
         <button className={styles.login__loginButton} type='submit'>
           Login
         </button>
+        <h4 className={styles.login__linkText}>
+          Need to <Link href='/register'>Register?</Link>
+        </h4>
       </form>
     </main>
   )
