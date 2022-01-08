@@ -11,13 +11,13 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     const { email, password }: AuthData = JSON.parse(req.body)
 
     if (email.length === 0 || password.length === 0) {
-      throw new Error('Please provide a email and password!')
+      throw { message: 'Please provide a email and password!' }
     }
 
     const emailPattern =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     if (!email.toLowerCase().match(emailPattern)) {
-      throw new Error('Please provide a valid email address!')
+      throw { message: 'Please provide a valid email address!', type: 'email' }
     }
     const [numRowsWithEmail]: any = await connection.query(
       'SELECT user_id, password FROM users WHERE email = ?',
@@ -25,11 +25,11 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     )
 
     if (numRowsWithEmail.length === 0) {
-      throw new Error('No user with that email exists!')
+      throw { message: 'No user with that email exists!', type: 'email' }
     }
 
     if (!(await bcrypt.compare(password, numRowsWithEmail[0][1]))) {
-      throw new Error('That password is incorrect!')
+      throw { message: 'That password is incorrect!', type: 'password' }
     }
 
     const session_data = { user_id: numRowsWithEmail[0][0], email }
@@ -43,11 +43,11 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       .status(200)
       .json({ user_id: numRowsWithEmail[0][0], session_id } as LoginSuccess)
   } catch (e: any) {
-    console.log({ e })
     res.status(500).json({
       is_error: true,
       error_code: e.code,
       error_message: e.message,
+      type: e.type,
     } as LoginError)
   }
 }
