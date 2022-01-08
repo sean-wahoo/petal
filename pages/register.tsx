@@ -21,6 +21,9 @@ const Register: NextPage = () => {
     type: '',
   })
 
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
   const onRegisterSubmit: () => void = async () => {
     try {
       const data = await fetch('/api/auth/register', {
@@ -30,6 +33,11 @@ const Register: NextPage = () => {
       const res: RegisterSuccess | RegisterError = await data.json()
       if ('is_error' in res) {
         setError({ error_message: res.error_message, type: res.type })
+        res.type === 'email' &&
+          emailRef.current?.setCustomValidity(res.error_message)
+        res.type === 'password' &&
+          passwordRef.current?.setCustomValidity(res.error_message)
+        return
       }
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)
@@ -55,6 +63,16 @@ const Register: NextPage = () => {
             type='email'
             value={email}
             required
+            onInvalid={(e: React.BaseSyntheticEvent) => {
+              e.preventDefault()
+              setError({
+                error_message: e.target.validationMessage.replace(
+                  / *\([^)]*\) */g,
+                  ''
+                ),
+                type: 'email',
+              })
+            }}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.currentTarget.value)
               e.currentTarget.setCustomValidity(
@@ -65,6 +83,7 @@ const Register: NextPage = () => {
               if (error.type === 'email')
                 setError({ error_message: '', type: '' })
             }}
+            ref={emailRef}
             placeholder='email@address.com'
             id='email'
             className={styles.register__emailInput}
@@ -81,7 +100,18 @@ const Register: NextPage = () => {
               id='password'
               required
               minLength={8}
+              onInvalid={(e: React.BaseSyntheticEvent) => {
+                e.preventDefault()
+                setError({
+                  error_message: e.target.validationMessage.replace(
+                    / *\([^)]*\) */g,
+                    ''
+                  ),
+                  type: 'password',
+                })
+              }}
               placeholder='super secret password'
+              ref={passwordRef}
               value={password}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.currentTarget.value)
