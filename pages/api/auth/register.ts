@@ -14,14 +14,14 @@ export default async function register(
     const { email, password }: AuthData = JSON.parse(req.body)
 
     if (email.length === 0 || password.length === 0) {
-      throw new Error('Please provide an email and password!')
+      throw { message: 'Please provide an email and password!' }
     }
 
     const emailPattern =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
     if (!email.toLowerCase().match(emailPattern)) {
-      throw new Error('Please provide a valid email address!')
+      throw { message: 'Please provide a valid email address!', type: 'email' }
     }
     const [[[numRowsWithEmail]]]: any = await connection.query(
       'SELECT COUNT(*) FROM users WHERE email = ?',
@@ -29,7 +29,7 @@ export default async function register(
     )
 
     if (numRowsWithEmail > 0) {
-      throw new Error('That email is already in use!')
+      throw { message: 'That email is already in use!', type: 'email' }
     }
 
     const user_id = await nanoid(11)
@@ -44,11 +44,11 @@ export default async function register(
 
     return res.status(200).json({ user_id, session_id } as RegisterSuccess)
   } catch (e: any) {
-    console.log(e)
     res.status(500).json({
       is_error: true,
       error_code: e.code,
       error_message: e.message,
+      type: e.type,
     } as RegisterError)
   }
 }
