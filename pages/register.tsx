@@ -1,16 +1,25 @@
 import type { NextPage } from 'next'
-import type { RegisterSuccess, RegisterError } from 'lib/types'
-import { useState } from 'react'
+import type {
+  RegisterSuccess,
+  RegisterError,
+  ErrorMessageProps,
+} from 'lib/types'
+import { useState, useRef } from 'react'
 import styles from 'styles/layouts/register.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import Cookies from 'universal-cookie'
 import Router from 'next/router'
+import ErrorMessage from 'components/ErrorMessage'
 
 const Register: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false)
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [error, setError] = useState<ErrorMessageProps>({
+    error_message: '',
+    type: '',
+  })
 
   const onRegisterSubmit: () => void = async () => {
     try {
@@ -18,15 +27,15 @@ const Register: NextPage = () => {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       })
-      console.log(data)
-      if (data.status === 500) throw new Error('Request Failed')
-      const res: RegisterSuccess & RegisterError = await data.json()
-      console.log({ res })
+      const res: RegisterSuccess | RegisterError = await data.json()
+      if ('is_error' in res) {
+        setError({ error_message: res.error_message, type: res.type })
+      }
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)
       Router.reload()
     } catch (e: any) {
-      console.log({ e })
+      setError({ ...e })
     }
   }
 
@@ -53,11 +62,16 @@ const Register: NextPage = () => {
                   ? ''
                   : 'Please provide a valid email address'
               )
+              if (error.type === 'email')
+                setError({ error_message: '', type: '' })
             }}
             placeholder='email@address.com'
             id='email'
             className={styles.register__emailInput}
           />
+          {error.type === 'email' && (
+            <ErrorMessage error_message={error.error_message} />
+          )}
         </div>
         <div className={styles.register__inputGroup}>
           <label htmlFor='password'>Password</label>
@@ -71,6 +85,9 @@ const Register: NextPage = () => {
               value={password}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.currentTarget.value)
+                if (error.type === 'password') {
+                  setError({ error_message: '', type: '' })
+                }
               }}
               className={styles.register__passwordInput}
             />
@@ -80,6 +97,9 @@ const Register: NextPage = () => {
               onClick={() => setVisible(!visible)}
             />
           </div>
+          {error.type === 'password' && (
+            <ErrorMessage error_message={error.error_message} />
+          )}
         </div>
         <button className={styles.register__registerButton} type='submit'>
           Register

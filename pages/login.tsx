@@ -1,11 +1,12 @@
 import type { NextPage } from 'next'
-import type { LoginSuccess, LoginError } from 'lib/types'
-import { useState } from 'react'
+import type { LoginSuccess, LoginError, ErrorMessageProps } from 'lib/types'
+import { useState, useRef } from 'react'
 import styles from 'styles/layouts/login.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import Cookies from 'universal-cookie'
 import Router from 'next/router'
+import ErrorMessage from 'components/ErrorMessage'
 
 // TODO: add other login providers
 
@@ -13,6 +14,10 @@ const Login: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false)
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [error, setError] = useState<ErrorMessageProps>({
+    error_message: '',
+    type: '',
+  })
 
   const onLoginSubmit: () => void = async () => {
     try {
@@ -21,13 +26,15 @@ const Login: NextPage = () => {
         body: JSON.stringify({ email, password }),
       })
 
-      if (data.status === 500) throw new Error('Request Failed')
-      const res: LoginSuccess & LoginError = await data.json()
+      const res: LoginSuccess | LoginError = await data.json()
+      if ('is_error' in res) {
+        setError({ error_message: res.error_message, type: res.type })
+      }
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)
       'is_error' in res || Router.reload()
     } catch (e: any) {
-      console.log({ e })
+      setError({ ...e })
     }
   }
 
@@ -54,11 +61,16 @@ const Login: NextPage = () => {
                   ? ''
                   : 'Please provide a valid email address'
               )
+              if (error.type === 'email')
+                setError({ error_message: '', type: '' })
             }}
             placeholder='email@address.com'
             id='email'
             className={styles.login__emailInput}
           />
+          {error.type === 'email' && (
+            <ErrorMessage error_message={error.error_message} />
+          )}
         </div>
         <div className={styles.login__inputGroup}>
           <label htmlFor='password'>Password</label>
@@ -72,6 +84,8 @@ const Login: NextPage = () => {
               minLength={8}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.currentTarget.value)
+                if (error.type === 'password') {
+                  setError({ error_message: '', type: '' })
               }}
               className={styles.login__passwordInput}
             />
@@ -81,6 +95,9 @@ const Login: NextPage = () => {
               onClick={() => setVisible(!visible)}
             />
           </div>
+          {error.type === 'password' && (
+            <ErrorMessage error_message={error.error_message} />
+          )}
         </div>
         <button className={styles.login__loginButton} type='submit'>
           Login
