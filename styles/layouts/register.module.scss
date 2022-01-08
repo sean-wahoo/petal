@@ -12,6 +12,10 @@
   align-items: center;
   min-height: 100vh;
 
+  h1 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
   .register__inputArea {
     margin-bottom: 12rem;
     display: flex;
@@ -21,8 +25,7 @@
       margin: 1rem 0 1rem;
       display: flex;
       flex-flow: column nowrap;
-      align-items: flex-start;
-      width: 60%;
+      align-items: center;
 
       label {
         font-size: 1.1rem;
