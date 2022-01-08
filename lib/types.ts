@@ -32,9 +32,13 @@ interface RegisterSuccess extends Success {}
 
 interface RegisterError extends Error {}
 
-interface LoginSuccess extends Success {}
+interface LoginSuccess extends Success {
+  type: string
+}
 
-interface LoginError extends Error {}
+interface LoginError extends Error {
+  type: string
+}
 
 interface SessionSuccess extends Success {
   email: string
@@ -51,6 +55,11 @@ interface LogoutSuccess extends Success {}
 
 interface LogoutError extends Error {}
 
+interface ErrorMessageProps {
+  error_message: string
+  type?: string
+}
+
 export type {
   SessionProps,
   RegisterSuccess,
@@ -64,4 +73,5 @@ export type {
   LogoutData,
   SessionData,
   LogoutError,
+  ErrorMessageProps,
 }
