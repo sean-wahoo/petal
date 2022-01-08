@@ -1,0 +1,9 @@
+.error_container {
+  width: 100%;
+
+  .error_message {
+    margin: 0.2rem auto;
+    text-align: center;
+    color: var(--error-text);
+  }
+}
