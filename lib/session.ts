@@ -1,8 +1,7 @@
 import Redis from 'ioredis'
 import { nanoid } from 'nanoid/async'
 import type { SessionSuccess, SessionError, SessionData } from 'lib/types'
-
-// TODO: find workaround for refreshing the page because apparently that matters
+import Cookies from 'universal-cookie'
 
 const updateSession = async (
   session_data: SessionData
@@ -84,4 +83,34 @@ const destroySession = async (session_id: string): Promise<void> => {
   }
 }
 
-export { updateSession, getSession, destroySession }
+const session_handler = async (
+  session_id: string | undefined
+): Promise<SessionSuccess | SessionError> => {
+  if (session_id === undefined || session_id.length < 1)
+    throw new Error('No session cookie!')
+
+  const session_data: SessionSuccess | SessionError = await getSession(
+    session_id
+  )
+
+  if (
+    'is_error' in session_data &&
+    session_data.error_message === 'Invalid Session ID!'
+  ) {
+    const dev = process.env.NODE_ENV !== 'production'
+
+    await fetch(
+      `${dev ? 'http://localhost:3000' : null}/api/auth/destroySession`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ session_id }),
+      }
+    )
+    const cookies = new Cookies()
+    cookies.remove('session_id')
+    throw new Error('Invalid Session ID!')
+  }
+
+  return session_data
+}
+export { updateSession, getSession, destroySession, session_handler }
