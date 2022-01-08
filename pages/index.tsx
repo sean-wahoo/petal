@@ -1,12 +1,11 @@
 import type { NextPage, GetServerSideProps } from 'next'
-import { getSession } from 'lib/session'
 import type { SessionProps, SessionError, SessionSuccess } from 'lib/types'
 import styles from 'styles/layouts/index.module.scss'
 import { logout } from 'lib/utils'
+import { session_handler } from 'lib/session'
 import Router from 'next/router'
 
 const Index: NextPage<SessionProps> = ({ session }) => {
-  console.log(session)
   return (
     <div>
       {session.user_id}
@@ -22,13 +21,21 @@ const Index: NextPage<SessionProps> = ({ session }) => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { session_id } = context.req.cookies
-  const session: SessionSuccess | SessionError = await getSession(session_id)
-  // console.log(`gssp -> ${JSON.stringify(session)}`)
-
-  return {
-    props: { session },
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  let session: SessionSuccess | SessionError | Object = {}
+  try {
+    session = await session_handler(context.req.cookies.session_id)
+    return {
+      props: { session },
+    }
+  } catch (e: any) {
+    context.res.setHeader('Set-Cookie', ['session_id=deleted; Max-Age=0'])
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
   }
 }
 
