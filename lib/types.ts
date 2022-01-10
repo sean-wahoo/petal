@@ -59,9 +59,15 @@ interface LogoutSuccess extends Success {}
 
 interface LogoutError extends Error {}
 
+// props
 interface ErrorMessageProps {
   error_message: string
   type?: string
+}
+
+interface LayoutProps {
+  children: any
+  title: string
 }
 
 export type {
@@ -78,4 +84,5 @@ export type {
   SessionData,
   LogoutError,
   ErrorMessageProps,
+  LayoutProps,
 }
