@@ -1,25 +1,29 @@
 import type { NextPage } from 'next'
-import { useState } from 'react'
+import type {
+  RegisterSuccess,
+  RegisterError,
+  ErrorMessageProps,
+} from 'lib/types'
+import { useState, useRef } from 'react'
 import styles from 'styles/layouts/register.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import Cookies from 'universal-cookie'
 import Router from 'next/router'
+import ErrorMessage from 'components/ErrorMessage'
+import Link from 'next/link'
 
 const Register: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false)
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [error, setError] = useState<ErrorMessageProps>({
+    error_message: '',
+    type: '',
+  })
 
-  interface SuccessRegister {
-    user_id: string
-    session_id: string
-  }
-
-  interface FailureRegister {
-    error_code: string
-    error_message: string
-  }
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
 
   const onRegisterSubmit: () => void = async () => {
     try {
@@ -27,15 +31,20 @@ const Register: NextPage = () => {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       })
-      console.log(data)
-      if (data.status === 500) throw new Error('Request Failed')
-      const res: SuccessRegister & FailureRegister = await data.json()
-      console.log({ res })
+      const res: RegisterSuccess | RegisterError = await data.json()
+      if ('is_error' in res) {
+        setError({ error_message: res.error_message, type: res.type })
+        res.type === 'email' &&
+          emailRef.current?.setCustomValidity(res.error_message)
+        res.type === 'password' &&
+          passwordRef.current?.setCustomValidity(res.error_message)
+        return
+      }
       const cookies = new Cookies()
       cookies.set('session_id', res.session_id)
       Router.reload()
     } catch (e: any) {
-      console.log({ e })
+      setError({ ...e })
     }
   }
 
@@ -55,6 +64,16 @@ const Register: NextPage = () => {
             type='email'
             value={email}
             required
+            onInvalid={(e: React.BaseSyntheticEvent) => {
+              e.preventDefault()
+              setError({
+                error_message: e.target.validationMessage.replace(
+                  / *\([^)]*\) */g,
+                  ''
+                ),
+                type: 'email',
+              })
+            }}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setEmail(e.currentTarget.value)
               e.currentTarget.setCustomValidity(
@@ -62,11 +81,17 @@ const Register: NextPage = () => {
                   ? ''
                   : 'Please provide a valid email address'
               )
+              if (error.type === 'email')
+                setError({ error_message: '', type: '' })
             }}
+            ref={emailRef}
             placeholder='email@address.com'
             id='email'
             className={styles.register__emailInput}
           />
+          {error.type === 'email' && (
+            <ErrorMessage error_message={error.error_message} />
+          )}
         </div>
         <div className={styles.register__inputGroup}>
           <label htmlFor='password'>Password</label>
@@ -76,10 +101,25 @@ const Register: NextPage = () => {
               id='password'
               required
               minLength={8}
+              onInvalid={(e: React.BaseSyntheticEvent) => {
+                e.preventDefault()
+                setError({
+                  error_message: e.target.validationMessage.replace(
+                    / *\([^)]*\) */g,
+                    ''
+                  ),
+                  type: 'password',
+                })
+              }}
               placeholder='super secret password'
+              ref={passwordRef}
               value={password}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.currentTarget.value)
+                if (error.type === 'password') {
+                  setError({ error_message: '', type: '' })
+                  e.target.setCustomValidity('')
+                }
               }}
               className={styles.register__passwordInput}
             />
@@ -89,10 +129,16 @@ const Register: NextPage = () => {
               onClick={() => setVisible(!visible)}
             />
           </div>
+          {error.type === 'password' && (
+            <ErrorMessage error_message={error.error_message} />
+          )}
         </div>
         <button className={styles.register__registerButton} type='submit'>
           Register
         </button>
+        <h4 className={styles.register__linkText}>
+          Need to <Link href='/login'>Login?</Link>
+        </h4>
       </form>
     </main>
   )

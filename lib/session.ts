@@ -1,25 +1,51 @@
 import Redis from 'ioredis'
 import { nanoid } from 'nanoid/async'
-
-interface UserSessionData {
-  user_id: string
-  email: string
-  session_id: string
-}
+import type { SessionSuccess, SessionError, SessionData } from 'lib/types'
+import Cookies from 'universal-cookie'
 
 const updateSession = async (
-  user_id: string,
-  email: string,
-  session_id?: string
-): Promise<string> => {
-  const redis = new Redis(process.env.REDISURL)
-  session_id ||= await nanoid(24)
-  redis.hmset(session_id, { user_id, email })
-  redis.expire(session_id, 84600)
-  return session_id
+  session_data: SessionData
+): Promise<string | SessionError> => {
+  try {
+    let { user_id, email, session_id } = session_data
+    session_id ||= await nanoid(24)
+    const obj: any = { user_id, email }
+
+    let data = await fetch(
+      `${process.env.REDISAPIURL}/hmset/${session_id}/session_data`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.REDISTOKEN}`,
+        },
+        body: JSON.stringify(obj),
+      }
+    )
+    data = await data.json()
+
+    let exp = await fetch(
+      `${process.env.REDISAPIURL}/expire/${session_id}/84600`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REDISTOKEN}`,
+        },
+      }
+    )
+    exp = await exp.json()
+
+    if ('error' in data || 'error' in exp)
+      throw new Error('Session failed to initialize!')
+
+    return session_id
+  } catch (e: any) {
+    console.log({ e })
+    return { is_error: true, error_code: e.code, error_message: e.message }
+  }
 }
 
-const getSession = async (session_id: string): Promise<UserSessionData> => {
+const getSession = async (
+  session_id: string
+): Promise<SessionSuccess | SessionError> => {
   let all = await fetch(`${process.env.REDISAPIURL}/hgetall/${session_id}`, {
     headers: {
       Authorization: `Bearer ${process.env.REDISTOKEN}`,
@@ -28,17 +54,63 @@ const getSession = async (session_id: string): Promise<UserSessionData> => {
 
   const allParsed = await all.json()
 
-  const n: number = allParsed.result.length / 2
-  let arr: any = []
+  if (allParsed.result.length === 0)
+    return {
+      is_error: true,
+      error_code: '',
+      error_message: 'Invalid Session ID!',
+    }
 
-  for (let i = 0; i < n; i++) {
-    arr = [...arr, allParsed.result.splice(0, 2)]
+  const obj = {
+    ...JSON.parse(allParsed.result[1]),
+    session_id,
+    is_error: false,
   }
-  arr.push(['session_id', session_id])
-
-  const obj = Object.fromEntries(arr) as UserSessionData
 
   return obj
 }
 
-export { updateSession, getSession }
+const destroySession = async (session_id: string): Promise<void> => {
+  try {
+    await fetch(`${process.env.REDISAPIURL}/del/${session_id}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.REDISTOKEN}`,
+      },
+      body: JSON.stringify({ session_id }),
+    })
+  } catch (e: any) {
+    console.log({ e })
+  }
+}
+
+const session_handler = async (
+  session_id: string | undefined
+): Promise<SessionSuccess | SessionError> => {
+  if (session_id === undefined || session_id.length < 1)
+    throw new Error('No session cookie!')
+
+  const session_data: SessionSuccess | SessionError = await getSession(
+    session_id
+  )
+
+  if (
+    'is_error' in session_data &&
+    session_data.error_message === 'Invalid Session ID!'
+  ) {
+    const dev = process.env.NODE_ENV !== 'production'
+
+    await fetch(
+      `${dev ? 'http://localhost:3000' : null}/api/auth/destroySession`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ session_id }),
+      }
+    )
+    const cookies = new Cookies()
+    cookies.remove('session_id')
+    throw new Error('Invalid Session ID!')
+  }
+
+  return session_data
+}
+export { updateSession, getSession, destroySession, session_handler }
