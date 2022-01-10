@@ -8,6 +8,7 @@ import Cookies from 'universal-cookie'
 import Router from 'next/router'
 import ErrorMessage from 'components/ErrorMessage'
 import Link from 'next/link'
+import Layout from 'components/Layout'
 
 // TODO: add other login providers
 
@@ -48,55 +49,22 @@ const Login: NextPage = () => {
   }
 
   return (
-    <main className={styles.login}>
-      <h1>Login to ConnectHigh</h1>
-      <form
-        className={styles.login__inputArea}
-        onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-          e.preventDefault()
-          onLoginSubmit()
-        }}
-      >
-        <div className={styles.login__inputGroup}>
-          <label htmlFor='email'>Email</label>
-          <input
-            type='email'
-            value={email}
-            required
-            onInvalid={(e: React.BaseSyntheticEvent) => {
-              e.preventDefault()
-              setError({
-                error_message: e.target.validationMessage.replace(
-                  / *\([^)]*\) */g,
-                  ''
-                ),
-                type: 'email',
-              })
-            }}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setEmail(e.currentTarget.value)
-              e.currentTarget.setCustomValidity(
-                e.currentTarget.value.includes('.')
-                  ? ''
-                  : 'Please provide a valid email address'
-              )
-              if (error.type === 'email')
-                setError({ error_message: '', type: '' })
-            }}
-            placeholder='email@address.com'
-            id='email'
-            ref={emailRef}
-            className={styles.login__emailInput}
-          />
-          {error.type === 'email' && (
-            <ErrorMessage error_message={error.error_message} />
-          )}
-        </div>
-        <div className={styles.login__inputGroup}>
-          <label htmlFor='password'>Password</label>
-          <div>
+    <Layout title='Login - ConnectHigh' is_auth={false}>
+      <main className={styles.login}>
+        <h1>Login to ConnectHigh</h1>
+        <form
+          className={styles.login__inputArea}
+          onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
+            onLoginSubmit()
+          }}
+        >
+          <div className={styles.login__inputGroup}>
+            <label htmlFor='email'>Email</label>
             <input
-              type={visible ? 'text' : 'password'}
+              type='email'
+              value={email}
+              required
               onInvalid={(e: React.BaseSyntheticEvent) => {
                 e.preventDefault()
                 setError({
@@ -104,42 +72,77 @@ const Login: NextPage = () => {
                     / *\([^)]*\) */g,
                     ''
                   ),
-                  type: 'password',
+                  type: 'email',
                 })
               }}
-              id='password'
-              value={password}
-              required
-              placeholder='super secret password'
-              minLength={8}
-              ref={passwordRef}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setPassword(e.currentTarget.value)
-                if (error.type === 'password') {
+                setEmail(e.currentTarget.value)
+                e.currentTarget.setCustomValidity(
+                  e.currentTarget.value.includes('.')
+                    ? ''
+                    : 'Please provide a valid email address'
+                )
+                if (error.type === 'email')
                   setError({ error_message: '', type: '' })
-                  e.target.setCustomValidity('')
-                }
               }}
-              className={styles.login__passwordInput}
+              placeholder='email@address.com'
+              id='email'
+              ref={emailRef}
+              className={styles.login__emailInput}
             />
-            <FontAwesomeIcon
-              icon={visible ? faEyeSlash : faEye}
-              className={styles.login__showPasswordIcon}
-              onClick={() => setVisible(!visible)}
-            />
+            {error.type === 'email' && (
+              <ErrorMessage error_message={error.error_message} />
+            )}
           </div>
-          {error.type === 'password' && (
-            <ErrorMessage error_message={error.error_message} />
-          )}
-        </div>
-        <button className={styles.login__loginButton} type='submit'>
-          Login
-        </button>
-        <h4 className={styles.login__linkText}>
-          Need to <Link href='/register'>Register?</Link>
-        </h4>
-      </form>
-    </main>
+          <div className={styles.login__inputGroup}>
+            <label htmlFor='password'>Password</label>
+            <div>
+              <input
+                type={visible ? 'text' : 'password'}
+                onInvalid={(e: React.BaseSyntheticEvent) => {
+                  e.preventDefault()
+                  setError({
+                    error_message: e.target.validationMessage.replace(
+                      / *\([^)]*\) */g,
+                      ''
+                    ),
+                    type: 'password',
+                  })
+                }}
+                id='password'
+                value={password}
+                required
+                placeholder='super secret password'
+                minLength={8}
+                ref={passwordRef}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setPassword(e.currentTarget.value)
+                  if (error.type === 'password') {
+                    setError({ error_message: '', type: '' })
+                    e.target.setCustomValidity('')
+                  }
+                }}
+                className={styles.login__passwordInput}
+              />
+              <FontAwesomeIcon
+                icon={visible ? faEyeSlash : faEye}
+                className={styles.login__showPasswordIcon}
+                onClick={() => setVisible(!visible)}
+              />
+            </div>
+            {error.type === 'password' && (
+              <ErrorMessage error_message={error.error_message} />
+            )}
+          </div>
+          <button className={styles.login__loginButton} type='submit'>
+            Login
+          </button>
+          <h4 className={styles.login__linkText}>
+            Need to <Link href='/register'>Register?</Link>
+          </h4>
+        </form>
+      </main>
+    </Layout>
   )
 }
 

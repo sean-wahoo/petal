@@ -68,6 +68,7 @@ interface ErrorMessageProps {
 interface LayoutProps {
   children: any
   title: string
+  is_auth: boolean
 }
 
 export type {

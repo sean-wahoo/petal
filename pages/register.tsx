@@ -12,6 +12,7 @@ import Cookies from 'universal-cookie'
 import Router from 'next/router'
 import ErrorMessage from 'components/ErrorMessage'
 import Link from 'next/link'
+import Layout from 'components/Layout'
 
 const Register: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false)
@@ -49,58 +50,22 @@ const Register: NextPage = () => {
   }
 
   return (
-    <main className={styles.register}>
-      <h1>Register to ConnectHigh</h1>
-      <form
-        className={styles.register__inputArea}
-        onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-          e.preventDefault()
-          onRegisterSubmit()
-        }}
-      >
-        <div className={styles.register__inputGroup}>
-          <label htmlFor='email'>Email</label>
-          <input
-            type='email'
-            value={email}
-            required
-            onInvalid={(e: React.BaseSyntheticEvent) => {
-              e.preventDefault()
-              setError({
-                error_message: e.target.validationMessage.replace(
-                  / *\([^)]*\) */g,
-                  ''
-                ),
-                type: 'email',
-              })
-            }}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setEmail(e.currentTarget.value)
-              e.currentTarget.setCustomValidity(
-                e.currentTarget.value.includes('.')
-                  ? ''
-                  : 'Please provide a valid email address'
-              )
-              if (error.type === 'email')
-                setError({ error_message: '', type: '' })
-            }}
-            ref={emailRef}
-            placeholder='email@address.com'
-            id='email'
-            className={styles.register__emailInput}
-          />
-          {error.type === 'email' && (
-            <ErrorMessage error_message={error.error_message} />
-          )}
-        </div>
-        <div className={styles.register__inputGroup}>
-          <label htmlFor='password'>Password</label>
-          <div>
+    <Layout title='Register - ConnectHigh' is_auth={false}>
+      <main className={styles.register}>
+        <h1>Register to ConnectHigh</h1>
+        <form
+          className={styles.register__inputArea}
+          onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
+            onRegisterSubmit()
+          }}
+        >
+          <div className={styles.register__inputGroup}>
+            <label htmlFor='email'>Email</label>
             <input
-              type={visible ? 'text' : 'password'}
-              id='password'
+              type='email'
+              value={email}
               required
-              minLength={8}
               onInvalid={(e: React.BaseSyntheticEvent) => {
                 e.preventDefault()
                 setError({
@@ -108,39 +73,77 @@ const Register: NextPage = () => {
                     / *\([^)]*\) */g,
                     ''
                   ),
-                  type: 'password',
+                  type: 'email',
                 })
               }}
-              placeholder='super secret password'
-              ref={passwordRef}
-              value={password}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setPassword(e.currentTarget.value)
-                if (error.type === 'password') {
+                setEmail(e.currentTarget.value)
+                e.currentTarget.setCustomValidity(
+                  e.currentTarget.value.includes('.')
+                    ? ''
+                    : 'Please provide a valid email address'
+                )
+                if (error.type === 'email')
                   setError({ error_message: '', type: '' })
-                  e.target.setCustomValidity('')
-                }
               }}
-              className={styles.register__passwordInput}
+              ref={emailRef}
+              placeholder='email@address.com'
+              id='email'
+              className={styles.register__emailInput}
             />
-            <FontAwesomeIcon
-              icon={visible ? faEyeSlash : faEye}
-              className={styles.register__showPasswordIcon}
-              onClick={() => setVisible(!visible)}
-            />
+            {error.type === 'email' && (
+              <ErrorMessage error_message={error.error_message} />
+            )}
           </div>
-          {error.type === 'password' && (
-            <ErrorMessage error_message={error.error_message} />
-          )}
-        </div>
-        <button className={styles.register__registerButton} type='submit'>
-          Register
-        </button>
-        <h4 className={styles.register__linkText}>
-          Need to <Link href='/login'>Login?</Link>
-        </h4>
-      </form>
-    </main>
+          <div className={styles.register__inputGroup}>
+            <label htmlFor='password'>Password</label>
+            <div>
+              <input
+                type={visible ? 'text' : 'password'}
+                id='password'
+                required
+                minLength={8}
+                onInvalid={(e: React.BaseSyntheticEvent) => {
+                  e.preventDefault()
+                  setError({
+                    error_message: e.target.validationMessage.replace(
+                      / *\([^)]*\) */g,
+                      ''
+                    ),
+                    type: 'password',
+                  })
+                }}
+                placeholder='super secret password'
+                ref={passwordRef}
+                value={password}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setPassword(e.currentTarget.value)
+                  if (error.type === 'password') {
+                    setError({ error_message: '', type: '' })
+                    e.target.setCustomValidity('')
+                  }
+                }}
+                className={styles.register__passwordInput}
+              />
+              <FontAwesomeIcon
+                icon={visible ? faEyeSlash : faEye}
+                className={styles.register__showPasswordIcon}
+                onClick={() => setVisible(!visible)}
+              />
+            </div>
+            {error.type === 'password' && (
+              <ErrorMessage error_message={error.error_message} />
+            )}
+          </div>
+          <button className={styles.register__registerButton} type='submit'>
+            Register
+          </button>
+          <h4 className={styles.register__linkText}>
+            Need to <Link href='/login'>Login?</Link>
+          </h4>
+        </form>
+      </main>
+    </Layout>
   )
 }
 
