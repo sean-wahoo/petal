@@ -12,6 +12,10 @@
   align-items: center;
   min-height: 100vh;
 
+  h1 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
   .register__inputArea {
     margin-bottom: 12rem;
     display: flex;
@@ -21,8 +25,7 @@
       margin: 1rem 0 1rem;
       display: flex;
       flex-flow: column nowrap;
-      align-items: flex-start;
-      width: 60%;
+      align-items: center;
 
       label {
         font-size: 1.1rem;
@@ -47,6 +50,7 @@
         padding: 0.4rem;
         border-bottom: 2px solid var(--text-accent);
         color: var(--text-color);
+        transition: border-bottom 0.1s ease;
 
         &:focus-within {
           border-bottom: 2px solid var(--accent-1);
@@ -69,7 +73,13 @@
       background: var(--accent-2);
       border-radius: 0.4rem;
       color: white;
+      font-family: 'Poppins';
       border: none;
+    }
+    .register__linkText {
+      a {
+        color: var(--accent-2);
+      }
     }
   }
 }
