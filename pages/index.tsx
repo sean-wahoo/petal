@@ -3,10 +3,14 @@ import type { SessionProps, SessionError, SessionSuccess } from 'lib/types'
 import styles from 'styles/layouts/index.module.scss'
 import { logout } from 'lib/utils'
 import { session_handler } from 'lib/session'
-import Router from 'next/router'
+import Layout from 'components/Layout'
 
 const Index: NextPage<SessionProps> = ({ session }) => {
-  return <main className={styles.index}></main>
+  return (
+    <Layout title='Home - ConnectHigh' is_auth={true}>
+      <main className={styles.index}></main>
+    </Layout>
+  )
 }
 
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
