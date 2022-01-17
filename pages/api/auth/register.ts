@@ -36,10 +36,12 @@ export default async function register(
     const salt = await bcrypt.genSalt()
     const hash = await bcrypt.hash(password, salt)
     const session_id = await updateSession({ user_id, email })
+    const seed = await nanoid(16)
+    const image_url = `https://avatars.dicebear.com/api/bottts/${seed}.svg`
 
     await connection.query(
-      'INSERT INTO users(user_id, email, password, session_id) VALUES (?, ?, ?, ?)',
-      [user_id, email, hash, session_id]
+      'INSERT INTO users(user_id, email, password, session_id, image_url) VALUES (?, ?, ?, ?, ?)',
+      [user_id, email, hash, session_id, image_url]
     )
 
     return res.status(200).json({ user_id, session_id } as RegisterSuccess)
