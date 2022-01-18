@@ -4,8 +4,8 @@
   display: flex;
   flex-flow: column nowrap;
   color: var(--text-color);
-  background-color: var(--primary-color);
+  background-color: var(--primary-bg);
   justify-content: flex-start;
+  flex-grow: 1;
   align-items: center;
-  min-height: 100vh;
 }
