@@ -36,6 +36,7 @@ a {
     --text-accent: #{theme.$text-accent--dark};
     --input-bg: #{theme.$input-bg--dark};
     --bg-shapes: url(#{theme.$bg-shapes--dark});
+    --nav-bg: #{theme.$nav-bg--dark};
   }
 }
 %dark-mode {
@@ -56,5 +57,6 @@ a {
   --input-bg: #{theme.$input-bg--light};
   --bg-shapes: url(#{theme.$bg-shapes--light});
   --error-text: #{theme.$error-text};
+  --nav-bg: #{theme.$nav-bg--light};
   @include dark-mode;
 }
