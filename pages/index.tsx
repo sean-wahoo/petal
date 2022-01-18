@@ -7,7 +7,7 @@ import Layout from 'components/Layout'
 
 const Index: NextPage<SessionProps> = ({ session }) => {
   return (
-    <Layout title='Home - ConnectHigh' is_auth={true}>
+    <Layout session_data={session} title='Home - ConnectHigh' is_auth={true}>
       <main className={styles.index}></main>
     </Layout>
   )

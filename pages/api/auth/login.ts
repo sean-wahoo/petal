@@ -20,7 +20,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       throw { message: 'Please provide a valid email address!', type: 'email' }
     }
     const [numRowsWithEmail]: any = await connection.query(
-      'SELECT user_id, password FROM users WHERE email = ?',
+      'SELECT user_id, password, display_name, image_url FROM users WHERE email = ?',
       [email]
     )
 
@@ -32,7 +32,13 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       throw { message: 'That password is incorrect!', type: 'password' }
     }
 
-    const session_data = { user_id: numRowsWithEmail[0][0], email }
+    const session_data = {
+      user_id: numRowsWithEmail[0][0],
+      email,
+      display_name: numRowsWithEmail[0][2],
+      image_url: numRowsWithEmail[0][3],
+    }
+    console.log(session_data)
     const session_id = await updateSession(session_data)
 
     await connection.query(
