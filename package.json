@@ -8,8 +8,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
+    "aws-sdk": "^2.1058.0",
     "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
     "ioredis": "^4.28.2",
