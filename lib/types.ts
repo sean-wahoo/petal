@@ -18,14 +18,12 @@ interface SessionData {
   user_id: string
   email: string
   session_id?: string
+  display_name: string
+  image_url: string
 }
 
 interface SessionProps {
-  session: {
-    user_id: string
-    email: string
-    session_id: string
-  }
+  session: SessionData
 }
 
 interface RegisterSuccess extends Success {
@@ -45,6 +43,8 @@ interface LoginError extends Error {
 }
 
 interface SessionSuccess extends Success {
+  display_name: string
+  image_url: string
   email: string
 }
 
@@ -69,6 +69,14 @@ interface LayoutProps {
   children: any
   title: string
   is_auth: boolean
+  session_data: SessionData
+}
+interface ProfileProps {
+  profile: {
+    user_id: string
+    display_name: string
+    image_url: string
+  }
 }
 
 export type {
@@ -86,4 +94,5 @@ export type {
   LogoutError,
   ErrorMessageProps,
   LayoutProps,
+  ProfileProps,
 }
