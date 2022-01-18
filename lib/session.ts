@@ -7,9 +7,9 @@ const updateSession = async (
   session_data: SessionData
 ): Promise<string | SessionError> => {
   try {
-    let { user_id, email, session_id } = session_data
+    let { user_id, email, session_id, image_url, display_name } = session_data
     session_id ||= await nanoid(24)
-    const obj: any = { user_id, email }
+    const obj: any = { user_id, email, image_url, display_name }
 
     let data = await fetch(
       `${process.env.REDISAPIURL}/hmset/${session_id}/session_data`,
@@ -38,7 +38,6 @@ const updateSession = async (
 
     return session_id
   } catch (e: any) {
-    console.log({ e })
     return { is_error: true, error_code: e.code, error_message: e.message }
   }
 }
