@@ -38,7 +38,6 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       display_name: numRowsWithEmail[0][2],
       image_url: numRowsWithEmail[0][3],
     }
-    console.log(session_data)
     const session_id = await updateSession(session_data)
 
     await connection.query(
