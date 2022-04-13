@@ -6,6 +6,6 @@
   color: var(--text-color);
   background-color: var(--primary-bg);
   justify-content: flex-start;
-  flex-grow: 1;
+  min-height: 150vh;
   align-items: center;
 }

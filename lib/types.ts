@@ -69,7 +69,7 @@ interface LayoutProps {
   children: any
   title: string
   is_auth: boolean
-  session_data: SessionData
+  session_data?: SessionData
 }
 interface ProfileProps {
   profile: {
