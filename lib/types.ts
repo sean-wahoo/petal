@@ -42,6 +42,11 @@ interface LoginError extends Error {
   type: string
 }
 
+interface LoginResponse {
+  data?: LoginSuccess
+  error?: LoginError
+}
+
 interface SessionSuccess extends Success, SessionData {
   display_name: string
   session_id: string
@@ -70,7 +75,7 @@ interface LayoutProps {
   children: any
   title: string
   is_auth: boolean
-  session_data: SessionData
+  session_data?: SessionData
 }
 interface ProfileProps {
   profile: {
@@ -86,6 +91,7 @@ export type {
   RegisterError,
   LoginSuccess,
   LoginError,
+  LoginResponse,
   SessionSuccess,
   SessionError,
   AuthData,
