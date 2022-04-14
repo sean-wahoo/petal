@@ -1,5 +1,5 @@
 import React from 'react'
-import { LayoutProps } from 'lib/types'
+import { LayoutProps, SessionData } from 'lib/types'
 import Head from 'next/head'
 import Navbar from 'components/Navbar'
 import styles from 'styles/components/layout.module.scss'
@@ -15,7 +15,7 @@ export default function Layout({
       <Head>
         <title>{title}</title>
       </Head>
-      {is_auth && <Navbar profile={{ ...session_data }} />}
+      {is_auth && <Navbar profile={{ ...session_data } as SessionData} />}
       {children}
     </div>
   )
