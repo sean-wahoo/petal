@@ -9,11 +9,19 @@ export default async function middleware(req: NextRequest) {
 
   if (!req.cookies.session_id) {
     if (['/login', '/register'].includes(pathname)) {
-      return NextResponse.next()
-    } else return NextResponse.redirect('/login')
+    } else {
+      const url = req.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next()
   }
 
-  if (pathname === '/register' || pathname === '/login')
-    return NextResponse.redirect('/')
+  if (pathname === '/register' || pathname === '/login') {
+    const url = req.nextUrl.clone()
+
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
   return NextResponse.next()
 }
