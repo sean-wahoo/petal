@@ -4,9 +4,9 @@ import debounce from 'lodash.debounce'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ProfileProps } from 'lib/types'
+import { upload } from 'lib/bucket'
 export default function Navbar({ profile }: ProfileProps) {
   const [prev, setPrev] = useState<number>(0)
-  const [hidden, setHidden] = useState<boolean>(false)
   const navRef = useRef(null)
   useEffect(() => {
     window.addEventListener(
@@ -36,6 +36,16 @@ export default function Navbar({ profile }: ProfileProps) {
         height={48}
         className={styles.profile_image}
       />
+      <form>
+        <input
+          type='file'
+          accept='image/*'
+          onChange={async (e: any) => {
+            const file = e.target.files[0]
+            upload(file, 'profile_images', profile.user_id)
+          }}
+        />
+      </form>
     </nav>
   )
 }
