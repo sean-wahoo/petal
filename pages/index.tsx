@@ -1,7 +1,6 @@
 import type { NextPage, GetServerSideProps } from 'next'
 import type { SessionProps, SessionError, SessionSuccess } from 'lib/types'
 import styles from 'styles/layouts/index.module.scss'
-import { logout } from 'lib/utils'
 import { session_handler } from 'lib/session'
 import Layout from 'components/Layout'
 
