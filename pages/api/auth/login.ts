@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { AuthData, LoginSuccess, LoginError } from 'lib/types'
 import { updateSession } from 'lib/session'
-import connection from 'lib/db'
 import bcrypt from 'bcrypt'
+import { PrismaClient } from '@prisma/client'
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   try {
-    await connection.connect()
+    const prisma = new PrismaClient()
 
     const { email, password }: AuthData = JSON.parse(req.body)
 
@@ -19,34 +19,33 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     if (!email.toLowerCase().match(emailPattern)) {
       throw { message: 'Please provide a valid email address!', type: 'email' }
     }
-    const [numRowsWithEmail]: any = await connection.query(
-      'SELECT user_id, password, display_name, image_url FROM users WHERE email = ?',
-      [email]
-    )
+    const numRowsWithEmail = await prisma.users.findMany({
+      where: { email: email },
+    })
 
     if (numRowsWithEmail.length === 0) {
       throw { message: 'No user with that email exists!', type: 'email' }
     }
 
-    if (!(await bcrypt.compare(password, numRowsWithEmail[0][1]))) {
+    if (!(await bcrypt.compare(password, numRowsWithEmail[0].email))) {
       throw { message: 'That password is incorrect!', type: 'password' }
     }
 
     const session_data = {
-      user_id: numRowsWithEmail[0][0],
+      user_id: numRowsWithEmail[0].email,
       email,
-      display_name: numRowsWithEmail[0][2],
-      image_url: numRowsWithEmail[0][3],
+      display_name: numRowsWithEmail[0].display_name,
+      image_url: numRowsWithEmail[0].image_url,
     }
     const session_id = await updateSession(session_data)
-
-    await connection.query(
-      'UPDATE users SET session_id = ? WHERE user_id = ?',
-      [session_id, numRowsWithEmail[0][0]]
-    )
-    return res
-      .status(200)
-      .json({ user_id: numRowsWithEmail[0][0], session_id } as LoginSuccess)
+    prisma.users.update({
+      where: { user_id: numRowsWithEmail[0].user_id },
+      data: { session_id: session_id as string },
+    })
+    return res.status(200).json({
+      user_id: numRowsWithEmail[0].user_id,
+      session_id,
+    } as LoginSuccess)
   } catch (e: any) {
     res.status(500).json({
       is_error: true,

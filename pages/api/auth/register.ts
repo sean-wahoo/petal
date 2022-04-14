@@ -5,13 +5,14 @@ import { updateSession } from 'lib/session'
 import connection from 'lib/db'
 import bcrypt from 'bcrypt'
 import { nanoid } from 'nanoid/async'
+import { PrismaClient } from '@prisma/client'
 
 export default async function register(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    await connection.connect()
+    const prisma = new PrismaClient()
     const { email, password }: AuthData = JSON.parse(req.body)
 
     if (email.length === 0 || password.length === 0) {
@@ -24,12 +25,11 @@ export default async function register(
     if (!email.toLowerCase().match(emailPattern)) {
       throw { message: 'Please provide a valid email address!', type: 'email' }
     }
-    const [[[numRowsWithEmail]]]: any = await connection.query(
-      'SELECT COUNT(*) FROM users WHERE email = ?',
-      [email]
-    )
+    const numRowsWithEmail = await prisma.users.findMany({
+      where: { email: email },
+    })
 
-    if (numRowsWithEmail > 0) {
+    if (numRowsWithEmail.length > 0) {
       throw { message: 'That email is already in use!', type: 'email' }
     }
 
@@ -46,10 +46,16 @@ export default async function register(
       display_name,
     })
 
-    await connection.query(
-      'INSERT INTO users(user_id, email, password, session_id, image_url, display_name) VALUES (?, ?, ?, ?, ?, ?)',
-      [user_id, email, hash, session_id, image_url, display_name]
-    )
+    await prisma.users.create({
+      data: {
+        user_id,
+        email,
+        password: hash,
+        session_id: session_id as string,
+        image_url,
+        display_name,
+      },
+    })
 
     return res.status(200).json({ user_id, session_id } as RegisterSuccess)
   } catch (e: any) {

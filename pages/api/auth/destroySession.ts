@@ -1,18 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import connection from 'lib/db'
+import { PrismaClient } from '@prisma/client'
 
 export default async function destroySession(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    await connection.connect()
+    const prisma = new PrismaClient()
     const { session_id }: { [k: string]: string } = JSON.parse(req.body)
-
-    await connection.query(
-      'UPDATE users SET session_id = NULL WHERE session_id = ?',
-      [session_id]
-    )
+    await prisma.users.updateMany({
+      where: { session_id: session_id },
+      data: { session_id: null },
+    })
     console.log('yes')
     return res.status(200).json({ message: 'yea' })
   } catch (e: any) {
