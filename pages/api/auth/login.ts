@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { AuthData, LoginSuccess, LoginError } from 'lib/types'
+import type { AuthData, LoginResponse } from 'lib/types'
 import { updateSession } from 'lib/session'
 import bcrypt from 'bcrypt'
 import { PrismaClient } from '@prisma/client'
@@ -8,7 +8,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
   try {
     const prisma = new PrismaClient()
 
-    const { email, password }: AuthData = JSON.parse(req.body)
+    const { email, password }: AuthData = req.body
 
     if (email.length === 0 || password.length === 0) {
       throw { message: 'Please provide a email and password!' }
@@ -27,7 +27,9 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       throw { message: 'No user with that email exists!', type: 'email' }
     }
 
-    if (!(await bcrypt.compare(password, numRowsWithEmail[0].email))) {
+    if (
+      !(await bcrypt.compare(password, numRowsWithEmail[0].password as string))
+    ) {
       throw { message: 'That password is incorrect!', type: 'password' }
     }
 
@@ -45,13 +47,13 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({
       user_id: numRowsWithEmail[0].user_id,
       session_id,
-    } as LoginSuccess)
+    } as LoginResponse)
   } catch (e: any) {
     res.status(500).json({
       is_error: true,
       error_code: e.code,
       error_message: e.message,
       type: e.type,
-    } as LoginError)
+    } as LoginResponse)
   }
 }
