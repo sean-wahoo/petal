@@ -12,7 +12,6 @@ export default async function destroySession(
       where: { session_id: session_id },
       data: { session_id: null },
     })
-    console.log('yes')
     return res.status(200).json({ message: 'yea' })
   } catch (e: any) {
     console.log({ e })
