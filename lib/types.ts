@@ -42,8 +42,9 @@ interface LoginError extends Error {
   type: string
 }
 
-interface SessionSuccess extends Success {
+interface SessionSuccess extends Success, SessionData {
   display_name: string
+  session_id: string
   image_url: string
   email: string
 }
@@ -69,7 +70,7 @@ interface LayoutProps {
   children: any
   title: string
   is_auth: boolean
-  session_data?: SessionData
+  session_data: SessionData
 }
 interface ProfileProps {
   profile: {
