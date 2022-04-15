@@ -34,6 +34,8 @@ interface RegisterError extends Error {
   type: string
 }
 
+interface RegisterResponse extends RegisterSuccess, RegisterError {}
+
 interface LoginSuccess extends Success {
   type: string
 }
@@ -42,10 +44,7 @@ interface LoginError extends Error {
   type: string
 }
 
-interface LoginResponse {
-  data?: LoginSuccess
-  error?: LoginError
-}
+interface LoginResponse extends LoginSuccess, LoginError {}
 
 interface SessionSuccess extends Success, SessionData {
   display_name: string
@@ -89,8 +88,7 @@ export type {
   SessionProps,
   RegisterSuccess,
   RegisterError,
-  LoginSuccess,
-  LoginError,
+  RegisterResponse,
   LoginResponse,
   SessionSuccess,
   SessionError,
