@@ -1,5 +1,7 @@
 import type { NextPage } from 'next'
-import type { LoginSuccess, LoginError, ErrorMessageProps } from 'lib/types'
+import type { ErrorMessageProps, LoginResponse } from 'lib/types'
+import { resolver } from 'lib/promises'
+import axios from 'axios'
 import { useState, useRef } from 'react'
 import styles from 'styles/layouts/login.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -25,27 +27,20 @@ const Login: NextPage = () => {
   const passwordRef = useRef<HTMLInputElement>(null)
 
   const onLoginSubmit: () => void = async () => {
-    try {
-      const data = await fetch('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      })
-
-      const res: LoginSuccess | LoginError = await data.json()
-      if ('is_error' in res) {
-        setError({ error_message: res.error_message, type: res.type })
-        res.type === 'email' &&
-          emailRef.current?.setCustomValidity(res.error_message)
-        res.type === 'password' &&
-          passwordRef.current?.setCustomValidity(res.error_message)
-        return
-      }
-      const cookies = new Cookies()
-      cookies.set('session_id', res.session_id)
-      Router.reload()
-    } catch (e: any) {
-      setError({ ...e })
+    const [data, error]: LoginResponse[] = await resolver(
+      axios.post('/api/auth/login', { email, password })
+    )
+    if (error || !data) {
+      setError({ error_message: error.error_message, type: error.type })
+      error.type === 'email' &&
+        emailRef.current?.setCustomValidity(error.error_message)
+      error.type === 'password' &&
+        passwordRef.current?.setCustomValidity(error.error_message)
+      return
     }
+    const cookies = new Cookies()
+    cookies.set('session_id', data.session_id)
+    Router.reload()
   }
 
   return (

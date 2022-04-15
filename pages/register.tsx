@@ -1,9 +1,5 @@
 import type { NextPage } from 'next'
-import type {
-  RegisterSuccess,
-  RegisterError,
-  ErrorMessageProps,
-} from 'lib/types'
+import type { ErrorMessageProps, RegisterResponse } from 'lib/types'
 import { useState, useRef } from 'react'
 import styles from 'styles/layouts/register.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,6 +9,8 @@ import Router from 'next/router'
 import ErrorMessage from 'components/ErrorMessage'
 import Link from 'next/link'
 import Layout from 'components/Layout'
+import { resolver } from 'lib/promises'
+import axios from 'axios'
 
 const Register: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false)
@@ -27,26 +25,20 @@ const Register: NextPage = () => {
   const passwordRef = useRef<HTMLInputElement>(null)
 
   const onRegisterSubmit: () => void = async () => {
-    try {
-      const data = await fetch('/api/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      })
-      const res: RegisterSuccess | RegisterError = await data.json()
-      if ('is_error' in res) {
-        setError({ error_message: res.error_message, type: res.type })
-        res.type === 'email' &&
-          emailRef.current?.setCustomValidity(res.error_message)
-        res.type === 'password' &&
-          passwordRef.current?.setCustomValidity(res.error_message)
-        return
-      }
-      const cookies = new Cookies()
-      cookies.set('session_id', res.session_id)
-      Router.reload()
-    } catch (e: any) {
-      setError({ ...e })
+    const [data, error]: RegisterResponse[] = await resolver(
+      axios.post('/api/auth/register', { email, password })
+    )
+    if (error || !data) {
+      setError({ error_message: error.error_message, type: error.type })
+      error.type === 'email' &&
+        emailRef.current?.setCustomValidity(error.error_message)
+      error.type === 'password' &&
+        passwordRef.current?.setCustomValidity(error.error_message)
+      return
     }
+    const cookies = new Cookies()
+    cookies.set('session_id', data.session_id)
+    Router.reload()
   }
 
   return (
