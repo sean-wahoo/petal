@@ -1,8 +1,7 @@
 import faker from '@faker-js/faker'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { AuthData, RegisterSuccess, RegisterError } from 'lib/types'
+import type { AuthData, RegisterResponse } from 'lib/types'
 import { updateSession } from 'lib/session'
-import connection from 'lib/db'
 import bcrypt from 'bcrypt'
 import { nanoid } from 'nanoid/async'
 import { PrismaClient } from '@prisma/client'
@@ -13,7 +12,7 @@ export default async function register(
 ) {
   try {
     const prisma = new PrismaClient()
-    const { email, password }: AuthData = JSON.parse(req.body)
+    const { email, password }: AuthData = req.body
 
     if (email.length === 0 || password.length === 0) {
       throw { message: 'Please provide an email and password!' }
@@ -25,6 +24,7 @@ export default async function register(
     if (!email.toLowerCase().match(emailPattern)) {
       throw { message: 'Please provide a valid email address!', type: 'email' }
     }
+
     const numRowsWithEmail = await prisma.users.findMany({
       where: { email: email },
     })
@@ -57,13 +57,13 @@ export default async function register(
       },
     })
 
-    return res.status(200).json({ user_id, session_id } as RegisterSuccess)
+    return res.status(200).json({ user_id, session_id } as RegisterResponse)
   } catch (e: any) {
     res.status(500).json({
       is_error: true,
       error_code: e.code,
       error_message: e.message,
       type: e.type,
-    } as RegisterError)
+    } as RegisterResponse)
   }
 }
