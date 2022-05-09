@@ -3,11 +3,11 @@ import type { AuthData, LoginResponse } from 'lib/types'
 import { updateSession } from 'lib/session'
 import bcrypt from 'bcrypt'
 import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const prisma = new PrismaClient()
-
+    
     const { email, password }: AuthData = req.body
 
     if (email.length === 0 || password.length === 0) {
@@ -34,7 +34,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const session_data = {
-      user_id: numRowsWithEmail[0].email,
+      user_id: numRowsWithEmail[0].user_id,
       email,
       display_name: numRowsWithEmail[0].display_name,
       image_url: numRowsWithEmail[0].image_url,
@@ -55,5 +55,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       error_message: e.message,
       type: e.type,
     } as LoginResponse)
+  } finally {
+    prisma.$disconnect();
   }
 }

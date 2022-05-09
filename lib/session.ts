@@ -1,7 +1,49 @@
-import Redis from 'ioredis'
 import { nanoid } from 'nanoid/async'
 import type { SessionSuccess, SessionError, SessionData } from 'lib/types'
 import Cookies from 'universal-cookie'
+
+const updateSessionWithSessionId = async(session_id: string, session_addition: Object): Promise<Response | SessionError> => {
+  try {
+    let all = await fetch(`${process.env.NEXT_PUBLIC_REDIS_API_URL}/hgetall/${session_id}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+      },
+    })
+  
+    const allParsed = await all.json()
+
+    let data = await fetch(
+      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_id}/session_data`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+
+        },
+        body: JSON.stringify({ ...allParsed, ...session_addition }),
+      }
+    )
+    data = await data.json()
+    console.log({ data })
+
+    let exp = await fetch(
+      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_id}/84600`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+        },
+      }
+    )
+    exp = await exp.json()
+
+    if ('error' in data || 'error' in exp)
+      throw new Error('Session failed to initialize!')
+
+    return exp;
+  } catch (e: any) {
+    return { is_error: true, error_code: e.code, error_message: e.message }
+  }
+}
 
 const updateSession = async (
   session_data: SessionData
@@ -11,23 +53,27 @@ const updateSession = async (
     session_id ||= await nanoid(24)
     const obj: any = { user_id, email, image_url, display_name }
 
+    console.log({obj})
+
     let data = await fetch(
-      `${process.env.REDISAPIURL}/hmset/${session_id}/session_data`,
+      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_id}/session_data`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.REDISTOKEN}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+
         },
         body: JSON.stringify(obj),
       }
     )
     data = await data.json()
+    console.log({ data })
 
     let exp = await fetch(
-      `${process.env.REDISAPIURL}/expire/${session_id}/84600`,
+      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_id}/84600`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.REDISTOKEN}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
         },
       }
     )
@@ -45,9 +91,9 @@ const updateSession = async (
 const getSession = async (
   session_id: string
 ): Promise<SessionSuccess | SessionError> => {
-  let all = await fetch(`${process.env.REDISAPIURL}/hgetall/${session_id}`, {
+  let all = await fetch(`${process.env.NEXT_PUBLIC_REDIS_API_URL}/hgetall/${session_id}`, {
     headers: {
-      Authorization: `Bearer ${process.env.REDISTOKEN}`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
     },
   })
 
@@ -71,9 +117,9 @@ const getSession = async (
 
 const destroySession = async (session_id: string): Promise<void> => {
   try {
-    await fetch(`${process.env.REDISAPIURL}/del/${session_id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_REDIS_API_URL}/del/${session_id}`, {
       headers: {
-        Authorization: `Bearer ${process.env.REDISTOKEN}`,
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
       },
       body: JSON.stringify({ session_id }),
     })

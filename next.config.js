@@ -11,7 +11,7 @@ module.exports = {
     return config
   },
   images: {
-    domains: ['avatars.dicebear.com'],
+    domains: ['avatars.dicebear.com', 'chv6-filestorage.s3.amazonaws.com'],
   },
   reactStrictMode: true,
 }
