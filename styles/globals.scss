@@ -1,4 +1,4 @@
-@use 'styles/theme';
+@use "styles/theme";
 
 html,
 body {
@@ -37,6 +37,7 @@ a {
     --input-bg: #{theme.$input-bg--dark};
     --bg-shapes: url(#{theme.$bg-shapes--dark});
     --nav-bg: #{theme.$nav-bg--dark};
+    --bg-border: #{theme.$bg-border--dark};
   }
 }
 %dark-mode {
@@ -58,5 +59,6 @@ a {
   --bg-shapes: url(#{theme.$bg-shapes--light});
   --error-text: #{theme.$error-text};
   --nav-bg: #{theme.$nav-bg--light};
+  --bg-border: #{theme.$bg-border--light};
   @include dark-mode;
 }
