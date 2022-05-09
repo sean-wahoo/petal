@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
 $sm: 480px;
 $md: 768px;
@@ -25,29 +25,31 @@ $xl: 1280px;
     @content;
   }
 }
-$accent-1: rgb(131, 12, 215);
-$accent-2: rgb(106, 39, 241);
-$accent-3: rgb(0, 212, 255);
+$accent-1: hsl(275, 89%, 45%);
+$accent-2: hsl(260, 88%, 55%);
+$accent-3: hsl(190, 100%, 50%);
 $accent-bg: linear-gradient(
   142deg,
   #{$accent-1} 0%,
   #{$accent-2} 50%,
   #{$accent-3} 100%
 );
-$error-text: #ff7070;
+$error-text: hsl(0, 100%, 72%);
 
 // light
-$bg--light: #f8f8f8;
-$text--light: #080808;
-$text-accent--light: #1e1e1e;
-$input-bg--light: #f2f2f2;
-$bg-shapes--light: '/bg-shapes-light.svg';
-$nav-bg--light: #f0f0f0;
+$bg--light: hsl(0, 0%, 97%);
+$text--light: hsl(0, 0%, 3%);
+$text-accent--light: hsl(0, 0%, 12%);
+$input-bg--light: hsl(0, 0%, 95%);
+$bg-shapes--light: "/bg-shapes-light.svg";
+$nav-bg--light: hsl(0, 0%, 94%);
+$bg-border--light: hsl(0, 0%, 82%);
 
 // dark
-$bg--dark: #212121;
-$text--dark: white;
-$text-accent--dark: #f7f7f7;
-$input-bg--dark: #2d2d2d;
-$bg-shapes--dark: '/bg-shapes-dark.svg';
-$nav-bg--dark: #323232;
+$bg--dark: hsl(0, 0%, 13%);
+$text--dark: hsl(0, 0%, 100%);
+$text-accent--dark: hsl(0, 0%, 97%);
+$input-bg--dark: hsl(0, 0%, 18%);
+$bg-shapes--dark: "/bg-shapes-dark.svg";
+$nav-bg--dark: hsl(0, 0%, 20%);
+$bg-border--dark: hsl(0, 0%, 32%);
