@@ -1,0 +1,45 @@
+@use "styles/theme";
+
+.profile_page {
+  display: flex;
+  flex-flow: column nowrap;
+  color: var(--text-color);
+  background-color: var(--primary-bg);
+  justify-content: flex-start;
+  align-items: center;
+
+  > .user_info {
+    background-color: var(--nav-bg);
+    width: min(100%, 1280px);
+    flex-grow: 1;
+    margin-inline: 1.2rem;
+    border-top-left-radius: 0.6rem;
+    border-top-right-radius: 0.6rem;
+    padding: 3.6rem;
+
+    @media screen and (max-width: 1280px) {
+      margin-inline: 0;
+    }
+
+    > section {
+      display: flex;
+
+      .profile_image {
+        border-radius: 0.4rem;
+        object-fit: cover;
+      }
+
+      > div {
+        margin-left: 1.2rem;
+      }
+
+      .display_name {
+        font-size: 2.2rem;
+        margin: 0;
+      }
+      .tagline {
+        opacity: 0.75;
+      }
+    }
+  }
+}
