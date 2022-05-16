@@ -4,6 +4,7 @@ import debounce from "lodash.debounce";
 import Image from "next/image";
 import Link from "next/link";
 import type { ProfileProps } from "lib/types";
+import Cookies from "universal-cookie";
 
 export default function Navbar({ profile }: ProfileProps) {
   const [prev, setPrev] = useState<number>(0);
@@ -29,7 +30,6 @@ export default function Navbar({ profile }: ProfileProps) {
   }, [prev]);
 
   const handleClickOutside = (e: MouseEvent) => {
-    console.log("click!", dropdownRef.current, showDropdown);
     if (
       !dropdownRef.current?.contains(e.target as any) &&
       !document.getElementById("profile-image")?.contains(e.target as any)
@@ -37,6 +37,12 @@ export default function Navbar({ profile }: ProfileProps) {
       setShowDropdown(false);
     }
   };
+  const handleLogout = () => {
+    const cookies = new Cookies();
+    cookies.remove("session_id", { path: "/" });
+    window.location.reload();
+  };
+
   useEffect(() => {
     document.addEventListener("click", handleClickOutside, true);
     return () =>
@@ -45,7 +51,7 @@ export default function Navbar({ profile }: ProfileProps) {
 
   return (
     <nav className={styles.navbar} ref={navRef}>
-      <Link href="/">ConnectHigh</Link>
+      <Link href="/">Petal</Link>
       <Image
         src={profile.image_url}
         alt={profile.display_name}
@@ -60,8 +66,13 @@ export default function Navbar({ profile }: ProfileProps) {
       {showDropdown && (
         <div ref={dropdownRef} className={styles.dropdown} id="dropdown">
           <ul>
-            <li>Profile</li>
+            <li>
+              <Link href={`/profile/${profile.user_id}`}>Profile</Link>
+            </li>
             <li>Settings</li>
+            <li className={styles.logout} onClick={handleLogout}>
+              Logout
+            </li>
           </ul>
         </div>
       )}
