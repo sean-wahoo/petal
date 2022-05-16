@@ -8,7 +8,6 @@ export default async function updateProfileImage(
 ) {
   try {
     const { user_id, image_url } = req.body
-    console.log({ user_id, image_url })
 
     const updated = await prisma.users.update({
       where: { user_id: user_id },

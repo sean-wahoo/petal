@@ -5,9 +5,8 @@ import { session_handler } from "lib/session";
 import Layout from "components/Layout";
 
 const Index: NextPage<SessionProps> = ({ session }) => {
-  console.log({ session });
   return (
-    <Layout session_data={session} title="Home - ConnectHigh" is_auth={true}>
+    <Layout session_data={session} title="Home - Petal" is_auth={true}>
       <main className={styles.index}></main>
     </Layout>
   );
