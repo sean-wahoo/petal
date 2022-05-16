@@ -24,6 +24,7 @@
     display: inline-block;
     cursor: pointer;
     border-radius: 0.2rem;
+    object-fit: cover;
   }
 
   .dropdown {
@@ -50,6 +51,9 @@
         padding: 0.4rem 0.2rem;
         padding-left: 18px;
         cursor: pointer;
+        & > * {
+          color: var(--text-color);
+        }
 
         &:hover {
           background-color: var(--bg-border);
