@@ -8,12 +8,75 @@ datasource db {
 }
 
 model users {
-  user_id      String   @id @db.VarChar(24)
-  email        String   @db.VarChar(54)
-  password     String?  @db.Text
-  updated_at   DateTime @default(now()) @db.Timestamp(0)
-  created_at   DateTime @default(now()) @db.Timestamp(0)
-  session_id   String?  @db.VarChar(24) @unique
-  image_url    String   @db.Text
-  display_name String   @db.Text
+  user_id        String                     @id @db.VarChar(24)
+  email          String                     @unique @db.VarChar(54)
+  password       String?                    @db.Text
+  been_welcomed  Boolean                    @default(false) @db.Bit(1)
+  updated_at     DateTime                   @default(now()) @db.Timestamp(0)
+  created_at     DateTime                   @default(now()) @db.Timestamp(0)
+  session_id     String?                    @unique @db.VarChar(24)
+  image_url      String                     @db.Text
+  display_name   String                     @db.Text
+  tagline        String                     @default("Super cool tagline") @db.VarChar(64)
+  date_of_birth  DateTime                   @default(now()) @db.Timestamp(0)
+  posts          posts[]
+  comments       comments[]
+  sender         friends[]                  @relation("sender")
+  recipient      friends[]                  @relation("recipient")
+  topic_user_rel topic_user_relationships[]
+}
+
+model posts {
+  post_id        String   @id @db.VarChar(24)
+  author         users    @relation(fields: [author_user_id], references: [user_id])
+  author_user_id String   @db.VarChar(24)
+  title          String   @db.Text
+  content        String   @db.Text
+  is_edited      Boolean  @db.Bit(1)
+  ups            Int      @db.Int
+  downs          Int      @db.Int
+  created_at     DateTime @default(now()) @db.Timestamp(0)
+  updated_at     DateTime @default(now()) @db.Timestamp(0)
+}
+
+model comments {
+  comment_id     String   @id @db.VarChar(24)
+  author         users    @relation(fields: [author_user_id], references: [user_id])
+  author_user_id String   @db.VarChar(24)
+  content        String   @db.Text
+  parent_id      String   @db.VarChar(24)
+  is_reply       String   @db.VarChar(24)
+  is_edited      Boolean  @db.Bit(1)
+  ups            Int      @db.Int
+  downs          Int      @db.Int
+  created_at     DateTime @default(now()) @db.Timestamp(0)
+  updated_at     DateTime @default(now()) @db.Timestamp(0)
+}
+
+model friends {
+  friend_id         String   @id @db.VarChar(24)
+  sender            users    @relation(name: "sender", fields: [sender_user_id], references: [user_id])
+  sender_user_id    String   @db.VarChar(24)
+  recipient         users    @relation(name: "recipient", fields: [recipient_user_id], references: [user_id])
+  recipient_user_id String   @db.VarChar(24)
+  status            String   @db.VarChar(12)
+  created_at        DateTime @default(now()) @db.Timestamp(0)
+  updated_at        DateTime @default(now()) @db.Timestamp(0)
+}
+
+model topics {
+  topic_id       String                     @id @db.VarChar(24)
+  name           String                     @db.VarChar(52)
+  topic_user_rel topic_user_relationships[]
+
+}
+
+model topic_user_relationships {
+  user     users  @relation(fields: [user_id], references: [user_id])
+  user_id  String @db.VarChar(24)
+  topic    topics @relation(fields: [topic_id], references: [topic_id])
+  topic_id String @db.VarChar(24)
+  status   String @default("joined") @db.VarChar(24)
+
+  @@id([user_id, topic_id])
 }
