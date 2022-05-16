@@ -1,4 +1,4 @@
-@use 'styles/theme';
+@use "styles/theme";
 
 .register {
   font-family: Poppins;
@@ -6,7 +6,7 @@
   flex-flow: column nowrap;
   color: var(--text-color);
   background-color: var(--primary-bg);
-  background-image: url('/layered-waves-haikei.svg'), var(--bg-shapes);
+  background-image: url("/layered-waves-haikei.svg"), var(--bg-shapes);
   background-size: cover;
   justify-content: center;
   align-items: center;
@@ -26,6 +26,7 @@
       display: flex;
       flex-flow: column nowrap;
       align-items: center;
+      min-width: 320px;
 
       label {
         font-size: 1.1rem;
@@ -35,6 +36,7 @@
         display: flex;
         flex-flow: row nowrap;
         align-items: center;
+        width: 100%;
 
         .register__showPasswordIcon {
           margin-left: -1.6rem;
@@ -51,6 +53,7 @@
         border-bottom: 2px solid var(--text-accent);
         color: var(--text-color);
         transition: border-bottom 0.1s ease;
+        width: 100%;
 
         &:focus-within {
           border-bottom: 2px solid var(--accent-1);
@@ -73,7 +76,7 @@
       background: var(--accent-2);
       border-radius: 0.4rem;
       color: white;
-      font-family: 'Poppins';
+      font-family: "Poppins";
       border: none;
     }
     .register__linkText {
