@@ -44,9 +44,9 @@ const Login: NextPage = () => {
   };
 
   return (
-    <Layout title="Login - ConnectHigh" is_auth={false}>
+    <Layout title="Login - Petal" is_auth={false}>
       <main className={styles.login}>
-        <h1>Login to ConnectHigh</h1>
+        <h1>Login to Petal</h1>
         <form
           className={styles.login__inputArea}
           onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
