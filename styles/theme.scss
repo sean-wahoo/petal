@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Galada&family=Gafata&display=swap");
 
 $sm: 480px;
 $md: 768px;
@@ -25,7 +25,7 @@ $xl: 1280px;
     @content;
   }
 }
-$accent-1: hsl(275, 89%, 45%);
+$accent-1: hsl(295, 93%, 71%);
 $accent-2: hsl(260, 88%, 55%);
 $accent-3: hsl(190, 100%, 50%);
 $accent-bg: linear-gradient(
@@ -44,6 +44,7 @@ $input-bg--light: hsl(0, 0%, 95%);
 $bg-shapes--light: "/bg-shapes-light.svg";
 $nav-bg--light: hsl(0, 0%, 94%);
 $bg-border--light: hsl(0, 0%, 82%);
+$color-scheme--light: light;
 
 // dark
 $bg--dark: hsl(0, 0%, 13%);
@@ -53,3 +54,4 @@ $input-bg--dark: hsl(0, 0%, 18%);
 $bg-shapes--dark: "/bg-shapes-dark.svg";
 $nav-bg--dark: hsl(0, 0%, 20%);
 $bg-border--dark: hsl(0, 0%, 32%);
+$color-scheme--dark: dark;
