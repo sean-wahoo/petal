@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 interface Success {
   user_id: string;
   session_id: string;
@@ -98,6 +99,12 @@ interface ProfilePageProps extends SessionProps {
   };
 }
 
+interface CreatePostPageProps extends SessionProps {}
+
+interface EditorProps {
+  updateEditorContent: (json: JSONContent) => void;
+}
+
 interface ProfileDataSuccess extends Success {}
 interface ProfileDataError extends Error {}
 
@@ -121,4 +128,6 @@ export type {
   ProfileProps,
   ProfilePageProps,
   ProfileDataResponse,
+  CreatePostPageProps,
+  EditorProps,
 };
