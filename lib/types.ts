@@ -103,6 +103,7 @@ interface CreatePostPageProps extends SessionProps {}
 
 interface EditorProps {
   updateEditorContent: (json: JSONContent) => void;
+  label: String;
 }
 
 interface ProfileDataSuccess extends Success {}

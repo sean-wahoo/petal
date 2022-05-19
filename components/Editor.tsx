@@ -4,7 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorProps } from "lib/types";
 
-const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
+const Editor: React.FC<EditorProps> = ({ updateEditorContent, label }) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -23,6 +23,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
 
   const buttons = [
     <button
+      type="button"
+      key="bold"
       onClick={() => editor?.chain().focus().toggleBold().run()}
       className={editor?.isActive("bold") ? styles.is_active : ""}
     >
@@ -37,6 +39,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      type="button"
+      key="italic"
       onClick={() => editor?.chain().focus().toggleItalic().run()}
       className={editor?.isActive("italic") ? styles.is_active : ""}
     >
@@ -51,6 +55,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      type="button"
+      key="strike"
       onClick={() => editor?.chain().focus().toggleStrike().run()}
       className={editor?.isActive("strike") ? styles.is_active : ""}
     >
@@ -65,6 +71,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      type="button"
+      key="heading1"
       onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
       className={
         editor?.isActive("heading", { level: 1 }) ? styles.is_active : ""
@@ -81,6 +89,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      type="button"
+      key="heading2"
       onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
       className={
         editor?.isActive("heading", { level: 2 }) ? styles.is_active : ""
@@ -97,6 +107,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      type="button"
+      key="heading3"
       onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
       className={
         editor?.isActive("heading", { level: 3 }) ? styles.is_active : ""
@@ -113,6 +125,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      type="button"
+      key="orderedList"
       onClick={() => editor?.chain().focus().toggleOrderedList().run()}
       className={editor?.isActive("orderedList") ? styles.is_active : ""}
     >
@@ -127,6 +141,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      type="button"
+      key="bulletList"
       onClick={() => editor?.chain().focus().toggleBulletList().run()}
       className={editor?.isActive("bulletList") ? styles.is_active : ""}
     >
@@ -141,6 +157,8 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
       </svg>
     </button>,
     <button
+      key="blockquote"
+      type="button"
       onClick={() => editor?.chain().focus().toggleBlockquote().run()}
       className={editor?.isActive("blockquote") ? styles.is_active : ""}
     >
@@ -158,8 +176,9 @@ const Editor: React.FC<EditorProps> = ({ updateEditorContent }) => {
 
   return (
     <div className={styles.wrapper}>
+      {label.length > 0 && <label htmlFor="editor">{label}</label>}
       <div className={styles.button_row}>{buttons}</div>
-      <EditorContent className={styles.editor} editor={editor} />
+      <EditorContent className={styles.editor} id="editor" editor={editor} />
     </div>
   );
 };
