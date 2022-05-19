@@ -34,10 +34,13 @@ a {
 
 @mixin dark-mode {
   @media (prefers-color-scheme: dark) {
+    --accent-4: #{theme.$accent-4--dark};
+    --accent-5: #{theme.$accent-5--dark};
     --primary-bg: #{theme.$bg--dark};
     --text-color: #{theme.$text--dark};
     --text-accent: #{theme.$text-accent--dark};
     --input-bg: #{theme.$input-bg--dark};
+    --input-bg-2: #{theme.$input-bg-2--dark};
     --bg-shapes: url(#{theme.$bg-shapes--dark});
     --nav-bg: #{theme.$nav-bg--dark};
     --bg-border: #{theme.$bg-border--dark};
@@ -59,11 +62,15 @@ a {
   --accent-1: #{theme.$accent-1};
   --accent-2: #{theme.$accent-2};
   --accent-3: #{theme.$accent-3};
+  --accent-4: #{theme.$accent-4--light};
+  --accent-5: #{theme.$accent-5--light};
   --input-bg: #{theme.$input-bg--light};
+  --input-bg-2: #{theme.$input-bg-2--light};
   --bg-shapes: url(#{theme.$bg-shapes--light});
   --error-text: #{theme.$error-text};
   --nav-bg: #{theme.$nav-bg--light};
   --bg-border: #{theme.$bg-border--light};
   --color-scheme: #{theme.$color-scheme--light};
+
   @include dark-mode;
 }

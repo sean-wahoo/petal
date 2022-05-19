@@ -37,20 +37,26 @@ $accent-bg: linear-gradient(
 $error-text: hsl(0, 100%, 72%);
 
 // light
+$accent-4--light: rgb(230, 230, 230);
+$accent-5--light: rgb(200, 200, 200);
 $bg--light: hsl(0, 0%, 97%);
 $text--light: hsl(0, 0%, 3%);
 $text-accent--light: hsl(0, 0%, 12%);
 $input-bg--light: hsl(0, 0%, 95%);
+$input-bg-2--light: hsl(0, 0%, 90%);
 $bg-shapes--light: "/bg-shapes-light.svg";
 $nav-bg--light: hsl(0, 0%, 94%);
 $bg-border--light: hsl(0, 0%, 82%);
 $color-scheme--light: light;
 
 // dark
+$accent-4--dark: rgb(39, 39, 39);
+$accent-5--dark: rgb(61, 61, 61);
 $bg--dark: hsl(0, 0%, 13%);
 $text--dark: hsl(0, 0%, 100%);
 $text-accent--dark: hsl(0, 0%, 97%);
 $input-bg--dark: hsl(0, 0%, 18%);
+$input-bg-2--dark: hsl(0, 0%, 16%);
 $bg-shapes--dark: "/bg-shapes-dark.svg";
 $nav-bg--dark: hsl(0, 0%, 20%);
 $bg-border--dark: hsl(0, 0%, 32%);
