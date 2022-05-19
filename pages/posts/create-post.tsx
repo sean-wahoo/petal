@@ -9,12 +9,15 @@ import { FormEvent, useRef, useState } from "react";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
   const titleRef = useRef(null);
   const [content, setContent] = useState<JSONContent>({});
   const [title, setTitle] = useState<string>("");
   const [contentErrorMessage, setContentErrorMessage] = useState<string>("");
+  const [disabled, setDisabled] = useState<boolean>(false);
+  const router = useRouter();
 
   const updateEditorContent = (json: JSONContent) => {
     const editorElement = document.querySelector("div.ProseMirror");
@@ -35,10 +38,18 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
   const submitNewPost = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (checkValidity()) {
+      setDisabled(true);
       const [data, error] = await resolver(
-        axios.post("/api/posts/create-post", { title, content })
+        axios.post("/api/posts/create-post", {
+          title,
+          content,
+          author_user_id: session.user_id,
+        })
       );
-      console.log({ data, error });
+      if (error) throw error;
+      if (data) {
+        router.push(`/posts/${data.post.post_id}`);
+      }
     }
   };
 
@@ -55,11 +66,16 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
             ref={titleRef}
             required
           />
-          <Editor updateEditorContent={updateEditorContent} />
+          <Editor
+            updateEditorContent={updateEditorContent}
+            label="Post Content"
+          />
           {contentErrorMessage.length > 0 && (
             <ErrorMessage error_message={contentErrorMessage} />
           )}
-          <button type="submit">Create Post</button>
+          <button disabled={disabled} type="submit">
+            Create Post
+          </button>
         </form>
       </main>
     </Layout>
