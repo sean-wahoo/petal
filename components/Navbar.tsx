@@ -69,6 +69,9 @@ export default function Navbar({ profile }: ProfileProps) {
             <li>
               <Link href={`/profile/${profile.user_id}`}>Profile</Link>
             </li>
+            <li>
+              <Link href="/create-post">Create Post</Link>
+            </li>
             <li>Settings</li>
             <li className={styles.logout} onClick={handleLogout}>
               Logout

@@ -1,0 +1,62 @@
+@use "styles/theme" as *;
+
+.create_post {
+  display: flex;
+  flex-flow: column nowrap;
+  color: var(--text-color);
+  background-color: var(--primary-bg);
+  justify-content: flex-start;
+  align-items: center;
+
+  > form {
+    background-color: var(--nav-bg);
+    width: min(100%, 1120px);
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 2.4rem;
+    font-size: larger;
+
+    > *::placeholder {
+      color: var(--text-color);
+      opacity: 0.2;
+    }
+
+    .invalid_content {
+      border: 1px solid var(--error-text);
+    }
+
+    label,
+    input {
+      align-self: flex-start;
+
+      &:is(input) {
+        width: 100%;
+        background-color: var(--accent-4);
+        border: none;
+        padding: 0.8rem;
+        margin-block: 1rem;
+        font-size: 1.2rem;
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    > button {
+      background-color: var(--accent-2);
+      border: none;
+      font-size: 1.2rem;
+      padding: 1rem;
+      user-select: none;
+      align-self: flex-end;
+      cursor: pointer;
+      color: white;
+
+      &:hover {
+        filter: brightness(90%);
+      }
+    }
+  }
+}
