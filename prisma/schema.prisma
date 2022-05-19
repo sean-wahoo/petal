@@ -31,7 +31,7 @@ model posts {
   author         users    @relation(fields: [author_user_id], references: [user_id])
   author_user_id String   @db.VarChar(24)
   title          String   @db.Text
-  content        String   @db.Text
+  content        Json
   is_edited      Boolean  @db.Bit(1)
   ups            Int      @db.Int
   downs          Int      @db.Int
