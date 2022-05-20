@@ -1,0 +1,92 @@
+@use "styles/theme" as *;
+.post_card {
+  width: 100%;
+  border: 1px solid var(--accent-5);
+  min-height: 160px;
+  max-height: 460px;
+  margin-block: 0.4rem;
+  padding: 0.8rem;
+  font-size: clamp(14px, 0.2vw, 18px);
+  display: flex;
+  flex-flow: column nowrap;
+  background-color: hsl(0, 0%, 11%);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-block: 8px;
+  }
+
+  > .header {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: baseline;
+    h6 {
+      opacity: 0.6;
+      margin-left: 0.8rem;
+    }
+  }
+
+  > .content {
+    flex-grow: 1;
+    position: relative;
+    border-inline: 1px solid var(--accent-5);
+    overflow-y: hidden;
+    padding: 0.6rem;
+    flex-basis: 100%;
+    background-color: hsl(0, 0%, 10%);
+
+    .show_more {
+      margin: 0.4rem auto;
+      padding: 0.6rem;
+      cursor: pointer;
+      background-color: var(--accent-5);
+      border: none;
+      position: absolute;
+      bottom: 0;
+      z-index: 11;
+
+      &:hover {
+        filter: brightness(90%);
+      }
+    }
+    > .overflow_shadow {
+      z-index: 10;
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 64px;
+      background: red;
+      content: "";
+      bottom: 0;
+      background: -webkit-linear-gradient(90deg, hsl(0, 0%, 9%), transparent);
+      background: linear-gradient(0deg, hsl(0, 0%, 9%), transparent);
+      @include medium {
+        height: 32px;
+      }
+    }
+  }
+
+  > .footer {
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    justify-content: flex-start;
+    padding-block: 0.2rem;
+    margin-top: 0.4rem;
+
+    svg {
+      margin-right: 0.8rem;
+      cursor: pointer;
+      fill: var(--text-color);
+      &.up {
+        fill: hsl(133, 57%, 45%);
+      }
+      &.down {
+        fill: hsl(0, 57%, 45%);
+      }
+    }
+  }
+}
