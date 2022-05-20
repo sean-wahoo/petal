@@ -1,6 +1,10 @@
 import type { LogoutSuccess, LogoutError } from "lib/types";
 import { destroySession, session_handler } from "lib/session";
 import Cookies from "universal-cookie";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en.json";
+
+TimeAgo.addDefaultLocale(en);
 
 export const logout = async (
   session_id: string,
@@ -44,4 +48,22 @@ export const session_check = async (req: any, res: any): Promise<any> => {
       }
     }
   }
+};
+
+export const getFormattedTimestamp = (isoDate: string) => {
+  const date = new Date(isoDate);
+  const currentDate = new Date();
+  const diff = currentDate.getTime() - date.getTime();
+  const diffDays = diff / (1000 * 3600 * 24);
+
+  if (diffDays < 7) {
+    const timeAgo = new TimeAgo("en-US");
+    return timeAgo.format(date);
+  }
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  return date.toLocaleDateString("en-us", options as any);
 };
