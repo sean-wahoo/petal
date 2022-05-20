@@ -1,10 +1,12 @@
-@use 'styles/theme';
+@use "styles/theme";
 
 .index {
   display: flex;
   flex-flow: column nowrap;
   color: var(--text-color);
   background-color: var(--primary-bg);
+  width: min(100% - 20px, 960px);
+  margin-inline: auto;
   justify-content: flex-start;
   min-height: 150vh;
   align-items: center;
