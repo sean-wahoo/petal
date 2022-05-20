@@ -9,7 +9,7 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   min-width: 100vw;
   min-height: 100vh;
-
+  background-color: var(--primary-bg);
   color-scheme: var(--color-scheme);
 
   input:-webkit-autofill,
