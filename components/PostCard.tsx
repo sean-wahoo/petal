@@ -99,7 +99,9 @@ export default function PostCard({ post }: PostCardProps) {
         className={`${styles.content}`}
       >
         {seeMoreButton && <span className={styles.overflow_shadow} />}
-        <EditorContent id={`editor-${post.post_id}`} editor={editor} />
+        <Link href={`/posts/${post.post_id}`}>
+          <EditorContent id={`editor-${post.post_id}`} editor={editor} />
+        </Link>
         {seeMoreButton && (
           <Link href={`/posts/${post.post_id}`}>
             <button className={styles.show_more} type="button">

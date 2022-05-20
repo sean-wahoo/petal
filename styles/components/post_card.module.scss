@@ -37,6 +37,8 @@
     padding: 0.6rem;
     flex-basis: 100%;
     background-color: hsl(0, 0%, 10%);
+    user-select: none;
+    cursor: pointer;
 
     .show_more {
       margin: 0.4rem auto;
