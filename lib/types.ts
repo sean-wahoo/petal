@@ -27,6 +27,28 @@ interface SessionProps {
   session: SessionData;
 }
 
+interface IndexProps extends SessionProps {
+  posts: PostProps[];
+}
+
+interface PostProps {
+  post_id: string;
+  author: {
+    user_id: string;
+    display_name: string;
+  };
+  title: string;
+  content: object;
+  ups: number;
+  downs: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface PostCardProps {
+  post: PostProps;
+}
+
 interface RegisterSuccess extends Success {
   type: string;
 }
@@ -131,4 +153,7 @@ export type {
   ProfileDataResponse,
   CreatePostPageProps,
   EditorProps,
+  IndexProps,
+  PostCardProps,
+  PostProps,
 };
