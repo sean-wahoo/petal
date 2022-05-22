@@ -14,7 +14,7 @@ export default async function destroySession(
     });
     return res.status(200).json({ message: "yea" });
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
   } finally {
     prisma.$disconnect();
   }

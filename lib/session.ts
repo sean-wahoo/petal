@@ -134,7 +134,7 @@ const destroySession = async (session_id: string): Promise<void> => {
       }
     );
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
   }
 };
 

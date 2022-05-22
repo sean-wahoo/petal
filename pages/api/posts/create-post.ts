@@ -26,10 +26,9 @@ export default async function createPost(
         downs: 0,
       },
     });
-    console.log({ new_post });
     return res.status(200).json({ post: new_post });
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     res.status(500).json({
       is_error: true,
       error_code: e.code,

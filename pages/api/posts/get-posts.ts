@@ -7,7 +7,6 @@ export default async function getPosts(
 ) {
   const prisma = new PrismaClient();
   try {
-    console.log("hello");
     const posts = await prisma.posts.findMany({
       select: {
         post_id: true,
@@ -27,7 +26,7 @@ export default async function getPosts(
     });
     return res.status(200).json([...posts]);
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     res.status(500).json({
       is_error: true,
       error_code: e.code,

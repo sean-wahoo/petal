@@ -16,7 +16,7 @@ export default async function logout(
     });
     return res.status(200).json({});
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     return res
       .status(500)
       .json({ is_error: true, error_code: e.code, error_message: e.message });

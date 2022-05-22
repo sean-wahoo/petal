@@ -48,7 +48,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       session_id,
     } as LoginResponse);
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     res.status(500).json({
       is_error: true,
       error_code: e.code,

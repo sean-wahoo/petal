@@ -100,7 +100,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: { session, user_data: data },
     };
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     context.res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
     return {
       redirect: {

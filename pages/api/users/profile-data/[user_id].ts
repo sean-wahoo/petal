@@ -19,14 +19,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
       where: { user_id: user_id as string },
     });
-    console.log({ profile_data });
     if (profile_data === null) {
-      console.log("empty");
       throw { message: "user-not-found" };
     }
     res.status(200).json({ ...profile_data });
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     res.status(500).json({
       is_error: true,
       error_code: e.code,

@@ -8,6 +8,7 @@ export const resolver = async (promise: Promise<AxiosResponse<any, any>>) => {
     let res = await Promise.resolve(promise);
     return [res.data, null];
   } catch (e: any) {
+    console.error({ e });
     return [null, e.response.data];
   }
 };

@@ -16,10 +16,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         user_id: user_id as string,
       },
     });
-    console.log({ user_data });
     return res.status(200).json({ ...user_data });
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     res.status(500).json({
       is_error: true,
       error_code: e.code,
