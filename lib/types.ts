@@ -45,6 +45,10 @@ interface PostProps {
   updated_at: string;
 }
 
+interface PostPageProps extends SessionProps {
+  post: PostProps;
+}
+
 interface PostCardProps {
   post: PostProps;
 }
@@ -133,6 +137,13 @@ interface ProfileDataError extends Error {}
 
 interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError {}
 
+interface RateButtonsProps {
+  onUp: (objectId?: string) => void;
+  onDown: (objectId?: string) => void;
+  isUp?: boolean;
+  isDown?: boolean;
+}
+
 export type {
   SessionProps,
   RegisterSuccess,
@@ -156,4 +167,6 @@ export type {
   IndexProps,
   PostCardProps,
   PostProps,
+  PostPageProps,
+  RateButtonsProps,
 };

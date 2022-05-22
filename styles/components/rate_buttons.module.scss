@@ -1,0 +1,13 @@
+.rate_buttons {
+  > svg {
+    margin-right: 0.8rem;
+    cursor: pointer;
+    fill: var(--text-color);
+    &.up {
+      fill: hsl(133, 57%, 45%);
+    }
+    &.down {
+      fill: hsl(0, 57%, 45%);
+    }
+  }
+}
