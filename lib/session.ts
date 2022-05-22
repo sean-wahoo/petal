@@ -2,6 +2,7 @@ import { nanoid } from "nanoid/async";
 import type { SessionSuccess, SessionError, SessionData } from "lib/types";
 import Cookies from "universal-cookie";
 import axios from "axios";
+import { getApiUrl } from "./utils";
 
 const updateSessionWithSessionId = async (
   session_id: string,
@@ -152,15 +153,10 @@ const session_handler = async (
     "is_error" in session_data &&
     session_data.error_message === "Invalid Session ID!"
   ) {
-    const dev = process.env.NODE_ENV !== "production";
-
-    await fetch(
-      `${dev ? "http://localhost:3000" : null}/api/auth/destroySession`,
-      {
-        method: "POST",
-        body: JSON.stringify({ session_id }),
-      }
-    );
+    await fetch(`${getApiUrl()}/api/auth/destroySession`, {
+      method: "POST",
+      body: JSON.stringify({ session_id }),
+    });
     const cookies = new Cookies();
     cookies.remove("session_id");
     throw {

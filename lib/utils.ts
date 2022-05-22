@@ -67,3 +67,10 @@ export const getFormattedTimestamp = (isoDate: string) => {
   };
   return date.toLocaleDateString("en-us", options as any);
 };
+
+export const getApiUrl = () => {
+  const dev = process.env.NODE_ENV !== "production";
+  return dev
+    ? process.env.NEXT_PUBLIC_DEV_ROOT_API_URL
+    : process.env.NEXT_PUBLIC_PROD_ROOT_API_URL;
+};

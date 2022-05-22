@@ -2,7 +2,7 @@ import Layout from "components/Layout";
 import { NextPage, GetServerSideProps } from "next";
 import styles from "styles/layouts/profile.module.scss";
 import type { ProfilePageProps } from "lib/types";
-import { session_check } from "lib/utils";
+import { getApiUrl, session_check } from "lib/utils";
 import axios from "axios";
 import Image from "next/image";
 
@@ -39,18 +39,11 @@ const ProfilePage: NextPage<ProfilePageProps> = ({ profile_data, session }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
   const [session, error] = await session_check(context.req, context.res);
-  console.log({ session, error });
   if (error) return error;
   try {
-    const root_url =
-      process.env.NODE_ENV === "production"
-        ? process.env.NEXT_PUBLIC_PROD_ROOT_API_URL
-        : process.env.NEXT_PUBLIC_DEV_ROOT_API_URL;
     let { data: profile_data } = await axios.get(
-      `${root_url}/api/users/profile-data/${context.query.user_id}`
+      `${getApiUrl()}/api/users/profile-data/${context.query.user_id}`
     );
-
-    console.log({ profile_data });
 
     return {
       props: { session, profile_data },

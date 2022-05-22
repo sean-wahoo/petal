@@ -13,6 +13,7 @@ import Layout from "components/Layout";
 import { resolver } from "lib/promises";
 import axios from "axios";
 import PostCard from "components/PostCard";
+import { getApiUrl } from "lib/utils";
 
 const Index: NextPage<IndexProps> = ({ session, posts }) => {
   return (
@@ -29,17 +30,11 @@ const Index: NextPage<IndexProps> = ({ session, posts }) => {
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
   let session: SessionSuccess | SessionError | Object = {};
   try {
-    const dev = process.env.NODE_ENV !== "production";
-    const url = dev
-      ? process.env.NEXT_PUBLIC_DEV_ROOT_API_URL
-      : process.env.NEXT_PUBLIC_PROD_ROOT_API_URL;
-
     session = await session_handler(context.req.cookies.session_id);
     const [data, error] = await resolver(
-      axios.get(`${url}/api/posts/get-posts`)
+      axios.get(`${getApiUrl()}/api/posts/get-posts`)
     );
     if (error) throw error;
-    console.log({ data });
     return {
       props: { session, posts: data },
     };
