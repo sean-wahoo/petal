@@ -21,11 +21,20 @@
 
   > .header {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
+    @include medium {
+      flex-flow: column nowrap;
+    }
     align-items: baseline;
+    h3 {
+      margin-right: 0.8rem;
+    }
     h6 {
       opacity: 0.6;
-      margin-left: 0.8rem;
+      margin: 0;
+      :first-child:not(a) {
+        margin-left: 0.8rem;
+      }
     }
   }
 
