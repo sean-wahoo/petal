@@ -12,21 +12,20 @@ export default function Navbar({ profile }: ProfileProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   useEffect(() => {
-    window.addEventListener(
-      "scroll",
-      debounce(
-        () => {
-          const yPos = window.scrollY;
-          document
-            .querySelector("nav")
-            ?.classList.toggle(styles.hidden, yPos > prev);
+    const dbFunc = debounce(
+      () => {
+        const yPos = window.scrollY;
+        document
+          .querySelector("nav")
+          ?.classList.toggle(styles.hidden, yPos > prev);
 
-          setPrev(yPos);
-        },
-        1000,
-        { leading: true, trailing: false }
-      )
+        setPrev(yPos);
+      },
+      1000,
+      { leading: true, trailing: false }
     );
+    window.addEventListener("scroll", dbFunc);
+    return () => removeEventListener("scroll", dbFunc);
   }, [prev]);
 
   const handleClickOutside = (e: MouseEvent) => {
