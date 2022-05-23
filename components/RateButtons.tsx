@@ -1,4 +1,5 @@
 import { RateButtonsProps } from "lib/types";
+import { useState } from "react";
 import styles from "styles/components/rate_buttons.module.scss";
 
 const RateButtons: React.FC<RateButtonsProps> = ({
@@ -6,9 +7,33 @@ const RateButtons: React.FC<RateButtonsProps> = ({
   onDown,
   isUp = false,
   isDown = false,
+  numUps = 0,
+  numDowns = 0,
 }) => {
   const upIndex = isUp ? 1 : 0;
   const downIndex = isDown ? 1 : 0;
+
+  const [ups, setUps] = useState<number>(numUps);
+  const [downs, setDowns] = useState<number>(numDowns);
+  const [upStatus, setUpStatus] = useState<boolean>(isUp);
+  const [downStatus, setDownStatus] = useState<boolean>(isDown);
+
+  const fullOnUp = () => {
+    setUps(upStatus ? ups - 1 : ups + 1);
+    if (downStatus) {
+      fullOnDown();
+    }
+    setUpStatus(!upStatus);
+    onUp();
+  };
+  const fullOnDown = () => {
+    setDowns(downStatus ? downs - 1 : downs + 1);
+    if (upStatus) {
+      fullOnUp();
+    }
+    setDownStatus(!downStatus);
+    onDown();
+  };
 
   const upPaths = [
     <>
@@ -39,19 +64,21 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         viewBox="0 0 24 24"
         width="24"
         height="24"
-        onClick={() => onUp()}
+        onClick={() => fullOnUp()}
       >
         {upPaths[upIndex]}
       </svg>
+      <p>{ups}</p>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         width="24"
         height="24"
-        onClick={() => onDown()}
+        onClick={() => fullOnDown()}
       >
         {downPaths[downIndex]}
       </svg>
+      <p>{downs}</p>
     </>
   );
 

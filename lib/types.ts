@@ -140,6 +140,8 @@ interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError {}
 interface RateButtonsProps {
   onUp: (objectId?: string) => void;
   onDown: (objectId?: string) => void;
+  numUps?: number;
+  numDowns?: number;
   isUp?: boolean;
   isDown?: boolean;
 }

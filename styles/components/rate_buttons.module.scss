@@ -1,6 +1,8 @@
 .rate_buttons {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
   > svg {
-    margin-right: 0.8rem;
     cursor: pointer;
     fill: var(--text-color);
     &.up {
@@ -9,5 +11,9 @@
     &.down {
       fill: hsl(0, 57%, 45%);
     }
+  }
+  > p {
+    margin-left: 0.4rem;
+    margin-right: 0.8rem;
   }
 }
