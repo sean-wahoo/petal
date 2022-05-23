@@ -3,6 +3,7 @@ import Layout from "components/Layout";
 import { resolver } from "lib/promises";
 import { session_handler } from "lib/session";
 import { SessionError, SessionProps, SessionSuccess } from "lib/types";
+import { handleMiddlewareErrors } from "lib/utils";
 import { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
 import styles from "styles/layouts/welcome.module.scss";
@@ -61,7 +62,7 @@ const Welcome: NextPage<SessionProps> = ({ session }) => {
     window.location.reload();
   };
   return (
-    <Layout title="Welcome - Petal" is_auth={true} showNavbar={false}>
+    <Layout title="Petal - Welcome" is_auth={true} showNavbar={false}>
       <main className={styles.welcome}>
         {headerText[pageNum]}
         {bodyText[pageNum]}
@@ -100,14 +101,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: { session, user_data: data },
     };
   } catch (e: any) {
-    console.error({ e });
-    context.res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
+    return handleMiddlewareErrors(e.message, context);
   }
 };
 

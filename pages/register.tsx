@@ -42,7 +42,7 @@ const Register: NextPage = () => {
   };
 
   return (
-    <Layout title="Register - Petal" is_auth={false}>
+    <Layout title="Petal - Register" is_auth={false}>
       <main className={styles.register}>
         <h1>Register to Petal</h1>
         <form

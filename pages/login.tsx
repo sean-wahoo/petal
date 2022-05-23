@@ -44,7 +44,7 @@ const Login: NextPage = () => {
   };
 
   return (
-    <Layout title="Login - Petal" is_auth={false}>
+    <Layout title="Petal - Login" is_auth={false}>
       <main className={styles.login}>
         <h1>Login to Petal</h1>
         <form

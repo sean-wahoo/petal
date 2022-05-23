@@ -3,6 +3,7 @@ import { destroySession, session_handler } from "lib/session";
 import Cookies from "universal-cookie";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
+import { GetServerSidePropsContext } from "next";
 
 TimeAgo.addDefaultLocale(en);
 
@@ -73,4 +74,32 @@ export const getApiUrl = () => {
   return dev
     ? process.env.NEXT_PUBLIC_DEV_ROOT_API_URL
     : process.env.NEXT_PUBLIC_PROD_ROOT_API_URL;
+};
+
+export const handleMiddlewareErrors: any = (
+  message: string,
+  context: GetServerSidePropsContext
+) => {
+  console.log({ message });
+  switch (message) {
+    case "user-not-found": {
+      return {
+        notFound: true,
+      };
+    }
+    case "invalid-session-id": {
+      context.res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+    default: {
+      return {
+        notFound: true,
+      };
+    }
+  }
 };

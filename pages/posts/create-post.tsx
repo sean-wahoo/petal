@@ -1,6 +1,6 @@
 import Layout from "components/Layout";
 import { CreatePostPageProps } from "lib/types";
-import { session_check } from "lib/utils";
+import { handleMiddlewareErrors, session_check } from "lib/utils";
 import { GetServerSideProps, NextPage } from "next";
 import styles from "styles/layouts/create_post.module.scss";
 import Editor from "components/Editor";
@@ -54,7 +54,7 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
   };
 
   return (
-    <Layout session_data={session} title="Create Post - Petal" is_auth={true}>
+    <Layout session_data={session} title="Petal - Create Post" is_auth={true}>
       <main className={styles.create_post}>
         <form onSubmit={(e) => submitNewPost(e)}>
           <label htmlFor="title-input">Post Title</label>
@@ -91,11 +91,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: { session },
     };
   } catch (e: any) {
-    if (e.response.data.error_message === "user-not-found") {
-      return {
-        notFound: true,
-      };
-    }
+    return handleMiddlewareErrors(e.response.data.error_message, context);
   }
 };
 

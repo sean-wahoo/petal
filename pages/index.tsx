@@ -13,11 +13,11 @@ import Layout from "components/Layout";
 import { resolver } from "lib/promises";
 import axios from "axios";
 import PostCard from "components/PostCard";
-import { getApiUrl } from "lib/utils";
+import { getApiUrl, handleMiddlewareErrors } from "lib/utils";
 
 const Index: NextPage<IndexProps> = ({ session, posts }) => {
   return (
-    <Layout session_data={session} title="Home - Petal" is_auth={true}>
+    <Layout session_data={session} title="Petal - Home" is_auth={true}>
       <main className={styles.index}>
         {posts.map((post: PostProps) => {
           return <PostCard key={post.post_id} post={post} />;
@@ -34,18 +34,11 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
     const [data, error] = await resolver(
       axios.get(`${getApiUrl()}/api/posts/get-posts`)
     );
-    if (error) throw error;
     return {
       props: { session, posts: data },
     };
   } catch (e: any) {
-    context.res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
+    return handleMiddlewareErrors(e.message, context);
   }
 };
 
