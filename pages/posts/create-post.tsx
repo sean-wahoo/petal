@@ -56,7 +56,7 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
   return (
     <Layout session_data={session} title="Petal - Create Post" is_auth={true}>
       <main className={styles.create_post}>
-        <form onSubmit={(e) => submitNewPost(e)}>
+        <form onSubmit={submitNewPost}>
           <label htmlFor="title-input">Post Title</label>
           <input
             type="text"
@@ -69,6 +69,7 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
           <Editor
             updateEditorContent={updateEditorContent}
             label="Post Content"
+            type="post"
           />
           {contentErrorMessage.length > 0 && (
             <ErrorMessage error_message={contentErrorMessage} />
