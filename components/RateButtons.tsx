@@ -66,7 +66,7 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         height="24"
         onClick={() => fullOnUp()}
       >
-        {upPaths[upIndex]}
+        {upPaths[upStatus ? 1 : 0]}
       </svg>
       <p>{ups}</p>
       <svg
@@ -76,7 +76,7 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         height="24"
         onClick={() => fullOnDown()}
       >
-        {downPaths[downIndex]}
+        {downPaths[downStatus ? 1 : 0]}
       </svg>
       <p>{downs}</p>
     </>
