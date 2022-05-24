@@ -66,7 +66,10 @@ export default function Navbar({ profile }: ProfileProps) {
         <div ref={dropdownRef} className={styles.dropdown} id="dropdown">
           <ul>
             <li>
-              <Link href={`/profile/${profile.user_id}`}>Profile</Link>
+              <Link href="/">Home</Link>
+            </li>
+            <li>
+              <Link href={`/users/${profile.user_id}`}>Profile</Link>
             </li>
             <li>
               <Link href="/posts/create-post">Create Post</Link>
