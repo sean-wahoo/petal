@@ -32,7 +32,7 @@ export default function PostCard({ post }: PostCardProps) {
   });
   return (
     <article className={styles.post_card}>
-      <div className={styles.header}>
+      <header className={styles.header}>
         <h3>
           <Link href={`/posts/${post.post_id}`}>{post.title}</Link>
         </h3>
@@ -44,9 +44,9 @@ export default function PostCard({ post }: PostCardProps) {
           </Link>{" "}
           · {getFormattedTimestamp(post.created_at)}
         </h6>
-      </div>
+      </header>
 
-      <div
+      <main
         id={`parent-${post.post_id}`}
         ref={parentRef}
         className={`${styles.content}`}
@@ -62,14 +62,14 @@ export default function PostCard({ post }: PostCardProps) {
             </button>
           </Link>
         )}
-      </div>
+      </main>
 
-      <div className={styles.footer}>
+      <footer className={styles.footer}>
         <RateButtons
           onUp={() => handleUp(post.post_id)}
           onDown={() => handleDown(post.post_id)}
         />
-      </div>
+      </footer>
     </article>
   );
 }
