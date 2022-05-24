@@ -43,9 +43,9 @@ model comments {
   comment_id     String   @id @db.VarChar(24)
   author         users    @relation(fields: [author_user_id], references: [user_id])
   author_user_id String   @db.VarChar(24)
-  content        String   @db.Text
+  content        Json
   parent_id      String   @db.VarChar(24)
-  is_reply       String   @db.VarChar(24)
+  is_reply       Boolean  @db.Bit(1)
   is_edited      Boolean  @db.Bit(1)
   ups            Int      @db.Int
   downs          Int      @db.Int
