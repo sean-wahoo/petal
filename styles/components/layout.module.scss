@@ -3,7 +3,7 @@
   flex-flow: column nowrap;
   min-height: 100vh;
 
-  > main {
+  > :not(nav, footer) {
     flex-grow: 1;
     padding-top: calc(48px + 4rem);
     overflow-y: hidden;
