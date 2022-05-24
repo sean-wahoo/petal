@@ -127,9 +127,15 @@ interface ProfilePageProps extends SessionProps {
 
 interface CreatePostPageProps extends SessionProps {}
 
+interface CreateCommentProps extends SessionProps {
+  parent_id: string;
+}
+
 interface EditorProps {
   updateEditorContent: (json: JSONContent) => void;
   label: String;
+  type?: string;
+  parent_id?: string;
 }
 
 interface ProfileDataSuccess extends Success {}
@@ -171,4 +177,5 @@ export type {
   PostProps,
   PostPageProps,
   RateButtonsProps,
+  CreateCommentProps,
 };
