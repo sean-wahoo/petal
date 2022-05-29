@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { AuthData, LoginResponse } from "lib/types";
-import { updateSession } from "lib/session";
+import { updateSessionDataRedis } from "lib/session";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
+import { nanoid } from "nanoid/async";
 const prisma = new PrismaClient();
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
@@ -32,20 +33,28 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       throw { message: "That password is incorrect!", type: "password" };
     }
 
+    const cache_key = await nanoid(12);
     const session_data = {
       user_id: numRowsWithEmail[0].user_id,
       email,
+      cache_key,
+      been_welcomed: numRowsWithEmail[0].been_welcomed,
       display_name: numRowsWithEmail[0].display_name,
       image_url: numRowsWithEmail[0].image_url,
     };
-    const session_id = await updateSession(session_data);
-    prisma.users.update({
+    await updateSessionDataRedis(session_data);
+    console.log({ cache_key });
+    await prisma.users.update({
       where: { user_id: numRowsWithEmail[0].user_id },
-      data: { session_id: session_id as string },
+      data: { cache_key: cache_key as string },
     });
     return res.status(200).json({
       user_id: numRowsWithEmail[0].user_id,
-      session_id,
+      email,
+      been_welcomed: numRowsWithEmail[0].been_welcomed,
+      display_name: numRowsWithEmail[0].display_name,
+      image_url: numRowsWithEmail[0].image_url,
+      cache_key,
     } as LoginResponse);
   } catch (e: any) {
     console.error({ e });

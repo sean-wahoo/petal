@@ -1,8 +1,10 @@
 import { RateButtonsProps } from "lib/types";
 import { useState } from "react";
 import styles from "styles/components/rate_buttons.module.scss";
+import Skeleton from "react-loading-skeleton";
 
 const RateButtons: React.FC<RateButtonsProps> = ({
+  loading,
   onUp,
   onDown,
   isUp = false,
@@ -10,9 +12,6 @@ const RateButtons: React.FC<RateButtonsProps> = ({
   numUps = 0,
   numDowns = 0,
 }) => {
-  const upIndex = isUp ? 1 : 0;
-  const downIndex = isDown ? 1 : 0;
-
   const [ups, setUps] = useState<number>(numUps);
   const [downs, setDowns] = useState<number>(numDowns);
   const [upStatus, setUpStatus] = useState<boolean>(isUp);
@@ -68,7 +67,13 @@ const RateButtons: React.FC<RateButtonsProps> = ({
       >
         {upPaths[upStatus ? 1 : 0]}
       </svg>
-      <p>{ups}</p>
+      {loading ? (
+        <p>
+          <Skeleton />
+        </p>
+      ) : (
+        <p>{ups}</p>
+      )}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -78,7 +83,13 @@ const RateButtons: React.FC<RateButtonsProps> = ({
       >
         {downPaths[downStatus ? 1 : 0]}
       </svg>
-      <p>{downs}</p>
+      {loading ? (
+        <p>
+          <Skeleton />
+        </p>
+      ) : (
+        <p>{downs}</p>
+      )}
     </>
   );
 

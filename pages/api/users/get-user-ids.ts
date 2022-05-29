@@ -3,21 +3,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { user_id } = req.query;
-    const user_data = await prisma.users.findFirst({
+    const user_ids = await prisma.users.findMany({
       select: {
         user_id: true,
-        been_welcomed: true,
-        email: true,
-        cache_key: true,
-        image_url: true,
-        display_name: true,
-      },
-      where: {
-        user_id: user_id as string,
       },
     });
-    return res.status(200).json({ ...user_data });
+    return res.status(200).json(user_ids);
   } catch (e: any) {
     console.error({ e });
     res.status(500).json({

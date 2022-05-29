@@ -1,7 +1,7 @@
 import { JSONContent } from "@tiptap/react";
 interface Success {
   user_id: string;
-  session_id: string;
+  session_id?: string;
 }
 
 interface Error {
@@ -18,13 +18,14 @@ interface AuthData {
 interface SessionData {
   user_id: string;
   email: string;
-  session_id?: string;
+  cache_key?: string;
+  been_welcomed: boolean;
   display_name: string;
   image_url: string;
 }
 
 interface SessionProps {
-  session: SessionData;
+  session?: SessionData;
 }
 
 interface IndexProps extends SessionProps {
@@ -45,12 +46,29 @@ interface PostProps {
   updated_at: string;
 }
 
+interface CommentProps {
+  comment_id: string;
+  parent_id: string;
+  author: {
+    user_id: string;
+    display_name: string;
+  };
+  ups: number;
+  downs: number;
+  content: object;
+  created_at: string;
+  replies: CommentProps[];
+}
+
 interface PostPageProps extends SessionProps {
-  post: PostProps;
+  post_id: string;
+  post?: PostProps;
+  comments?: CommentProps[];
 }
 
 interface PostCardProps {
-  post: PostProps;
+  post?: PostProps;
+  loading: boolean;
 }
 
 interface RegisterSuccess extends Success {
@@ -65,13 +83,14 @@ interface RegisterResponse extends RegisterSuccess, RegisterError {}
 
 interface LoginSuccess extends Success {
   type: string;
+  been_welcomed: boolean;
 }
 
 interface LoginError extends Error {
   type: string;
 }
 
-interface LoginResponse extends LoginSuccess, LoginError {}
+interface LoginResponse extends LoginSuccess, LoginError, SessionData {}
 
 interface SessionSuccess extends Success, SessionData {
   display_name: string;
@@ -101,11 +120,11 @@ interface LayoutProps {
   children: any;
   title: string;
   is_auth: boolean;
-  session_data?: SessionData;
+  session?: SessionData;
   showNavbar?: boolean;
 }
 interface ProfileProps {
-  profile: {
+  session: {
     user_id: string;
     display_name: string;
     image_url: string;
@@ -144,6 +163,7 @@ interface ProfileDataError extends Error {}
 interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError {}
 
 interface RateButtonsProps {
+  loading: boolean;
   onUp: (objectId?: string) => void;
   onDown: (objectId?: string) => void;
   numUps?: number;
@@ -178,4 +198,5 @@ export type {
   PostPageProps,
   RateButtonsProps,
   CreateCommentProps,
+  CommentProps,
 };

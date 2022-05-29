@@ -1,11 +1,11 @@
-@use "styles/theme";
+@use "styles/theme" as *;
 
 .index {
   display: flex;
   flex-flow: column nowrap;
   color: var(--text-color);
   background-color: var(--primary-bg);
-  width: min(100% - 20px, 960px);
+  width: min(100% - 20px, map-get($spacing, "main"));
   margin-inline: auto;
   justify-content: flex-start;
   min-height: 150vh;

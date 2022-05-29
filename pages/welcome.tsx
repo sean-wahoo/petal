@@ -1,8 +1,13 @@
 import axios from "axios";
 import Layout from "components/Layout";
 import { resolver } from "lib/promises";
-import { session_handler } from "lib/session";
-import { SessionError, SessionProps, SessionSuccess } from "lib/types";
+import { decodeSessionToken, session_handler } from "lib/session";
+import {
+  SessionData,
+  SessionError,
+  SessionProps,
+  SessionSuccess,
+} from "lib/types";
 import { handleMiddlewareErrors } from "lib/utils";
 import { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
@@ -78,18 +83,10 @@ const Welcome: NextPage<SessionProps> = ({ session }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let session: SessionSuccess | SessionError;
   try {
-    session = (await session_handler(
-      context.req.cookies.session_id
-    )) as SessionSuccess;
-    const [data, error] = await resolver(
-      axios.get(
-        `http://localhost:3000/api/users/get-user?user_id=${session.user_id}`
-      )
-    );
-    if (error) throw { message: error.message, code: error.code };
-    if (data.been_welcomed) {
+    const session_payload = context.req.cookies.session_payload;
+    const session = decodeSessionToken(session_payload);
+    if (session.been_welcomed) {
       return {
         redirect: {
           destination: "/",
@@ -98,10 +95,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     }
     return {
-      props: { session, user_data: data },
+      props: { session },
     };
   } catch (e: any) {
-    return handleMiddlewareErrors(e.message, context);
+    return handleMiddlewareErrors(e.code, context);
   }
 };
 

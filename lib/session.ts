@@ -2,96 +2,126 @@ import { nanoid } from "nanoid/async";
 import type { SessionSuccess, SessionError, SessionData } from "lib/types";
 import Cookies from "universal-cookie";
 import axios from "axios";
-import { getApiUrl } from "./utils";
+import { getApiUrl } from "lib/utils";
+import jwt from "jsonwebtoken";
 
-const updateSessionWithSessionId = async (
-  session_id: string,
-  session_addition: Object
-): Promise<Response | SessionError> => {
-  try {
-    let all = await fetch(
-      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hgetall/${session_id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-        },
-      }
-    );
-
-    const allParsed = await all.json();
-
-    let data = await fetch(
-      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_id}/session_data`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-        },
-        body: JSON.stringify({ ...allParsed, ...session_addition }),
-      }
-    );
-    data = await data.json();
-
-    let exp = await fetch(
-      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_id}/84600`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-        },
-      }
-    );
-    exp = await exp.json();
-
-    if ("error" in data || "error" in exp)
-      throw new Error("Session failed to initialize!");
-
-    return exp;
-  } catch (e: any) {
-    return { is_error: true, error_code: e.code, error_message: e.message };
-  }
+const encodeSessionToken = (session: SessionData) => {
+  const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
+  const token = jwt.sign(session, key);
+  return token;
 };
 
-const updateSession = async (
-  session_data: SessionData
-): Promise<string | SessionError> => {
-  try {
-    let { user_id, email, session_id, image_url, display_name } = session_data;
-    session_id ||= await nanoid(24);
-    const obj: any = { user_id, email, image_url, display_name };
-
-    let data = await fetch(
-      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_id}/session_data`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-        },
-        body: JSON.stringify(obj),
-      }
-    );
-    data = await data.json();
-
-    let exp = await fetch(
-      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_id}/84600`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-        },
-      }
-    );
-    exp = await exp.json();
-
-    if ("error" in data || "error" in exp)
-      throw {
-        code: "session-failed",
-        message: "Session Failed to Initialize!",
-      };
-
-    return session_id;
-  } catch (e: any) {
-    return { is_error: true, error_code: e.code, error_message: e.message };
-  }
+const decodeSessionToken: (token: string) => SessionData = (token: string) => {
+  const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
+  const session = jwt.verify(token, key);
+  return session as SessionData;
 };
+
+const updateSessionDataRedis = async (session_payload: SessionData) => {
+  const stringifiedSession = JSON.stringify(session_payload);
+  let redisReturnedUpdateData = await fetch(
+    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_payload.user_id}/session_data`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+      },
+      body: JSON.stringify(stringifiedSession),
+    }
+  );
+  let responseForSettingExpiration = await fetch(
+    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_payload.user_id}/84600`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+      },
+    }
+  );
+  responseForSettingExpiration = await responseForSettingExpiration.json();
+  redisReturnedUpdateData = await redisReturnedUpdateData.json();
+  if (
+    "error" in redisReturnedUpdateData ||
+    "error" in responseForSettingExpiration
+  )
+    throw {
+      code: "session-failed",
+      message: "Session Failed to Initialize!",
+    };
+  return session_payload.cache_key;
+};
+
+const isSessionValid = async (session_payload: SessionData) => {
+  const { user_id, cache_key } = session_payload;
+  let data = await fetch(
+    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hgetall/${user_id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+      },
+    }
+  );
+  const parsed = await data.json();
+  if (parsed.result.length === 0)
+    throw {
+      code: "invalid-session-id",
+      message: "Invalid Session ID!",
+    };
+
+  const obj = JSON.parse(JSON.parse(parsed.result[1]));
+  return cache_key === obj.cache_key;
+};
+
+const syncSession = async (user_id: string) => {
+  let data: any = await fetch(
+    `${getApiUrl()}/api/users/get-user?user_id=${user_id}`
+  );
+  data = await data.json();
+  const token = encodeSessionToken(data as SessionData);
+  return token;
+};
+
+// const updateSession = async (
+//   session_data: SessionData
+// ): Promise<string | SessionError> => {
+//   try {
+//     let { user_id, email, session_id, image_url, display_name } = session_data;
+//     session_id ||= await nanoid(24);
+//     const obj: any = { user_id, email, image_url, display_name };
+//     obj.cacheKey = nanoid(12);
+
+//     let data = await fetch(
+//       `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_id}/session_data`,
+//       {
+//         method: "POST",
+//         headers: {
+//           Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+//         },
+//         body: JSON.stringify(obj),
+//       }
+//     );
+//     data = await data.json();
+
+//     let exp = await fetch(
+//       `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_id}/84600`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+//         },
+//       }
+//     );
+//     exp = await exp.json();
+
+//     if ("error" in data || "error" in exp)
+//       throw {
+//         code: "session-failed",
+//         message: "Session Failed to Initialize!",
+//       };
+
+//     return session_id;
+//   } catch (e: any) {
+//     return { is_error: true, error_code: e.code, error_message: e.message };
+//   }
+// };
 
 const getSession = async (
   session_id: string
@@ -167,4 +197,14 @@ const session_handler = async (
 
   return session_data;
 };
-export { updateSession, getSession, destroySession, session_handler };
+export {
+  // updateSession,
+  getSession,
+  destroySession,
+  session_handler,
+  encodeSessionToken,
+  decodeSessionToken,
+  updateSessionDataRedis,
+  isSessionValid,
+  syncSession,
+};

@@ -5,7 +5,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { GetServerSidePropsContext } from "next";
 
-TimeAgo.addDefaultLocale(en);
+TimeAgo.addLocale(en);
 
 export const logout = async (
   session_id: string,
@@ -31,23 +31,27 @@ export const logout = async (
   }
 };
 
-export const session_check = async (req: any, res: any): Promise<any> => {
+export const session_check = async (): Promise<any> => {
   try {
-    const session = await session_handler(req.cookies.session_id);
+    const cookies = new Cookies();
+    const session_id = cookies.get("session_id");
+    const session = await session_handler(session_id);
     return [session, null];
   } catch ({ message, code }: any) {
-    switch (code) {
-      case "invalid-session-id": {
-        res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
-        const error = {
-          redirect: {
-            destination: "/login",
-            permanent: false,
-          },
-        };
-        return [null, error];
-      }
-    }
+    console.log({ message, code });
+    // switch (code) {
+    //   case "invalid-session-id": {
+    //     res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
+    //     const error = {
+    //       redirect: {
+    //         destination: "/login",
+    //         permanent: false,
+    //       },
+    //     };
+    //     return [null, error];
+    //   }
+    // }
+    throw { message, code };
   }
 };
 
@@ -77,11 +81,11 @@ export const getApiUrl = () => {
 };
 
 export const handleMiddlewareErrors: any = (
-  message: string,
+  code: string,
   context: GetServerSidePropsContext
 ) => {
-  console.log({ message });
-  switch (message) {
+  console.log({ code });
+  switch (code) {
     case "user-not-found": {
       return {
         notFound: true,

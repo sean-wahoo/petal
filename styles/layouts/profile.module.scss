@@ -10,14 +10,14 @@
 
   > .user_info {
     background-color: var(--nav-bg);
-    width: min(100%, 1280px);
+    width: min(100%, map-get($spacing, "main"));
     flex-grow: 1;
     margin-inline: 1.2rem;
     border-top-left-radius: 0.6rem;
     border-top-right-radius: 0.6rem;
     padding: 3.6rem;
 
-    @media screen and (max-width: 1280px) {
+    @media screen and (max-width: map-get($breakpoints, "xl")) {
       margin-inline: 0;
     }
 

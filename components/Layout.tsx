@@ -1,25 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { LayoutProps, SessionData } from "lib/types";
 import Head from "next/head";
 import Navbar from "components/Navbar";
 import styles from "styles/components/layout.module.scss";
+import { SkeletonTheme } from "react-loading-skeleton";
 
 export default function Layout({
   children,
   title,
   is_auth,
-  session_data,
+  session,
   showNavbar = true,
 }: LayoutProps) {
   return (
     <div className={styles.layout}>
-      <Head>
-        <title>{title}</title>
-      </Head>
-      {is_auth && showNavbar && (
-        <Navbar profile={{ ...session_data } as SessionData} />
-      )}
-      {children}
+      <SkeletonTheme
+        baseColor="var(--input-bg-2)"
+        highlightColor="var(--input-bg)"
+      >
+        <Head>
+          <title>{title}</title>
+        </Head>
+        {is_auth && showNavbar && <Navbar session={session as any} />}
+        {children}
+      </SkeletonTheme>
     </div>
   );
 }

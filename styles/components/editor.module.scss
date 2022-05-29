@@ -10,10 +10,21 @@
   .editor {
     margin: 1rem 0;
 
+    &.post {
+      > [contenteditable="true"] {
+        min-height: 360px;
+      }
+    }
+
+    &.comment {
+      > [contenteditable="true"] {
+        min-height: 180px;
+      }
+    }
+
     > [contenteditable="true"] {
       padding: 1.2rem;
       background-color: var(--accent-4);
-      min-height: 360px;
 
       &:focus {
         outline: none;

@@ -1,0 +1,7 @@
+.create_comment {
+  margin-bottom: 1.2rem;
+
+  > .invalid_content {
+    border: 1px solid var(--error-text);
+  }
+}

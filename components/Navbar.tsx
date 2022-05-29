@@ -1,12 +1,14 @@
 import styles from "styles/components/navbar.module.scss";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 import Image from "next/image";
 import Link from "next/link";
-import type { ProfileProps } from "lib/types";
+import type { ProfileProps, SessionData } from "lib/types";
 import Cookies from "universal-cookie";
+import Skeleton from "react-loading-skeleton";
+import { useSession } from "lib/useSession";
 
-export default function Navbar({ profile }: ProfileProps) {
+const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
   const [prev, setPrev] = useState<number>(0);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,7 @@ export default function Navbar({ profile }: ProfileProps) {
   };
   const handleLogout = () => {
     const cookies = new Cookies();
-    cookies.remove("session_id", { path: "/" });
+    cookies.remove("session_payload", { path: "/" });
     window.location.reload();
   };
 
@@ -51,17 +53,23 @@ export default function Navbar({ profile }: ProfileProps) {
   return (
     <nav className={styles.navbar} ref={navRef}>
       <Link href="/">Petal</Link>
-      <Image
-        src={profile.image_url}
-        alt={profile.display_name}
-        width={48}
-        height={48}
-        id="profile-image"
-        className={styles.profile_image}
-        onClick={(e: any) => {
-          setShowDropdown(!showDropdown);
-        }}
-      />
+
+      {!session ? (
+        <Skeleton height={48} width={48} />
+      ) : (
+        <Image
+          src={session.image_url as string}
+          alt={session.display_name}
+          width={48}
+          height={48}
+          id="profile-image"
+          className={styles.profile_image}
+          onClick={() => {
+            setShowDropdown(!showDropdown);
+          }}
+        />
+      )}
+
       {showDropdown && (
         <div ref={dropdownRef} className={styles.dropdown} id="dropdown">
           <ul>
@@ -69,7 +77,7 @@ export default function Navbar({ profile }: ProfileProps) {
               <Link href="/">Home</Link>
             </li>
             <li>
-              <Link href={`/users/${profile.user_id}`}>Profile</Link>
+              <Link href={`/users/${session?.user_id}`}>Profile</Link>
             </li>
             <li>
               <Link href="/posts/create-post">Create Post</Link>
@@ -106,4 +114,6 @@ export default function Navbar({ profile }: ProfileProps) {
       </form> */}
     </nav>
   );
-}
+};
+
+export default Navbar;

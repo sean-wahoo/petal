@@ -1,17 +1,24 @@
 import Layout from "components/Layout";
-import { CreatePostPageProps } from "lib/types";
+import { CreatePostPageProps, SessionData } from "lib/types";
 import { handleMiddlewareErrors, session_check } from "lib/utils";
 import { GetServerSideProps, NextPage } from "next";
 import styles from "styles/layouts/create_post.module.scss";
 import Editor from "components/Editor";
 import { JSONContent } from "@tiptap/react";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useSession } from "lib/useSession";
 
-const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
+const CreatePostPage: NextPage<CreatePostPageProps> = () => {
+  const [session, setSession] = useState<SessionData | undefined>();
+  useEffect(() => {
+    const s = useSession();
+    setSession(s);
+  }, []);
+
   const titleRef = useRef(null);
   const [content, setContent] = useState<JSONContent>({});
   const [title, setTitle] = useState<string>("");
@@ -43,7 +50,7 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
         axios.post("/api/posts/create-post", {
           title,
           content,
-          author_user_id: session.user_id,
+          author_user_id: session?.user_id,
         })
       );
       if (error) throw error;
@@ -54,7 +61,7 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
   };
 
   return (
-    <Layout session_data={session} title="Petal - Create Post" is_auth={true}>
+    <Layout session={session} title="Petal - Create Post" is_auth={true}>
       <main className={styles.create_post}>
         <form onSubmit={submitNewPost}>
           <label htmlFor="title-input">Post Title</label>
@@ -81,19 +88,6 @@ const CreatePostPage: NextPage<CreatePostPageProps> = ({ session }) => {
       </main>
     </Layout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const [session, error] = await session_check(context.req, context.res);
-    if (error) return error;
-
-    return {
-      props: { session },
-    };
-  } catch (e: any) {
-    return handleMiddlewareErrors(e.response.data.error_message, context);
-  }
 };
 
 export default CreatePostPage;

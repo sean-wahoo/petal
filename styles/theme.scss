@@ -1,27 +1,33 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins&family=Galada&family=Gafata&display=swap");
 
-$sm: 480px;
-$md: 768px;
-$lg: 1024px;
-$xl: 1280px;
+$breakpoints: (
+  "sm": 480px,
+  "md": 960px,
+  "lg": 1024px,
+  "xl": 1280px,
+);
+
+$spacing: (
+  "main": 1024px,
+);
 
 @mixin small {
-  @media screen and (max-width: $sm) {
+  @media screen and (max-width: map-get($breakpoints, "sm")) {
     @content;
   }
 }
 @mixin medium {
-  @media screen and (max-width: $md) {
+  @media screen and (max-width: map-get($breakpoints, "md")) {
     @content;
   }
 }
 @mixin large {
-  @media screen and (max-width: $lg) {
+  @media screen and (max-width: map-get($breakpoints, "lg")) {
     @content;
   }
 }
 @mixin huge {
-  @media screen and (max-width: $xl) {
+  @media screen and (max-width: map-get($breakpoints, "xl")) {
     @content;
   }
 }

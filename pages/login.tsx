@@ -11,6 +11,7 @@ import Router from "next/router";
 import ErrorMessage from "components/ErrorMessage";
 import Link from "next/link";
 import Layout from "components/Layout";
+import { decodeSessionToken, encodeSessionToken } from "lib/session";
 
 // TODO: add other login providers
 
@@ -22,7 +23,6 @@ const Login: NextPage = () => {
     error_message: "",
     type: "",
   });
-
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -39,7 +39,9 @@ const Login: NextPage = () => {
       return;
     }
     const cookies = new Cookies();
-    cookies.set("session_id", data.session_id);
+    const token = encodeSessionToken(data);
+    cookies.set("session_payload", token);
+    const session = decodeSessionToken(token);
     Router.reload();
   };
 

@@ -1,0 +1,24 @@
+.comment {
+  border-left: 2px solid var(--accent-5);
+  padding: 0.1rem 1rem;
+
+  > header {
+    opacity: 0.6;
+  }
+  > footer {
+    display: flex;
+    align-items: center;
+
+    > h5 {
+      cursor: pointer;
+      padding: 0.4rem;
+      user-select: none;
+      background-color: var(--accent-5);
+      margin: 0;
+      &.active {
+        filter: brightness(110%);
+        background-color: var(--accent-4);
+      }
+    }
+  }
+}
