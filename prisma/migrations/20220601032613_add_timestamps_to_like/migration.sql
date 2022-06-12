@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE `likes` ADD COLUMN `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    ADD COLUMN `updated_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0);
+
+-- AlterTable
+ALTER TABLE `posts` MODIFY `is_edited` BIT(1) NOT NULL DEFAULT false;
+
+-- AlterTable
+ALTER TABLE `users` MODIFY `been_welcomed` BIT(1) NOT NULL DEFAULT false;

@@ -24,33 +24,37 @@ model users {
   sender         friends[]                  @relation("sender")
   recipient      friends[]                  @relation("recipient")
   topic_user_rel topic_user_relationships[]
+  post_rater     post_rates[]
+  comment_rater  comment_rates[]
 }
 
 model posts {
-  post_id        String   @id @db.VarChar(24)
-  author         users    @relation(fields: [author_user_id], references: [user_id])
-  author_user_id String   @db.VarChar(24)
-  title          String   @db.Text
+  post_id        String       @id @db.VarChar(24)
+  author         users        @relation(fields: [author_user_id], references: [user_id])
+  author_user_id String       @db.VarChar(24)
+  title          String       @db.Text
   content        Json
-  is_edited      Boolean  @default(false) @db.Bit(1)
-  ups            Int      @default(0) @db.Int
-  downs          Int      @default(0) @db.Int
-  created_at     DateTime @default(now()) @db.Timestamp(0)
-  updated_at     DateTime @default(now()) @db.Timestamp(0)
+  is_edited      Boolean      @default(false) @db.Bit(1)
+  ups            Int          @default(0) @db.Int
+  downs          Int          @default(0) @db.Int
+  created_at     DateTime     @default(now()) @db.Timestamp(0)
+  updated_at     DateTime     @default(now()) @db.Timestamp(0)
+  rated_post     post_rates[]
 }
 
 model comments {
-  comment_id     String   @id @db.VarChar(24)
-  author         users    @relation(fields: [author_user_id], references: [user_id])
-  author_user_id String   @db.VarChar(24)
+  comment_id     String          @id @db.VarChar(24)
+  author         users           @relation(fields: [author_user_id], references: [user_id])
+  author_user_id String          @db.VarChar(24)
   content        Json
-  parent_id      String   @db.VarChar(24)
-  is_reply       Boolean  @db.Bit(1)
-  is_edited      Boolean  @db.Bit(1)
-  ups            Int      @db.Int
-  downs          Int      @db.Int
-  created_at     DateTime @default(now()) @db.Timestamp(0)
-  updated_at     DateTime @default(now()) @db.Timestamp(0)
+  parent_id      String          @db.VarChar(24)
+  is_reply       Boolean         @db.Bit(1)
+  is_edited      Boolean         @db.Bit(1)
+  ups            Int             @db.Int
+  downs          Int             @db.Int
+  created_at     DateTime        @default(now()) @db.Timestamp(0)
+  updated_at     DateTime        @default(now()) @db.Timestamp(0)
+  rated_comment  comment_rates[]
 }
 
 model friends {
@@ -68,7 +72,30 @@ model topics {
   topic_id       String                     @id @db.VarChar(24)
   name           String                     @db.VarChar(52)
   topic_user_rel topic_user_relationships[]
+}
 
+model post_rates {
+  rate_kind    String   @db.VarChar(24)
+  post_rater   users    @relation(fields: [user_rate_id], references: [user_id])
+  user_rate_id String   @db.VarChar(24)
+  rated_post   posts    @relation(fields: [post_rate_id], references: [post_id])
+  post_rate_id String   @db.VarChar(24)
+  created_at   DateTime @default(now()) @db.Timestamp(0)
+  updated_at   DateTime @default(now()) @db.Timestamp(0)
+
+  @@id([user_rate_id, post_rate_id])
+}
+
+model comment_rates {
+  rate_kind       String   @db.VarChar(24)
+  comment_rater   users    @relation(fields: [user_rate_id], references: [user_id])
+  user_rate_id    String   @db.VarChar(24)
+  rated_comment   comments @relation(fields: [comment_rate_id], references: [comment_id])
+  comment_rate_id String   @db.VarChar(24)
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @default(now()) @db.Timestamp(0)
+
+  @@id([user_rate_id, comment_rate_id])
 }
 
 model topic_user_relationships {
