@@ -46,29 +46,23 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
 
   const onUp = async () => {
     const session = useSession()
-    // const current_user_rate_data = post?.rated_post.find(rate => {
-    //   return rate.user_rate_id === session?.user_id;
-    // })
     const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
       rate_kind: 'up',
       user_rate_id: session?.user_id,
       post_rate_id: post?.post_id,
       remove_rate: current_user_rate_data?.rate_kind === 'up'
     }))
-    console.log({ data, error })
+    if (error) console.error(error)
   }
   const onDown = async () => {
     const session = useSession()
-    // const current_user_rate_data = post?.rated_post.find(rate => {
-    //   return rate.user_rate_id === session?.user_id;
-    // })
     const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
       rate_kind: 'down',
       user_rate_id: session?.user_id,
       post_rate_id: post?.post_id,
       remove_rate: current_user_rate_data?.rate_kind === 'down'
     }))
-    console.log({ data, error })
+    if (error) console.error(error)
   }
 
   return (
