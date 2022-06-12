@@ -32,6 +32,10 @@ interface IndexProps extends SessionProps {
   posts: PostProps[];
 }
 
+interface RateProps {
+ rate_id: string, rate_kind: string, user_rate_id: string 
+}
+
 interface PostProps {
   post_id: string;
   author: {
@@ -44,6 +48,7 @@ interface PostProps {
   downs: number;
   created_at: string;
   updated_at: string;
+  rated_post: RateProps[]
 }
 
 interface CommentProps {
@@ -58,6 +63,7 @@ interface CommentProps {
   content: object;
   created_at: string;
   replies: CommentProps[];
+  rated_comment: RateProps[]
 }
 
 interface PostPageProps extends SessionProps {
@@ -66,7 +72,7 @@ interface PostPageProps extends SessionProps {
   comments?: CommentProps[];
 }
 
-interface PostCardProps {
+interface PostCardProps extends SessionProps {
   post?: PostProps;
   loading: boolean;
 }
@@ -79,7 +85,7 @@ interface RegisterError extends Error {
   type: string;
 }
 
-interface RegisterResponse extends RegisterSuccess, RegisterError {}
+interface RegisterResponse extends RegisterSuccess, RegisterError { }
 
 interface LoginSuccess extends Success {
   type: string;
@@ -90,7 +96,7 @@ interface LoginError extends Error {
   type: string;
 }
 
-interface LoginResponse extends LoginSuccess, LoginError, SessionData {}
+interface LoginResponse extends LoginSuccess, LoginError, SessionData { }
 
 interface SessionSuccess extends Success, SessionData {
   display_name: string;
@@ -99,16 +105,16 @@ interface SessionSuccess extends Success, SessionData {
   email: string;
 }
 
-interface SessionError extends Error {}
+interface SessionError extends Error { }
 
 interface LogoutData {
   user_id: string;
   session_id: string;
 }
 
-interface LogoutSuccess extends Success {}
+interface LogoutSuccess extends Success { }
 
-interface LogoutError extends Error {}
+interface LogoutError extends Error { }
 
 // props
 interface ErrorMessageProps {
@@ -144,7 +150,7 @@ interface ProfilePageProps extends SessionProps {
   };
 }
 
-interface CreatePostPageProps extends SessionProps {}
+interface CreatePostPageProps extends SessionProps { }
 
 interface CreateCommentProps extends SessionProps {
   parent_id: string;
@@ -157,10 +163,10 @@ interface EditorProps {
   parent_id?: string;
 }
 
-interface ProfileDataSuccess extends Success {}
-interface ProfileDataError extends Error {}
+interface ProfileDataSuccess extends Success { }
+interface ProfileDataError extends Error { }
 
-interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError {}
+interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError { }
 
 interface RateButtonsProps {
   loading: boolean;
@@ -170,6 +176,7 @@ interface RateButtonsProps {
   numDowns?: number;
   isUp?: boolean;
   isDown?: boolean;
+  session?: SessionData;
 }
 
 export type {
@@ -199,4 +206,5 @@ export type {
   RateButtonsProps,
   CreateCommentProps,
   CommentProps,
+  RateProps
 };
