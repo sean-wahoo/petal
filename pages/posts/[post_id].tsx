@@ -9,19 +9,21 @@ import { getApiUrl, getFormattedTimestamp } from "lib/utils";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import styles from "styles/layouts/post_page.module.scss";
 import Comment from "components/Comment";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { useSession } from "lib/useSession";
 
-const PostPage: NextPage<PostPageProps> = ({ post, post_id }) => {
+const PostPage: NextPage<PostPageProps> = ({ post }) => {
   const [session, setSession] = useState<SessionData | undefined>();
   useEffect(() => {
-    const s = useSession();
-    setSession(s);
+    setSession(useSession())
   }, []);
 
   const [loading, setLoading] = useState<boolean>(!post);
+  const current_user_rate_data = useMemo(() => {
+    return post?.rated_post.find(rate => rate.user_rate_id === session?.user_id);
+  }, [post, session]);
 
   const editor = useEditor({
     editable: false,
@@ -32,7 +34,7 @@ const PostPage: NextPage<PostPageProps> = ({ post, post_id }) => {
   useEffect(() => {
     if (post) {
       setLoading(false);
-      editor?.commands.setContent(post?.content);
+      if (editor?.commands) editor?.commands?.setContent(post?.content);
     }
   }, [post]);
 
@@ -41,6 +43,33 @@ const PostPage: NextPage<PostPageProps> = ({ post, post_id }) => {
     fetcher
   );
   if (comments_error) console.error(comments_error);
+
+  const onUp = async () => {
+    const session = useSession()
+    // const current_user_rate_data = post?.rated_post.find(rate => {
+    //   return rate.user_rate_id === session?.user_id;
+    // })
+    const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
+      rate_kind: 'up',
+      user_rate_id: session?.user_id,
+      post_rate_id: post?.post_id,
+      remove_rate: current_user_rate_data?.rate_kind === 'up'
+    }))
+    console.log({ data, error })
+  }
+  const onDown = async () => {
+    const session = useSession()
+    // const current_user_rate_data = post?.rated_post.find(rate => {
+    //   return rate.user_rate_id === session?.user_id;
+    // })
+    const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
+      rate_kind: 'down',
+      user_rate_id: session?.user_id,
+      post_rate_id: post?.post_id,
+      remove_rate: current_user_rate_data?.rate_kind === 'down'
+    }))
+    console.log({ data, error })
+  }
 
   return (
     <Layout session={session} title={`Petal - ${post?.title}`} is_auth={true}>
@@ -57,9 +86,13 @@ const PostPage: NextPage<PostPageProps> = ({ post, post_id }) => {
             {<EditorContent editor={editor} />}
           </div>
           <RateButtons
-            onUp={() => console.log("up!")}
-            onDown={() => console.log("down")}
+            onUp={() => onUp()}
+            onDown={() => onDown()}
             loading={loading}
+            isUp={current_user_rate_data?.rate_kind === 'up'}
+            isDown={current_user_rate_data?.rate_kind === 'down'}
+            numUps={post?.rated_post.filter(rate => rate.rate_kind === 'up').length}
+            numDowns={post?.rated_post.filter(rate => rate.rate_kind === 'down').length}
           />
           <section className={styles.comments_section}>
             <CreateComment
@@ -67,43 +100,25 @@ const PostPage: NextPage<PostPageProps> = ({ post, post_id }) => {
               parent_id={post?.post_id as string}
             />
             {!comments
-              ? [...Array(12).keys()].map(() => (
-                  <Comment loading={true} session={session as SessionData} />
-                ))
-              : comments.map((comment: any) => {
-                  return (
-                    <Comment
-                      loading={!!comments}
-                      comment={comment}
-                      session={session as SessionData}
-                    />
-                  );
-                })}
+              ? [...Array(12).keys()].map((_, i) => (
+                <Comment loading={true} key={i} session={session as SessionData} />
+              ))
+              : comments.map((comment: any, i: number) => {
+                return (
+                  <Comment
+                    loading={false}
+                    key={i}
+                    comment={comment}
+                    session={session as SessionData}
+                  />
+                );
+              })}
           </section>
         </article>
       </main>
     </Layout>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   let post, error;
-//   try {
-//     // [session, error] = await session_check(context.req, context.res);
-//     // if (error) throw { message: error.message, code: error.code };
-//     const post_id = context.query.post_id;
-//     [post, error] = await resolver(
-//       axios.get(`${getApiUrl()}/api/comments/${post_id}`)
-//     );
-//     if (error) throw { message: error.message, code: error.code };
-//     return {
-//       props: { session: {}, post_id, post },
-//     };
-//   } catch (e: any) {
-//     console.log({ e });
-//     return handleMiddlewareErrors(e.code, context);
-//   }
-// };
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const { post_id }: any = context.params;

@@ -1,33 +1,56 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { CommentProps, SessionData } from "lib/types";
-import { getFormattedTimestamp } from "lib/utils";
+import { getApiUrl, getFormattedTimestamp } from "lib/utils";
 import styles from "styles/components/comment.module.scss";
 import RateButtons from "components/RateButtons";
-import { useEffect, useState } from "react";
-import CreateComment from "./CreateComment";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import CreateComment from "components/CreateComment";
 import Skeleton from "react-loading-skeleton";
+import { resolver } from "lib/promises";
+import axios from "axios";
+import { useSession } from "lib/useSession";
 
 const Comment: React.FC<{
   loading: boolean;
   comment?: CommentProps;
   session: SessionData;
-}> = ({ comment, session }) => {
+}> = ({ comment, session, loading }) => {
   const [replyActive, setReplyActive] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(!comment);
   const editor = useEditor({
     editable: false,
     content: comment?.content,
     extensions: [StarterKit],
   });
+  session = useMemo(() => session, [session])
+  comment = useMemo(() => comment, [comment])
   useEffect(() => {
-    setLoading(!comment);
-  }, [comment]);
-  useEffect(() => {
-    if (loading) {
+    if (!loading) {
       editor?.commands?.setContent(comment?.content as any);
     }
-  }, [comment]);
+  }, [comment, loading]);
+  const current_user_rate_data = useMemo(() => comment?.rated_comment.find(rate => {
+    return rate.user_rate_id === session?.user_id;
+  }), [comment, session])
+
+  const onUp = useCallback(async () => {
+    const [_, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/comment-rate`, {
+      rate_kind: 'up',
+      user_rate_id: session?.user_id,
+      comment_rate_id: comment?.comment_id,
+      remove_rate: current_user_rate_data?.rate_kind === 'up'
+    }))
+    if (error) console.log({ error })
+  }, [loading, comment])
+  const onDown = useCallback(async () => {
+    const [_, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/comment-rate`, {
+      rate_kind: 'down',
+      user_rate_id: session?.user_id,
+      comment_rate_id: comment?.comment_id,
+      remove_rate: current_user_rate_data?.rate_kind === 'down'
+    }))
+    if (error) console.log({ error })
+  }, [loading, comment])
 
   return (
     <div className={styles.comment}>
@@ -51,11 +74,16 @@ const Comment: React.FC<{
         </h3>
       )}
       <footer>
-        <RateButtons
-          loading={!comment}
-          onUp={() => console.log("up")}
-          onDown={() => console.log("down")}
+        {!loading && <RateButtons
+          onUp={() => onUp()}
+          onDown={() => onDown()}
+          loading={loading}
+          isUp={current_user_rate_data?.rate_kind === 'up'}
+          isDown={current_user_rate_data?.rate_kind === 'down'}
+          numUps={comment?.rated_comment.filter(rate => rate.rate_kind === 'up').length}
+          numDowns={comment?.rated_comment.filter(rate => rate.rate_kind === 'down').length}
         />
+        }
         <h5
           onClick={() => setReplyActive(!replyActive)}
           className={replyActive ? styles.active : ""}
@@ -70,8 +98,8 @@ const Comment: React.FC<{
         />
       )}
       {!!comment?.replies?.length &&
-        comment.replies.map((reply) => {
-          return <Comment loading={false} comment={reply} session={session} />;
+        comment.replies.map((reply, i) => {
+          return <Comment key={i} loading={false} comment={reply} session={session} />;
         })}
     </div>
   );
