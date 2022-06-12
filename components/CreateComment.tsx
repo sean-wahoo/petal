@@ -5,7 +5,6 @@ import { FormEvent, useState } from "react";
 import styles from "styles/components/create_comment.module.scss";
 import util_styles from "styles/utils.module.scss";
 import ErrorMessage from "components/ErrorMessage";
-import { useRouter } from "next/router";
 import { resolver } from "lib/promises";
 import axios from "axios";
 
@@ -49,9 +48,8 @@ const CreateComment: React.FC<CreateCommentProps> = ({
         })
       );
       if (error) console.log({ error });
-      if (error) throw error;
       if (data) {
-        console.log({ data });
+        window.location.reload();
       }
     }
   };
