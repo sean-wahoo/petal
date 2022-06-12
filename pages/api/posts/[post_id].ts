@@ -23,6 +23,7 @@ export default async function getPost(
         downs: true,
         created_at: true,
         updated_at: true,
+        rated_post: true,
       },
       where: {
         post_id: post_id as string,

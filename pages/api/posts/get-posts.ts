@@ -18,11 +18,15 @@ export default async function getPosts(
         },
         title: true,
         content: true,
-        ups: true,
-        downs: true,
         created_at: true,
         updated_at: true,
-      },
+        rated_post: {
+          select: {
+            rate_kind: true,
+            user_rate_id: true,
+          }
+        }
+      }
     });
     return res.status(200).json([...posts]);
   } catch (e: any) {

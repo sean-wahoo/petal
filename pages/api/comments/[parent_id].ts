@@ -29,6 +29,7 @@ export default async function getComments(
               },
             },
             created_at: true,
+            rated_comment: true
           },
           where: {
             parent_id: parent_id as string,
@@ -65,6 +66,7 @@ export default async function getComments(
           },
         },
         created_at: true,
+        rated_comment: true
       },
       where: {
         parent_id: parent_id as string,
@@ -78,7 +80,6 @@ export default async function getComments(
       comments.map(async (comment: any) => {
         const replies = await searchCommentsRecursively(comment.comment_id, 2);
         comment.replies = replies;
-        console.log({ loopComment: comment });
         return comment;
       })
     );
