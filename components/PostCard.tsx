@@ -2,19 +2,25 @@ import styles from "styles/components/post_card.module.scss";
 import { PostCardProps } from "lib/types";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { getFormattedTimestamp } from "lib/utils";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getApiUrl, getFormattedTimestamp } from "lib/utils";
 import Link from "next/link";
 import RateButtons from "components/RateButtons";
 import Skeleton from "react-loading-skeleton";
+import { resolver } from "lib/promises";
+import axios from "axios";
+import { useSession } from "lib/useSession";
 
-export default function PostCard({ post, loading }: PostCardProps) {
+export default function PostCard({ session, post, loading }: PostCardProps) {
   const [seeMoreButton, setSeeMoreButton] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const isOverflown = (child: any, parent: any) => {
     return child.clientHeight > parent.clientHeight;
   };
+  const current_user_rate_data = useMemo(() => {
+    return post?.rated_post.find(rate => rate.user_rate_id === session?.user_id);
+  }, [post, session]);
   !loading &&
     useEffect(() => {
       const editorElement = document.getElementById(`editor-${post?.post_id}`);
@@ -24,8 +30,27 @@ export default function PostCard({ post, loading }: PostCardProps) {
       }
     }, [isOverflown]);
 
-  const handleUp = async (post_id: string) => {};
-  const handleDown = async (post_id: string) => {};
+  const onUp = async () => {
+    const session = useSession()
+    const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
+      rate_kind: 'up',
+      user_rate_id: session?.user_id,
+      post_rate_id: post?.post_id,
+      remove_rate: current_user_rate_data?.rate_kind === 'up'
+    }))
+    if (error) console.error(error)
+  }
+  const onDown = async () => {
+    const session = useSession()
+    const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
+      rate_kind: 'down',
+      user_rate_id: session?.user_id,
+      post_rate_id: post?.post_id,
+      remove_rate: current_user_rate_data?.rate_kind === 'down'
+    }))
+    if (error) console.error(error)
+    console.log({ data })
+  }
 
   const editor = useEditor({
     editable: false,
@@ -94,11 +119,17 @@ export default function PostCard({ post, loading }: PostCardProps) {
       </main>
 
       <footer className={styles.footer}>
-        <RateButtons
-          loading={loading}
-          onUp={() => handleUp(post?.post_id as string)}
-          onDown={() => handleDown(post?.post_id as string)}
-        />
+        {loading ||
+          <RateButtons
+            loading={loading}
+            onUp={() => onUp()}
+            onDown={() => onDown()}
+            isUp={current_user_rate_data?.rate_kind === 'up'}
+            isDown={current_user_rate_data?.rate_kind === 'down'}
+            numUps={post?.rated_post.filter(rate => rate.rate_kind === 'up').length}
+            numDowns={post?.rated_post.filter(rate => rate.rate_kind === 'down').length}
+          />
+        }
       </footer>
     </article>
   );

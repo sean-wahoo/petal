@@ -1,5 +1,6 @@
 import { RateButtonsProps } from "lib/types";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import debounce from "lodash.debounce"
 import styles from "styles/components/rate_buttons.module.scss";
 import Skeleton from "react-loading-skeleton";
 
@@ -14,8 +15,15 @@ const RateButtons: React.FC<RateButtonsProps> = ({
 }) => {
   const [ups, setUps] = useState<number>(numUps);
   const [downs, setDowns] = useState<number>(numDowns);
-  const [upStatus, setUpStatus] = useState<boolean>(isUp);
-  const [downStatus, setDownStatus] = useState<boolean>(isDown);
+  const [upStatus, setUpStatus] = useState<boolean>();
+  const [downStatus, setDownStatus] = useState<boolean>();
+
+  useEffect(() => {
+    setUpStatus(isUp)
+    setDownStatus(isDown)
+  }, [isUp, isDown])
+  
+  const dbCall = useCallback(debounce((type) => type === 'up' ? onUp() : onDown(), 700, { leading: true, trailing: true }), [])
 
   const fullOnUp = () => {
     setUps(upStatus ? ups - 1 : ups + 1);
@@ -23,15 +31,15 @@ const RateButtons: React.FC<RateButtonsProps> = ({
       fullOnDown();
     }
     setUpStatus(!upStatus);
-    onUp();
-  };
+    dbCall('up')
+  }
   const fullOnDown = () => {
     setDowns(downStatus ? downs - 1 : downs + 1);
     if (upStatus) {
       fullOnUp();
     }
     setDownStatus(!downStatus);
-    onDown();
+    dbCall('down')
   };
 
   const upPaths = [
