@@ -39,19 +39,6 @@ export const session_check = async (): Promise<any> => {
     return [session, null];
   } catch ({ message, code }: any) {
     console.log({ message, code });
-    // switch (code) {
-    //   case "invalid-session-id": {
-    //     res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
-    //     const error = {
-    //       redirect: {
-    //         destination: "/login",
-    //         permanent: false,
-    //       },
-    //     };
-    //     return [null, error];
-    //   }
-    // }
-    throw { message, code };
   }
 };
 
