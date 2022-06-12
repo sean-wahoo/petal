@@ -32,13 +32,13 @@ const Index: NextPage<IndexProps> = () => {
       <main className={styles.index}>
         {loading
           ? [...Array(12).keys()].map((_, i) => {
-              return <PostCard loading={loading} key={i} />;
-            })
+            return <PostCard session={session} loading={loading} key={i} />;
+          })
           : posts.map((post: PostProps) => {
-              return (
-                <PostCard loading={loading} key={post.post_id} post={post} />
-              );
-            })}
+            return (
+              <PostCard session={session} loading={loading} key={post.post_id} post={post} />
+            );
+          })}
       </main>
     </Layout>
   );
