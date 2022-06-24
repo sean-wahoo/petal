@@ -11,6 +11,7 @@ import Link from "next/link";
 import Layout from "components/Layout";
 import { resolver } from "lib/promises";
 import axios from "axios";
+import { decodeSessionToken, encodeSessionToken } from "lib/session";
 
 const Register: NextPage = () => {
   const [visible, setVisible] = useState<boolean>(false);
@@ -37,7 +38,9 @@ const Register: NextPage = () => {
       return;
     }
     const cookies = new Cookies();
-    cookies.set("session_id", data.session_id);
+    const token = encodeSessionToken(data);
+    cookies.set("session_payload", token);
+    const session = decodeSessionToken(token);
     Router.reload();
   };
 

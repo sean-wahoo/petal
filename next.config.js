@@ -1,6 +1,10 @@
+const webpack = require('webpack')
 /** @type {import('next').NextConfig} */
 module.exports = {
   webpack: (config, { isServer }) => {
+    config.plugins.push(new webpack.DefinePlugin({
+      'process.env.FLUENTFFMPEG_COV': false
+    }))
     config.experiments = { layers: true, topLevelAwait: true }
     if (!isServer) {
       config.resolve.fallback.fs = false
@@ -11,7 +15,7 @@ module.exports = {
     return config
   },
   images: {
-    domains: ['avatars.dicebear.com', 'chv6-filestorage.s3.amazonaws.com'],
+    domains: ['avatars.dicebear.com', 'chv6-filestorage.s3.amazonaws.com', 'chv6-filestorage.s3.us-east-2.amazonaws.com'],
   },
   reactStrictMode: true,
 }

@@ -16,6 +16,7 @@ export default async function updateProfileImage(
     })
     return res.status(200).json({ user_id, image_url, email: updated.email })
   } catch (e: any) {
+    console.log({ errorAtPatchRoute: e})
 
     res.status(500).json({
       is_error: true,

@@ -1,17 +1,17 @@
 import styles from "styles/components/navbar.module.scss";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 import Image from "next/image";
 import Link from "next/link";
-import type { ProfileProps, SessionData } from "lib/types";
+import type { SessionData } from "lib/types";
 import Cookies from "universal-cookie";
 import Skeleton from "react-loading-skeleton";
-import { useSession } from "lib/useSession";
+import Dropdown from "./Dropdown";
 
 const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
   const [prev, setPrev] = useState<number>(0);
+  const [imageRef, setImageRef] = useState<any>(null)
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const dbFunc = debounce(
@@ -30,25 +30,11 @@ const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
     return () => removeEventListener("scroll", dbFunc);
   }, [prev]);
 
-  const handleClickOutside = (e: MouseEvent) => {
-    if (
-      !dropdownRef.current?.contains(e.target as any) &&
-      !document.getElementById("profile-image")?.contains(e.target as any)
-    ) {
-      setShowDropdown(false);
-    }
-  };
   const handleLogout = () => {
     const cookies = new Cookies();
     cookies.remove("session_payload", { path: "/" });
     window.location.reload();
   };
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside, true);
-    return () =>
-      document.removeEventListener("click", handleClickOutside, true);
-  }, [showDropdown]);
 
   return (
     <nav className={styles.navbar} ref={navRef}>
@@ -71,7 +57,7 @@ const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
       )}
 
       {showDropdown && (
-        <div ref={dropdownRef} className={styles.dropdown} id="dropdown">
+        <Dropdown toggler={setShowDropdown}>
           <ul>
             <li>
               <Link href="/">Home</Link>
@@ -87,7 +73,7 @@ const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
               Logout
             </li>
           </ul>
-        </div>
+        </Dropdown>
       )}
       {/* <form>
         <input

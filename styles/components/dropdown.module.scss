@@ -1,0 +1,49 @@
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(48px + 2rem);
+  color: var(--text-color);
+  min-width: 160px;
+  padding: 0.4rem;
+  margin: 0.2rem;
+  background-color: var(--nav-bg);
+  border-radius: 0.4rem;
+  border: 1px solid var(--bg-border);
+  transform: translateX(240px);
+  opacity: 0;
+  animation: slide-in cubic-bezier(0, 0.66, 0.2, 1) 0.2s forwards;
+  font-family: 'Poppins';
+
+  > ul {
+    margin: 0;
+    padding: 0;
+
+    > li {
+      list-style-type: none;
+      margin: 0.4rem 0;
+      padding: 0.4rem 0.2rem;
+      padding-left: 18px;
+      cursor: pointer;
+      font-size: larger;
+      & > * {
+        font-size: inherit;
+        color: var(--text-color);
+      }
+
+      &:hover:not(.disabled) {
+        background-color: var(--bg-border);
+        border-radius: 0.2rem;
+        transition: background-color 0.2s ease;
+      }
+    }
+  }
+}
+@keyframes slide-in {
+  25% {
+    opacity: 0
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

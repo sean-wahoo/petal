@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid/async";
 import type { SessionSuccess, SessionError, SessionData } from "lib/types";
 import Cookies from "universal-cookie";
 import axios from "axios";

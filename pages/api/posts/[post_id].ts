@@ -29,7 +29,7 @@ export default async function getPost(
         post_id: post_id as string,
       },
     });
-    res.status(200).json(post);
+    return res.status(200).json(post);
   } catch (e: any) {
     console.error({ e });
     res.status(500).json({

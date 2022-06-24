@@ -16,6 +16,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         display_name: true,
         date_of_birth: true,
         tagline: true,
+        sender: true,
+        recipient: true
       },
       where: { user_id: user_id as string },
     });

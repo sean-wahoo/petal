@@ -79,13 +79,14 @@ interface PostCardProps extends SessionProps {
 
 interface RegisterSuccess extends Success {
   type: string;
+  been_welcomed: boolean
 }
 
 interface RegisterError extends Error {
   type: string;
 }
 
-interface RegisterResponse extends RegisterSuccess, RegisterError { }
+interface RegisterResponse extends RegisterSuccess, RegisterError, SessionData { }
 
 interface LoginSuccess extends Success {
   type: string;
@@ -136,9 +137,7 @@ interface ProfileProps {
     image_url: string;
   };
 }
-
-interface ProfilePageProps extends SessionProps {
-  profile_data: {
+interface ProfileDataProps {
     user_id: string;
     display_name: string;
     email: string;
@@ -147,7 +146,19 @@ interface ProfilePageProps extends SessionProps {
     image_url: string;
     date_of_birth: string;
     tagline: string;
-  };
+}
+interface FriendProps {
+  friend_id: string
+  sender: ProfileDataProps
+  recipient: ProfileDataProps
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProfilePageProps extends SessionProps {
+  profile_data: ProfileDataProps
+  friends_data: FriendProps[]
 }
 
 interface CreatePostPageProps extends SessionProps { }
@@ -167,6 +178,12 @@ interface ProfileDataSuccess extends Success { }
 interface ProfileDataError extends Error { }
 
 interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError { }
+
+interface FriendDataSuccess extends Success {}
+interface FriendDataError extends Error { }
+
+interface FriendDataResponse extends FriendDataSuccess, FriendDataError { }
+
 
 interface RateButtonsProps {
   loading: boolean;
@@ -206,5 +223,6 @@ export type {
   RateButtonsProps,
   CreateCommentProps,
   CommentProps,
-  RateProps
+  RateProps,
+  FriendDataResponse
 };

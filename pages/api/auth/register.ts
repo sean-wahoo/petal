@@ -1,7 +1,7 @@
 import faker from "@faker-js/faker";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { AuthData, RegisterResponse } from "lib/types";
-import { updateSession } from "lib/session";
+import { updateSessionDataRedis } from "lib/session";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid/async";
 import { PrismaClient } from "@prisma/client";
@@ -39,26 +39,36 @@ export default async function register(
     const hash = await bcrypt.hash(password, salt);
     const seed = await nanoid(16);
     const image_url = `https://avatars.dicebear.com/api/bottts/${seed}.svg`;
+    const cache_key = await nanoid(12);
     const display_name = faker.internet.userName();
-    const session_id = await updateSession({
+    // const session_id = await updateSessionDataRedis({
+    //   user_id,
+    //   email,
+    //   image_url,
+    //   display_name,
+    // });
+    const session_data = {
       user_id,
       email,
-      image_url,
+      cache_key,
+      been_welcomed: false,
       display_name,
-    });
+      image_url,
+    }
+    await updateSessionDataRedis(session_data);
 
     await prisma.users.create({
       data: {
         user_id,
         email,
         password: hash,
-        session_id: session_id as string,
+        cache_key,
         image_url,
         display_name,
       },
     });
 
-    return res.status(200).json({ user_id, session_id } as RegisterResponse);
+    return res.status(200).json(session_data);
   } catch (e: any) {
     res.status(500).json({
       is_error: true,
