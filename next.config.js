@@ -16,4 +16,7 @@ module.exports = {
     minimumCacheTTL: 0,
   },
   reactStrictMode: true,
+  experimental: {
+    runtime: 'nodejs'
+  }
 }
