@@ -1,25 +1,35 @@
-import type { SessionSuccess, SessionError, SessionData } from "lib/types";
-import Cookies from "universal-cookie";
+import type { SessionData } from "lib/types";
 import axios from "axios";
 import { getApiUrl } from "lib/utils";
-import jwt from "jsonwebtoken";
-
-const encodeSessionToken = (session: SessionData) => {
+import * as jose from 'jose'
+const encodeSessionToken: (session: SessionData) => Promise<string> = async (session: SessionData) => {
   const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
-  const token = jwt.sign(session, key);
+  const token = await new jose.SignJWT({ ...session })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('30d')
+    .sign(new TextEncoder().encode(key));
   return token;
 };
 
-const decodeSessionToken: (token: string) => SessionData = (token: string) => {
-  const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
-  const session = jwt.verify(token, key);
-  return session as SessionData;
+const decodeSessionToken: (token: string) => Promise<SessionData> = async (token: string) => {
+  try {
+    const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
+    const { payload } = await jose.jwtVerify(
+        token, new TextEncoder().encode(key)
+    );
+    return payload
+  }
+  catch (e: any) {
+    console.log({ e })
+    return e
+  }
 };
 
-const updateSessionDataRedis = async (session_payload: SessionData) => {
-  const stringifiedSession = JSON.stringify(session_payload);
+const updateSessionDataRedis = async (session_data: SessionData) => {
+  const stringifiedSession = JSON.stringify(session_data);
   let redisReturnedUpdateData = await fetch(
-    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_payload.user_id}/session_data`,
+    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_data.user_id}/session_data`,
     {
       method: "POST",
       headers: {
@@ -29,7 +39,7 @@ const updateSessionDataRedis = async (session_payload: SessionData) => {
     }
   );
   let responseForSettingExpiration = await fetch(
-    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_payload.user_id}/84600`,
+    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_data.user_id}/84600`,
     {
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
@@ -46,11 +56,11 @@ const updateSessionDataRedis = async (session_payload: SessionData) => {
       code: "session-failed",
       message: "Session Failed to Initialize!",
     };
-  return session_payload.cache_key;
+  return session_data.cache_key;
 };
 
-const isSessionValid = async (session_payload: SessionData) => {
-  const { user_id, cache_key } = session_payload;
+const isSessionValid = async (session_token: SessionData) => {
+  const { user_id, cache_key } = session_token;
   let data = await fetch(
     `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hgetall/${user_id}`,
     {
@@ -79,79 +89,6 @@ const syncSession = async (user_id: string) => {
   return token;
 };
 
-// const updateSession = async (
-//   session_data: SessionData
-// ): Promise<string | SessionError> => {
-//   try {
-//     let { user_id, email, session_id, image_url, display_name } = session_data;
-//     session_id ||= await nanoid(24);
-//     const obj: any = { user_id, email, image_url, display_name };
-//     obj.cacheKey = nanoid(12);
-
-//     let data = await fetch(
-//       `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hmset/${session_id}/session_data`,
-//       {
-//         method: "POST",
-//         headers: {
-//           Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-//         },
-//         body: JSON.stringify(obj),
-//       }
-//     );
-//     data = await data.json();
-
-//     let exp = await fetch(
-//       `${process.env.NEXT_PUBLIC_REDIS_API_URL}/expire/${session_id}/84600`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-//         },
-//       }
-//     );
-//     exp = await exp.json();
-
-//     if ("error" in data || "error" in exp)
-//       throw {
-//         code: "session-failed",
-//         message: "Session Failed to Initialize!",
-//       };
-
-//     return session_id;
-//   } catch (e: any) {
-//     return { is_error: true, error_code: e.code, error_message: e.message };
-//   }
-// };
-
-const getSession = async (
-  session_id: string
-): Promise<SessionSuccess | SessionError> => {
-  let all = await fetch(
-    `${process.env.NEXT_PUBLIC_REDIS_API_URL}/hgetall/${session_id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-      },
-    }
-  );
-
-  const allParsed = await all.json();
-
-  if (allParsed.result.length === 0)
-    return {
-      is_error: true,
-      error_code: "invalid-session-id",
-      error_message: "Invalid Session ID!",
-    };
-
-  const obj = {
-    ...JSON.parse(allParsed.result[1]),
-    session_id,
-    is_error: false,
-  };
-
-  return obj;
-};
-
 const destroySession = async (session_id: string): Promise<void> => {
   try {
     await axios.post(
@@ -168,39 +105,8 @@ const destroySession = async (session_id: string): Promise<void> => {
   }
 };
 
-const session_handler = async (
-  session_id: string | undefined
-): Promise<SessionSuccess | SessionError> => {
-  if (session_id === undefined || session_id.length < 1)
-    throw { message: "No Session Cookie!", code: "no-session-cookie" };
-
-  const session_data: SessionSuccess | SessionError = await getSession(
-    session_id
-  );
-
-  if (
-    "is_error" in session_data &&
-    session_data.error_message === "Invalid Session ID!"
-  ) {
-    await fetch(`${getApiUrl()}/api/auth/destroySession`, {
-      method: "POST",
-      body: JSON.stringify({ session_id }),
-    });
-    const cookies = new Cookies();
-    cookies.remove("session_id");
-    throw {
-      message: "Invalid Session ID!",
-      code: "invalid-session-id",
-    };
-  }
-
-  return session_data;
-};
 export {
-  // updateSession,
-  getSession,
   destroySession,
-  session_handler,
   encodeSessionToken,
   decodeSessionToken,
   updateSessionDataRedis,
