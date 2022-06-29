@@ -1,10 +1,9 @@
-import type { LogoutSuccess, LogoutError } from "lib/types";
-import { destroySession, session_handler } from "lib/session";
 import type { LogoutSuccess } from "lib/types";
+import { destroySession } from "lib/session";
 import Cookies from "universal-cookie";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
-import { GetServerSidePropsContext } from "next";
+import axios from "axios";
 
 TimeAgo.addLocale(en);
 
@@ -17,17 +16,6 @@ export const logout = async (
   cookies.remove("session_token");
 
   return { user_id } as LogoutSuccess;
-};
-
-export const session_check = async (): Promise<any> => {
-  try {
-    const cookies = new Cookies();
-    const session_id = cookies.get("session_id");
-    const session = await session_handler(session_id);
-    return [session, null];
-  } catch ({ message, code }: any) {
-    console.log({ message, code });
-  }
 };
 
 export const getFormattedTimestamp = (isoDate: string) => {
@@ -55,30 +43,8 @@ export const getApiUrl = () => {
     : process.env.NEXT_PUBLIC_PROD_ROOT_API_URL;
 };
 
-export const handleMiddlewareErrors: any = (
-  code: string,
-  context: GetServerSidePropsContext
-) => {
-  console.log({ code });
-  switch (code) {
-    case "user-not-found": {
-      return {
-        notFound: true,
-      };
-    }
-    case "invalid-session-id": {
-      context.res.setHeader("Set-Cookie", ["session_id=deleted; Max-Age=0"]);
-      return {
-        redirect: {
-          destination: "/login",
-          permanent: false,
-        },
-      };
-    }
-    default: {
-      return {
-        notFound: true,
-      };
-    }
-  }
-};
+export const revalidate = async (path: string) => {
+  await axios.get(`/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}&path=${path}`);
+  return;
+}
+
