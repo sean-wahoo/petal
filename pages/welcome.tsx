@@ -41,16 +41,17 @@ const Welcome: NextPage<SessionProps> = () => {
       <li>Meet new people who share your interests</li>
     </ul>,
     <p key="b-3" className={styles.body_text}>
-      Start with choosing a few <i>topics</i> you're interested in and make your
+      Start with choosing a few <i>topics</i> you&apos;re interested in and make your
       first <i>post</i>!
     </p>,
   ];
 
   const pages = () => {
-    return headerText.map((x, i) => {
+    return headerText.map((_, i) => {
       return (
         <span
           className={i === pageNum ? styles.on_page : ""}
+          key={i}
           onClick={() => {
             setPageNum(i);
             i === 2 && setCompleted(true);
