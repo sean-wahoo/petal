@@ -1,11 +1,10 @@
 import Layout from "components/Layout";
-import { CreatePostPageProps, SessionData } from "lib/types";
-import { handleMiddlewareErrors, session_check } from "lib/utils";
-import { GetServerSideProps, NextPage } from "next";
+import { CreatePostPageProps  } from "lib/types";
+import { NextPage } from "next";
 import styles from "styles/layouts/create_post.module.scss";
 import Editor from "components/Editor";
 import { JSONContent } from "@tiptap/react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
 import axios from "axios";
