@@ -3,15 +3,14 @@ import StarterKit from "@tiptap/starter-kit";
 import CreateComment from "components/CreateComment";
 import Layout from "components/Layout";
 import RateButtons from "components/RateButtons";
-import { fetcher, resolver } from "lib/promises";
+import { fetcher } from "lib/promises";
 import { PostPageProps, RateProps, SessionData } from "lib/types";
 import { getApiUrl, getFormattedTimestamp } from "lib/utils";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import styles from "styles/layouts/post_page.module.scss";
 import Comment from "components/Comment";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
-import axios from "axios";
 import { useSession } from "lib/useSession";
 import { PrismaClient } from "@prisma/client";
 

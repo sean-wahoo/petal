@@ -9,6 +9,7 @@ import useSWR from "swr";
 import { useEffect, useState } from "react";
 import { useSession } from "lib/useSession";
 
+// sean-reichel-chv6-development.vercel.com
 const Index: NextPage<IndexProps> = () => {
   const { session } = useSession()
 
