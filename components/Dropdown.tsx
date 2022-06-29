@@ -1,7 +1,7 @@
 import styles from "styles/components/dropdown.module.scss"
 import { forwardRef, useEffect, useRef } from "react";
 
-export default forwardRef(({ children, toggler }: any, ref: any) => {
+const Dropdown = ({ children, toggler }: any, ref: any) => {
   const parent = ref ? ref : document.getElementById('profile-image');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const handleClickOutside = (e: MouseEvent) => {
@@ -23,4 +23,5 @@ export default forwardRef(({ children, toggler }: any, ref: any) => {
       {children}
     </div>
   )
-})
+}
+export default forwardRef(Dropdown)
