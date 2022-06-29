@@ -4,7 +4,7 @@ import CreateComment from "components/CreateComment";
 import Layout from "components/Layout";
 import RateButtons from "components/RateButtons";
 import { fetcher, resolver } from "lib/promises";
-import { PostPageProps, SessionData } from "lib/types";
+import { PostPageProps, RateProps, SessionData } from "lib/types";
 import { getApiUrl, getFormattedTimestamp } from "lib/utils";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import styles from "styles/layouts/post_page.module.scss";
@@ -13,14 +13,10 @@ import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { useSession } from "lib/useSession";
+import { PrismaClient } from "@prisma/client";
 
 const PostPage: NextPage<PostPageProps> = ({ post }) => {
   const { session } = useSession()
-
-  const [loading, setLoading] = useState<boolean>(!post);
-  const current_user_rate_data = useMemo(() => {
-    return post?.rated_post.find(rate => rate.user_rate_id === session?.user_id);
-  }, [post, session]);
 
   const editor = useEditor({
     editable: false,
@@ -30,7 +26,7 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
 
   useEffect(() => {
     if (post) {
-      setLoading(false); if (editor?.commands) editor?.commands?.setContent(post?.content);
+      if (editor?.commands) editor?.commands?.setContent(post?.content);
     }
   }, [post]);
 
@@ -39,27 +35,6 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
     fetcher
   );
   if (comments_error) console.error(comments_error);
-
-  const onUp = async () => {
-    const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
-    // const { session  } = useSession()
-      rate_kind: 'up',
-      user_rate_id: session?.user_id,
-      post_rate_id: post?.post_id,
-      remove_rate: current_user_rate_data?.rate_kind === 'up'
-    }))
-    if (error) console.error(error)
-  }
-  const onDown = async () => {
-    const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
-    // const { session  } = useSession()
-      rate_kind: 'down',
-      user_rate_id: session?.user_id,
-      post_rate_id: post?.post_id,
-      remove_rate: current_user_rate_data?.rate_kind === 'down'
-    }))
-    if (error) console.error(error)
-  }
 
   return (
     <Layout session={session} title={`Petal - ${post?.title}`} is_auth={true}>
@@ -76,13 +51,9 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
             {<EditorContent editor={editor} />}
           </div>
           <RateButtons
-            onUp={() => onUp()}
-            onDown={() => onDown()}
-            loading={loading}
-            isUp={current_user_rate_data?.rate_kind === 'up'}
-            isDown={current_user_rate_data?.rate_kind === 'down'}
-            numUps={post?.rated_post.filter(rate => rate.rate_kind === 'up').length}
-            numDowns={post?.rated_post.filter(rate => rate.rate_kind === 'down').length}
+            comment_id={post?.post_id}
+            user_id={session?.user_id as string}
+            rate_info={post?.rated_post as RateProps[]}
           />
           <section className={styles.comments_section}>
             <CreateComment
@@ -112,7 +83,34 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const { post_id }: any = context.params;
-  let { data: post } = await axios.get(`${getApiUrl()}/api/posts/${post_id}`);
+  const prisma = new PrismaClient()
+  let post = await prisma.posts.findUnique({
+    select: {
+      post_id: true,
+      author: {
+        select: {
+          user_id: true,
+          display_name: true,
+        },
+      },
+      title: true,
+      content: true,
+      ups: true,
+      downs: true,
+      created_at: true,
+      updated_at: true,
+      rated_post: true,
+    },
+    where: {
+      post_id: post_id as string,
+    },
+  });
+
+
+  post = JSON.parse(JSON.stringify(post))
+  console.log({ post })
+
+  prisma.$disconnect()
   return {
     props: {
       post,
@@ -122,15 +120,20 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const { data: post_ids } = await axios.get(
-    `${getApiUrl()}/api/posts/get-post-ids`
-  );
+  const prisma = new PrismaClient()
+  const post_ids = await prisma.posts.findMany({
+    select: {
+      post_id: true,
+    },
+  });
   const paths = post_ids.map((x: any) => {
     return { params: { post_id: x.post_id } };
   });
+
+  prisma.$disconnect()
   return {
     paths,
-    fallback: false,
+    fallback: 'blocking',
   };
 };
 
