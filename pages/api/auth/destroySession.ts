@@ -9,8 +9,8 @@ export default async function destroySession(
   try {
     const { session_id }: { [k: string]: string } = JSON.parse(req.body);
     await prisma.users.updateMany({
-      where: { session_id: session_id },
-      data: { session_id: null },
+      where: { cache_key: session_id },
+      data: { cache_key: null },
     });
     return res.status(200).json({ message: "yea" });
   } catch (e: any) {
