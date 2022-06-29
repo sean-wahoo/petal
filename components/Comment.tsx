@@ -1,15 +1,12 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { CommentProps, SessionData } from "lib/types";
-import { getApiUrl, getFormattedTimestamp } from "lib/utils";
+import { CommentProps, RateProps, SessionData } from "lib/types";
+import { getFormattedTimestamp } from "lib/utils";
 import styles from "styles/components/comment.module.scss";
 import RateButtons from "components/RateButtons";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CreateComment from "components/CreateComment";
 import Skeleton from "react-loading-skeleton";
-import { resolver } from "lib/promises";
-import axios from "axios";
-import { useSession } from "lib/useSession";
 
 const Comment: React.FC<{
   loading: boolean;
@@ -29,28 +26,6 @@ const Comment: React.FC<{
       editor?.commands?.setContent(comment?.content as any);
     }
   }, [comment, loading]);
-  const current_user_rate_data = useMemo(() => comment?.rated_comment.find(rate => {
-    return rate.user_rate_id === session?.user_id;
-  }), [comment, session])
-
-  const onUp = useCallback(async () => {
-    const [_, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/comment-rate`, {
-      rate_kind: 'up',
-      user_rate_id: session?.user_id,
-      comment_rate_id: comment?.comment_id,
-      remove_rate: current_user_rate_data?.rate_kind === 'up'
-    }))
-    if (error) console.log({ error })
-  }, [loading, comment])
-  const onDown = useCallback(async () => {
-    const [_, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/comment-rate`, {
-      rate_kind: 'down',
-      user_rate_id: session?.user_id,
-      comment_rate_id: comment?.comment_id,
-      remove_rate: current_user_rate_data?.rate_kind === 'down'
-    }))
-    if (error) console.log({ error })
-  }, [loading, comment])
 
   return (
     <div className={styles.comment}>
@@ -75,13 +50,9 @@ const Comment: React.FC<{
       )}
       <footer>
         {!loading && <RateButtons
-          onUp={() => onUp()}
-          onDown={() => onDown()}
-          loading={loading}
-          isUp={current_user_rate_data?.rate_kind === 'up'}
-          isDown={current_user_rate_data?.rate_kind === 'down'}
-          numUps={comment?.rated_comment.filter(rate => rate.rate_kind === 'up').length}
-          numDowns={comment?.rated_comment.filter(rate => rate.rate_kind === 'down').length}
+            comment_id={comment?.comment_id}
+            user_id={session?.user_id as string}
+            rate_info={comment?.rated_comment as RateProps[]}
         />
         }
         <h5
