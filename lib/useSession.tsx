@@ -4,6 +4,12 @@ import { SessionData } from "lib/types";
 import { useEffect, useState } from "react";
 import { nanoid } from "nanoid/async";
 
+/**
+ * Retrieves current session data and function to update the session
+ *
+ * @returns Session object and function to update session 
+ *
+ */
 const useSession = () => {
   const [session, setSession] = useState<SessionData>()
   let session_token: string = "";

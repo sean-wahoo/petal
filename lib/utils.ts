@@ -7,6 +7,13 @@ import axios from "axios";
 
 TimeAgo.addLocale(en);
 
+/**
+ * Destroys session in both databases and removes session_token cookie
+ *
+ * @param user_id A user's ID
+ *
+ * @returns ID of logged out user
+ */
 export const logout = async (
   user_id: string
 ): Promise<LogoutSuccess> => {
@@ -18,6 +25,14 @@ export const logout = async (
   return { user_id } as LogoutSuccess;
 };
 
+/**
+ * Returns a string representing a timestamp in past tense with different units
+ *
+ * @param isoDate Date to format as an ISO timestamp
+ *
+ * @returns string representing a timestamp in past tense with different units 
+ *
+ */
 export const getFormattedTimestamp = (isoDate: string) => {
   const date = new Date(isoDate);
   const currentDate = new Date();
@@ -36,6 +51,9 @@ export const getFormattedTimestamp = (isoDate: string) => {
   return date.toLocaleDateString("en-us", options as any);
 };
 
+/**
+ * Returns current URL based on node environment ('development' or 'production')
+ */
 export const getApiUrl = () => {
   const dev = process.env.NODE_ENV !== "production";
   return dev
@@ -43,6 +61,12 @@ export const getApiUrl = () => {
     : process.env.NEXT_PUBLIC_PROD_ROOT_API_URL;
 };
 
+/**
+ * Tells static page to manually revalidate and regenerate with any updated content
+ *
+ * @param path Path of page to revalidate
+ *
+ */
 export const revalidate = async (path: string) => {
   await axios.get(`/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}&path=${path}`);
   return;

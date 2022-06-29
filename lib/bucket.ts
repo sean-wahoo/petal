@@ -5,6 +5,17 @@ const bucket = new AWS.S3({
   secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET,
 });
 
+/**
+ *
+ * Uploads a file to a storage bucket on AWS S3
+ *
+ * @param file File to upload
+ * @param foler Folder on S3 to upload to
+ * @param user_id User's ID to name the file as
+ *
+ * @returns User's ID + URL path for the image OR error
+ *
+ */
 export const upload = async (file: Buffer, folder: string, user_id: string) => {
   try {
     const params = {

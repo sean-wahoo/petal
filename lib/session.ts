@@ -2,6 +2,14 @@ import type { SessionData } from "lib/types";
 import axios from "axios";
 import { getApiUrl } from "lib/utils";
 import * as jose from 'jose'
+
+/**
+ * Returns a user's session payload as a JWT string.
+ * @param session JSON object representing a user's session
+ * 
+ * @returns String representing session as JWT
+ *
+ */
 const encodeSessionToken: (session: SessionData) => Promise<string> = async (session: SessionData) => {
   const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
   const token = await new jose.SignJWT({ ...session })
@@ -12,6 +20,12 @@ const encodeSessionToken: (session: SessionData) => Promise<string> = async (ses
   return token;
 };
 
+/**
+ * Returns a JSON object representing a user's session
+ * @param token String representing session as JWT
+ * 
+ * @returns JSON object representing a user's session 
+ */
 const decodeSessionToken: (token: string) => Promise<SessionData> = async (token: string) => {
   try {
     const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
@@ -26,6 +40,16 @@ const decodeSessionToken: (token: string) => Promise<SessionData> = async (token
   }
 };
 
+/**
+*
+* Updates user's session data in Redis
+*
+* @param session_data JSON object containing user's session data
+*
+* @returns Cache key for the user
+*
+*
+*/
 const updateSessionDataRedis = async (session_data: SessionData) => {
   const stringifiedSession = JSON.stringify(session_data);
   let redisReturnedUpdateData = await fetch(
@@ -59,6 +83,13 @@ const updateSessionDataRedis = async (session_data: SessionData) => {
   return session_data.cache_key;
 };
 
+/**
+ * checks to see if the session on the client is up to date with
+ * the session in redis
+ * 
+ * @param session_token JSON object representing a user's session
+ * @returns whether or not the client cache key is up to date with the one stored on redis
+ */
 const isSessionValid = async (session_token: SessionData) => {
   const { user_id, cache_key } = session_token;
   let data = await fetch(
@@ -80,6 +111,11 @@ const isSessionValid = async (session_token: SessionData) => {
   return cache_key === obj.cache_key;
 };
 
+/**
+ * Fetches session from MySQL storage and returns encoded JWT
+ * @param user_id User's ID
+ * @returns JWT token containing user's session data
+ */
 const syncSession = async (user_id: string) => {
   let data: any = await fetch(
     `${getApiUrl()}/api/users/get-user?user_id=${user_id}`
