@@ -5,15 +5,14 @@ import { useEffect, useState } from "react";
 import { nanoid } from "nanoid/async";
 
 const useSession = () => {
+  const [session, setSession] = useState<SessionData>()
+  let session_token: string = "";
+  useEffect(() => {
+    const cookies = new Cookies();
+    session_token = cookies.get("session_token");
+    decodeSessionToken(session_token).then(payload => setSession(payload));
+  }, [session_token])
   try {
-    const [session, setSession] = useState<SessionData>()
-    let session_payload: string = "";
-    useEffect(() => {
-      const cookies = new Cookies();
-      session_payload = cookies.get("session_payload");
-      setSession(decodeSessionToken(session_payload));
-    }, [session_payload])
-
     const updateSession = async (newSession: SessionData) => {
       const newCacheKey = await nanoid(11);
       newSession.cache_key = newCacheKey;
@@ -46,49 +45,17 @@ const useSession = () => {
           code: "session-failed",
           message: "Session Failed to Initialize!",
         };
-      const newSessionToken = encodeSessionToken(newSession);
+      const newSessionToken = await encodeSessionToken(newSession);
       const cookies = new Cookies();
-      cookies.set("session_payload", newSessionToken);
+      cookies.set("session_token", newSessionToken, { path: '/' });
       setSession(newSession)
       return newSession.cache_key;
     }
-
     return { session, updateSession };
   } catch (e: any) {
     console.error(e);
-    return { session: undefined, updateSession: (_: any) => {} }
+    return { session: undefined, updateSession: (_: any) => { } }
   }
 };
-
-// const SessionContext = createContext<
-//   | {
-//       session: SessionData;
-//       setSession: React.Dispatch<React.SetStateAction<SessionData>>;
-//     }
-//   | undefined
-// >(undefined);
-
-// const useSession = () => {
-//   const context = useContext(SessionContext);
-//   if (context === undefined) {
-//     console.log("not used correctly");
-//   }
-//   return context;
-// };
-
-// const SessionProvider = (props: any) => {
-//   const [session, setSession] = useState({
-//     user_id: "",
-//     email: "",
-//     display_name: "",
-//     image_url: "",
-//   });
-//   const value = { session, setSession };
-//   return (
-//     <SessionContext.Provider value={value}>
-//       {props.children}
-//     </SessionContext.Provider>
-//   );
-// };
 
 export { useSession };
