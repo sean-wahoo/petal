@@ -4,13 +4,12 @@ import debounce from "lodash.debounce";
 import Image from "next/image";
 import Link from "next/link";
 import type { SessionData } from "lib/types";
-import Cookies from "universal-cookie";
 import Skeleton from "react-loading-skeleton";
 import Dropdown from "./Dropdown";
+import { logout } from "lib/utils";
 
 const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
   const [prev, setPrev] = useState<number>(0);
-  const [imageRef, setImageRef] = useState<any>(null)
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const navRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -31,9 +30,7 @@ const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
   }, [prev]);
 
   const handleLogout = () => {
-    const cookies = new Cookies();
-    cookies.remove("session_payload", { path: "/" });
-    window.location.reload();
+    logout(session.user_id).then(() => window.location.reload())
   };
 
   return (
@@ -75,29 +72,6 @@ const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
           </ul>
         </Dropdown>
       )}
-      {/* <form>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={async (e: any) => {
-            const file = e.target.files[0];
-            const [data, error] = await upload(
-              file,
-              "profile_images",
-              profile.user_id
-            );
-            if (error || !data) {
-              console.log("whoops", { error });
-              return;
-            }
-            updateSession({
-              ...profile,
-              email: data.email,
-              image_url: data.image_url,
-            });
-          }}
-        />
-      </form> */}
     </nav>
   );
 };

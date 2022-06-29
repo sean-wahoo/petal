@@ -12,7 +12,7 @@ export default async function logout(
 
     await prisma.users.update({
       where: { user_id: user_id },
-      data: { session_id: null },
+      data: { cache_key: null },
     });
     return res.status(200).json({});
   } catch (e: any) {
