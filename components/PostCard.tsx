@@ -14,6 +14,7 @@ import { useSession } from "lib/useSession";
 export default function PostCard({ session, post, loading }: PostCardProps) {
   const [seeMoreButton, setSeeMoreButton] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
+  const { session } = useSession()
 
   const isOverflown = (child: any, parent: any) => {
     return child.clientHeight > parent.clientHeight;
@@ -63,6 +64,7 @@ export default function PostCard({ session, post, loading }: PostCardProps) {
       editor?.commands?.setContent(post?.content as any);
     }
   }, [post]);
+  
 
   return (
     <article className={styles.post_card}>

@@ -1,21 +1,16 @@
-import type { NextPage, GetServerSideProps } from "next";
-import type { IndexProps, PostProps, SessionData } from "lib/types";
+import type { NextPage } from "next";
+import type { IndexProps, PostProps } from "lib/types";
 import styles from "styles/layouts/index.module.scss";
-import { decodeSessionToken } from "lib/session";
 import Layout from "components/Layout";
 import { fetcher } from "lib/promises";
 import PostCard from "components/PostCard";
-import { getApiUrl, handleMiddlewareErrors } from "lib/utils";
+import { getApiUrl } from "lib/utils";
 import useSWR from "swr";
 import { useEffect, useState } from "react";
 import { useSession } from "lib/useSession";
 
 const Index: NextPage<IndexProps> = () => {
-  const [session, setSession] = useState<SessionData | undefined>();
-  useEffect(() => {
-    const s = useSession();
-    setSession(s);
-  }, []);
+  const { session } = useSession()
 
   const { data: posts, error: posts_error } = useSWR(
     `${getApiUrl()}/api/posts/get-posts`,
@@ -42,18 +37,6 @@ const Index: NextPage<IndexProps> = () => {
       </main>
     </Layout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context: any) => {
-  try {
-    const session_payload = context.req.cookies.session_payload;
-    const session = decodeSessionToken(session_payload);
-    return {
-      props: { session },
-    };
-  } catch (e: any) {
-    return handleMiddlewareErrors(e.message, context);
-  }
 };
 
 export default Index;

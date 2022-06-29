@@ -15,10 +15,7 @@ import axios from "axios";
 import { useSession } from "lib/useSession";
 
 const PostPage: NextPage<PostPageProps> = ({ post }) => {
-  const [session, setSession] = useState<SessionData | undefined>();
-  useEffect(() => {
-    setSession(useSession())
-  }, []);
+  const { session } = useSession()
 
   const [loading, setLoading] = useState<boolean>(!post);
   const current_user_rate_data = useMemo(() => {
@@ -33,8 +30,7 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
 
   useEffect(() => {
     if (post) {
-      setLoading(false);
-      if (editor?.commands) editor?.commands?.setContent(post?.content);
+      setLoading(false); if (editor?.commands) editor?.commands?.setContent(post?.content);
     }
   }, [post]);
 
@@ -45,8 +41,8 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
   if (comments_error) console.error(comments_error);
 
   const onUp = async () => {
-    const session = useSession()
     const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
+    // const { session  } = useSession()
       rate_kind: 'up',
       user_rate_id: session?.user_id,
       post_rate_id: post?.post_id,
@@ -55,8 +51,8 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
     if (error) console.error(error)
   }
   const onDown = async () => {
-    const session = useSession()
     const [data, error] = await resolver(axios.post(`${getApiUrl()}/api/rates/post-rate`, {
+    // const { session  } = useSession()
       rate_kind: 'down',
       user_rate_id: session?.user_id,
       post_rate_id: post?.post_id,

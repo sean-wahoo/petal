@@ -1,19 +1,16 @@
 import axios from "axios";
 import Layout from "components/Layout";
-import { resolver } from "lib/promises";
-import { decodeSessionToken, session_handler } from "lib/session";
 import {
   SessionData,
-  SessionError,
   SessionProps,
-  SessionSuccess,
 } from "lib/types";
-import { handleMiddlewareErrors } from "lib/utils";
-import { GetServerSideProps, NextPage } from "next";
+import { useSession } from "lib/useSession";
+import { NextPage } from "next";
 import { useState } from "react";
 import styles from "styles/layouts/welcome.module.scss";
 
-const Welcome: NextPage<SessionProps> = ({ session }) => {
+const Welcome: NextPage<SessionProps> = () => {
+  const { session, updateSession } = useSession();
   const [pageNum, setPageNum] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
   const headerText = [
@@ -63,8 +60,13 @@ const Welcome: NextPage<SessionProps> = ({ session }) => {
     });
   };
   const handleContinue: () => void = async () => {
-    await axios.patch(`/api/users/welcome-user?user_id=${session.user_id}`);
-    window.location.reload();
+    try {
+      await axios.patch(`/api/users/welcome-user?user_id=${session?.user_id}`);
+      updateSession({ ...session as SessionData, been_welcomed: true })
+    }
+    catch (e: any) {
+      console.log({ e })
+    }
   };
   return (
     <Layout title="Petal - Welcome" is_auth={true} showNavbar={false}>
@@ -80,26 +82,6 @@ const Welcome: NextPage<SessionProps> = ({ session }) => {
       </main>
     </Layout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const session_payload = context.req.cookies.session_payload;
-    const session = decodeSessionToken(session_payload);
-    if (session.been_welcomed) {
-      return {
-        redirect: {
-          destination: "/",
-          permanent: false,
-        },
-      };
-    }
-    return {
-      props: { session },
-    };
-  } catch (e: any) {
-    return handleMiddlewareErrors(e.code, context);
-  }
 };
 
 export default Welcome;

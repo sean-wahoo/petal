@@ -13,11 +13,7 @@ import { useRouter } from "next/router";
 import { useSession } from "lib/useSession";
 
 const CreatePostPage: NextPage<CreatePostPageProps> = () => {
-  const [session, setSession] = useState<SessionData | undefined>();
-  useEffect(() => {
-    const s = useSession();
-    setSession(s);
-  }, []);
+  const { session } = useSession()
 
   const titleRef = useRef(null);
   const [content, setContent] = useState<JSONContent>({});
