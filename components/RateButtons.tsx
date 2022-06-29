@@ -1,46 +1,85 @@
 import { RateButtonsProps } from "lib/types";
-import { useCallback, useEffect, useState } from "react";
-import debounce from "lodash.debounce"
+import { useEffect, useState } from "react";
 import styles from "styles/components/rate_buttons.module.scss";
-import Skeleton from "react-loading-skeleton";
+import axios from "axios";
+import { getApiUrl } from "lib/utils";
 
 const RateButtons: React.FC<RateButtonsProps> = ({
-  loading,
-  onUp,
-  onDown,
-  isUp = false,
-  isDown = false,
-  numUps = 0,
-  numDowns = 0,
+  post_id,
+  comment_id,
+  rate_info,
+  user_id
 }) => {
-  const [ups, setUps] = useState<number>(numUps);
-  const [downs, setDowns] = useState<number>(numDowns);
-  const [upStatus, setUpStatus] = useState<boolean>();
-  const [downStatus, setDownStatus] = useState<boolean>();
+  const [ups, setUps] = useState<number>(rate_info.filter(rate => rate.rate_kind === 'up').length || 0);
+  const [downs, setDowns] = useState<number>(rate_info.filter(rate => rate.rate_kind === 'down').length || 0);
+  const [isUp, setUp] = useState<boolean>(!!rate_info.find(rate => rate.rate_kind === 'up' && rate.user_rate_id === user_id));
+  const [isDown, setDown] = useState<boolean>(!!rate_info.find(rate => rate.rate_kind === 'down' && rate.user_rate_id === user_id));
 
   useEffect(() => {
-    setUpStatus(isUp)
-    setDownStatus(isDown)
-  }, [isUp, isDown])
-  
-  const dbCall = useCallback(debounce((type) => type === 'up' ? onUp() : onDown(), 700, { leading: true, trailing: true }), [])
+    setUp(!!rate_info.find(rate => rate.rate_kind === 'up' && rate.user_rate_id === user_id))
+    setDown(!!rate_info.find(rate => rate.rate_kind === 'down' && rate.user_rate_id === user_id))
+  }, [user_id])
 
-  const fullOnUp = () => {
-    setUps(upStatus ? ups - 1 : ups + 1);
-    if (downStatus) {
-      fullOnDown();
-    }
-    setUpStatus(!upStatus);
-    dbCall('up')
+  console.log({ isUp, ups })
+
+  const ratee_type = post_id ? {
+    type: 'post',
+    id: post_id
+  } :  {
+    type: 'comment',
+    id: comment_id
   }
-  const fullOnDown = () => {
-    setDowns(downStatus ? downs - 1 : downs + 1);
-    if (upStatus) {
-      fullOnUp();
+  
+  const onUp = async () => {
+    try {
+      setUp(!isUp)
+      setUps(isUp ? ups - 1 : ups + 1)
+      if (isDown) {
+        setDown(false)
+        setDowns(downs - 1)
+        await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+          rate_kind: 'down',
+          user_rate_id: user_id,
+          [`${ratee_type.type}_rate_id`]: ratee_type.id,
+          remove_rate: true
+        })
+      }
+      await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+        rate_kind: 'up',
+        user_rate_id: user_id,
+        [`${ratee_type.type}_rate_id`]: ratee_type.id,
+        remove_rate: isUp
+      })
     }
-    setDownStatus(!downStatus);
-    dbCall('down')
-  };
+    catch (e: any) {
+      console.log('Up Failed!', e)
+    }
+  }
+  const onDown = async () => {
+    try {
+      setDown(!isDown)
+      setDowns(isDown ? downs - 1 : downs + 1)
+      if (isUp) {
+        setUp(false)
+        setUps(ups - 1)
+        await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+          rate_kind: 'up',
+          user_rate_id: user_id,
+          [`${ratee_type.type}_rate_id`]: ratee_type.id,
+          remove_rate: true
+        })
+      }
+      await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+        rate_kind: 'down',
+        user_rate_id: user_id,
+        [`${ratee_type.type}_rate_id`]: ratee_type.id,
+        remove_rate: isDown
+      })
+    }
+    catch (e: any) {
+      console.log('Down Failed!', e)
+    }
+  }
 
   const upPaths = [
     <>
@@ -71,33 +110,21 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         viewBox="0 0 24 24"
         width="24"
         height="24"
-        onClick={() => fullOnUp()}
+        onClick={() => onUp()}
       >
-        {upPaths[upStatus ? 1 : 0]}
+        {upPaths[isUp ? 1 : 0]}
       </svg>
-      {loading ? (
-        <p>
-          <Skeleton />
-        </p>
-      ) : (
-        <p>{ups}</p>
-      )}
+      <p>{ups}</p>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         width="24"
         height="24"
-        onClick={() => fullOnDown()}
+        onClick={() => onDown()}
       >
-        {downPaths[downStatus ? 1 : 0]}
+        {downPaths[isDown ? 1 : 0]}
       </svg>
-      {loading ? (
-        <p>
-          <Skeleton />
-        </p>
-      ) : (
-        <p>{downs}</p>
-      )}
+      <p>{downs}</p>
     </>
   );
 
