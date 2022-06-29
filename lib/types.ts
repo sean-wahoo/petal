@@ -186,14 +186,10 @@ interface FriendDataResponse extends FriendDataSuccess, FriendDataError { }
 
 
 interface RateButtonsProps {
-  loading: boolean;
-  onUp: (objectId?: string) => void;
-  onDown: (objectId?: string) => void;
-  numUps?: number;
-  numDowns?: number;
-  isUp?: boolean;
-  isDown?: boolean;
-  session?: SessionData;
+  post_id?: string;
+  comment_id?: string;
+  rate_info: RateProps[] 
+  user_id: string;
 }
 
 export type {
