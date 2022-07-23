@@ -1,7 +1,7 @@
 @use "styles/theme";
 
 .register {
-  font-family: Poppins;
+  font-family: Poppins sans;
   display: flex;
   flex-flow: column nowrap;
   color: var(--text-color);
@@ -76,7 +76,7 @@
       background: var(--accent-2);
       border-radius: 0.4rem;
       color: white;
-      font-family: "Poppins";
+      font-family: Poppins sans;
       border: none;
     }
     .register__linkText {
