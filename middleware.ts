@@ -50,7 +50,7 @@ export default async function middleware(req: NextRequest) {
 
     return NextResponse.next();
   } catch (e: any) {
-    console.error("Something went wrong with authentication!");
+    console.error("Something went wrong with authentication!", e);
     req.cookies.delete("session_token");
     return NextResponse.redirect(new URL("/login", req.url));
   }
