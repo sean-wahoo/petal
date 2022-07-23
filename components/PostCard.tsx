@@ -12,7 +12,7 @@ import { useSession } from "lib/useSession";
 export default function PostCard({ post, loading }: PostCardProps) {
   const [seeMoreButton, setSeeMoreButton] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
-  const { session } = useSession()
+  const { session } = useSession();
 
   const isOverflown = (child: any, parent: any) => {
     return child?.clientHeight > parent?.clientHeight;
@@ -36,7 +36,6 @@ export default function PostCard({ post, loading }: PostCardProps) {
       editor?.commands?.setContent(post?.content as any);
     }
   }, [post]);
-  
 
   return (
     <article className={styles.post_card}>
@@ -93,13 +92,13 @@ export default function PostCard({ post, loading }: PostCardProps) {
       </main>
 
       <footer className={styles.footer}>
-        {loading ||
+        {loading || (
           <RateButtons
             post_id={post?.post_id}
             user_id={session?.user_id as string}
             rate_info={post?.rated_post as RateProps[]}
           />
-        }
+        )}
       </footer>
     </article>
   );

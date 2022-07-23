@@ -1,5 +1,5 @@
 import Layout from "components/Layout";
-import { CreatePostPageProps  } from "lib/types";
+import { CreatePostPageProps } from "lib/types";
 import { NextPage } from "next";
 import styles from "styles/layouts/create_post.module.scss";
 import Editor from "components/Editor";
@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import { useSession } from "lib/useSession";
 
 const CreatePostPage: NextPage<CreatePostPageProps> = () => {
-  const { session } = useSession()
+  const { session } = useSession();
 
   const titleRef = useRef(null);
   const [content, setContent] = useState<JSONContent>({});

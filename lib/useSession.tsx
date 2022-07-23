@@ -7,17 +7,17 @@ import { nanoid } from "nanoid/async";
 /**
  * Retrieves current session data and function to update the session
  *
- * @returns Session object and function to update session 
+ * @returns Session object and function to update session
  *
  */
 const useSession = () => {
-  const [session, setSession] = useState<SessionData>()
+  const [session, setSession] = useState<SessionData>();
   let session_token: string = "";
   useEffect(() => {
     const cookies = new Cookies();
     session_token = cookies.get("session_token");
-    decodeSessionToken(session_token).then(payload => setSession(payload));
-  }, [session_token])
+    decodeSessionToken(session_token).then((payload) => setSession(payload));
+  }, [session_token]);
   try {
     const updateSession = async (newSession: SessionData) => {
       const newCacheKey = await nanoid(11);
@@ -53,14 +53,14 @@ const useSession = () => {
         };
       const newSessionToken = await encodeSessionToken(newSession);
       const cookies = new Cookies();
-      cookies.set("session_token", newSessionToken, { path: '/' });
-      setSession(newSession)
+      cookies.set("session_token", newSessionToken, { path: "/" });
+      setSession(newSession);
       return newSession.cache_key;
-    }
+    };
     return { session, updateSession };
   } catch (e: any) {
     console.error(e);
-    return { session: undefined, updateSession: (_: any) => { } }
+    return { session: undefined, updateSession: (_: any) => {} };
   }
 };
 

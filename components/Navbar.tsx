@@ -30,7 +30,7 @@ const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
   }, [prev]);
 
   const handleLogout = () => {
-    logout(session.user_id).then(() => window.location.reload())
+    logout(session.user_id).then(() => window.location.reload());
   };
 
   return (

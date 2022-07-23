@@ -15,7 +15,7 @@ import { useSession } from "lib/useSession";
 import { PrismaClient } from "@prisma/client";
 
 const PostPage: NextPage<PostPageProps> = ({ post }) => {
-  const { session } = useSession()
+  const { session } = useSession();
 
   const editor = useEditor({
     editable: false,
@@ -61,18 +61,22 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
             />
             {!comments
               ? [...Array(12).keys()].map((_, i) => (
-                <Comment loading={true} key={i} session={session as SessionData} />
-              ))
-              : comments.map((comment: any, i: number) => {
-                return (
                   <Comment
-                    loading={false}
+                    loading={true}
                     key={i}
-                    comment={comment}
                     session={session as SessionData}
                   />
-                );
-              })}
+                ))
+              : comments.map((comment: any, i: number) => {
+                  return (
+                    <Comment
+                      loading={false}
+                      key={i}
+                      comment={comment}
+                      session={session as SessionData}
+                    />
+                  );
+                })}
           </section>
         </article>
       </main>
@@ -82,7 +86,7 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const { post_id }: any = context.params;
-  const prisma = new PrismaClient()
+  const prisma = new PrismaClient();
   let post = await prisma.posts.findUnique({
     select: {
       post_id: true,
@@ -105,11 +109,10 @@ export const getStaticProps: GetStaticProps = async (context) => {
     },
   });
 
+  post = JSON.parse(JSON.stringify(post));
+  console.log({ post });
 
-  post = JSON.parse(JSON.stringify(post))
-  console.log({ post })
-
-  prisma.$disconnect()
+  prisma.$disconnect();
   return {
     props: {
       post,
@@ -119,7 +122,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const prisma = new PrismaClient()
+  const prisma = new PrismaClient();
   const post_ids = await prisma.posts.findMany({
     select: {
       post_id: true,
@@ -129,10 +132,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
     return { params: { post_id: x.post_id } };
   });
 
-  prisma.$disconnect()
+  prisma.$disconnect();
   return {
     paths,
-    fallback: 'blocking',
+    fallback: "blocking",
   };
 };
 

@@ -1,21 +1,23 @@
 import type { SessionData } from "lib/types";
 import axios from "axios";
 import { getApiUrl } from "lib/utils";
-import * as jose from 'jose'
+import * as jose from "jose";
 
 /**
  * Returns a user's session payload as a JWT string.
  * @param session JSON object representing a user's session
- * 
+ *
  * @returns String representing session as JWT
  *
  */
-const encodeSessionToken: (session: SessionData) => Promise<string> = async (session: SessionData) => {
+const encodeSessionToken: (session: SessionData) => Promise<string> = async (
+  session: SessionData
+) => {
   const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
   const token = await new jose.SignJWT({ ...session })
-    .setProtectedHeader({ alg: 'HS256' })
+    .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime('30d')
+    .setExpirationTime("30d")
     .sign(new TextEncoder().encode(key));
   return token;
 };
@@ -23,33 +25,35 @@ const encodeSessionToken: (session: SessionData) => Promise<string> = async (ses
 /**
  * Returns a JSON object representing a user's session
  * @param token String representing session as JWT
- * 
- * @returns JSON object representing a user's session 
+ *
+ * @returns JSON object representing a user's session
  */
-const decodeSessionToken: (token: string) => Promise<SessionData> = async (token: string) => {
+const decodeSessionToken: (token: string) => Promise<SessionData> = async (
+  token: string
+) => {
   try {
     const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
     const { payload } = await jose.jwtVerify(
-        token, new TextEncoder().encode(key)
+      token,
+      new TextEncoder().encode(key)
     );
-    return payload
-  }
-  catch (e: any) {
-    console.log({ e })
-    return e
+    return payload;
+  } catch (e: any) {
+    console.log({ e });
+    return e;
   }
 };
 
 /**
-*
-* Updates user's session data in Redis
-*
-* @param session_data JSON object containing user's session data
-*
-* @returns Cache key for the user
-*
-*
-*/
+ *
+ * Updates user's session data in Redis
+ *
+ * @param session_data JSON object containing user's session data
+ *
+ * @returns Cache key for the user
+ *
+ *
+ */
 const updateSessionDataRedis = async (session_data: SessionData) => {
   const stringifiedSession = JSON.stringify(session_data);
   let redisReturnedUpdateData = await fetch(
@@ -86,7 +90,7 @@ const updateSessionDataRedis = async (session_data: SessionData) => {
 /**
  * checks to see if the session on the client is up to date with
  * the session in redis
- * 
+ *
  * @param session_token JSON object representing a user's session
  * @returns whether or not the client cache key is up to date with the one stored on redis
  */

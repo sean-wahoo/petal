@@ -19,8 +19,8 @@ const Comment: React.FC<{
     content: comment?.content,
     extensions: [StarterKit],
   });
-  session = useMemo(() => session, [session])
-  comment = useMemo(() => comment, [comment])
+  session = useMemo(() => session, [session]);
+  comment = useMemo(() => comment, [comment]);
   useEffect(() => {
     if (!loading) {
       editor?.commands?.setContent(comment?.content as any);
@@ -49,12 +49,13 @@ const Comment: React.FC<{
         </h3>
       )}
       <footer>
-        {!loading && <RateButtons
+        {!loading && (
+          <RateButtons
             comment_id={comment?.comment_id}
             user_id={session?.user_id as string}
             rate_info={comment?.rated_comment as RateProps[]}
-        />
-        }
+          />
+        )}
         <h5
           onClick={() => setReplyActive(!replyActive)}
           className={replyActive ? styles.active : ""}
@@ -70,7 +71,14 @@ const Comment: React.FC<{
       )}
       {!!comment?.replies?.length &&
         comment.replies.map((reply, i) => {
-          return <Comment key={i} loading={false} comment={reply} session={session} />;
+          return (
+            <Comment
+              key={i}
+              loading={false}
+              comment={reply}
+              session={session}
+            />
+          );
         })}
     </div>
   );

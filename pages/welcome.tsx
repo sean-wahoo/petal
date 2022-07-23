@@ -1,9 +1,6 @@
 import axios from "axios";
 import Layout from "components/Layout";
-import {
-  SessionData,
-  SessionProps,
-} from "lib/types";
+import { SessionData, SessionProps } from "lib/types";
 import { useSession } from "lib/useSession";
 import { NextPage } from "next";
 import { useState } from "react";
@@ -41,8 +38,8 @@ const Welcome: NextPage<SessionProps> = () => {
       <li>Meet new people who share your interests</li>
     </ul>,
     <p key="b-3" className={styles.body_text}>
-      Start with choosing a few <i>topics</i> you&apos;re interested in and make your
-      first <i>post</i>!
+      Start with choosing a few <i>topics</i> you&apos;re interested in and make
+      your first <i>post</i>!
     </p>,
   ];
 
@@ -63,10 +60,9 @@ const Welcome: NextPage<SessionProps> = () => {
   const handleContinue: () => void = async () => {
     try {
       await axios.patch(`/api/users/welcome-user?user_id=${session?.user_id}`);
-      updateSession({ ...session as SessionData, been_welcomed: true })
-    }
-    catch (e: any) {
-      console.log({ e })
+      updateSession({ ...(session as SessionData), been_welcomed: true });
+    } catch (e: any) {
+      console.log({ e });
     }
   };
   return (

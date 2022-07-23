@@ -1,4 +1,4 @@
-import { generateUsername } from "unique-username-generator"
+import { generateUsername } from "unique-username-generator";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { AuthData, RegisterResponse } from "lib/types";
 import { updateSessionDataRedis } from "lib/session";
@@ -40,7 +40,7 @@ export default async function register(
     const seed = await nanoid(16);
     const image_url = `https://avatars.dicebear.com/api/bottts/${seed}.svg`;
     const cache_key = await nanoid(12);
-    const display_name = generateUsername()
+    const display_name = generateUsername();
     const session_data = {
       user_id,
       email,
@@ -48,7 +48,7 @@ export default async function register(
       been_welcomed: false,
       display_name,
       image_url,
-    }
+    };
     await updateSessionDataRedis(session_data);
 
     await prisma.users.create({

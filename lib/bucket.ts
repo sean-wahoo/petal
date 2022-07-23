@@ -23,11 +23,11 @@ export const upload = async (file: Buffer, folder: string, user_id: string) => {
       Key: `${folder}/${user_id}.webp`,
       Body: file,
       ACL: "public-read",
-      ContentType: 'image/webp'
+      ContentType: "image/webp",
     };
     const bucketData = await bucket.upload(params).promise();
     const image_url: string = bucketData.Location;
-    return [{ user_id, image_url }, null]
+    return [{ user_id, image_url }, null];
   } catch (e: any) {
     console.error({ e });
     return [null, e];

@@ -24,9 +24,9 @@ export default async function getPosts(
           select: {
             rate_kind: true,
             user_rate_id: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
     return res.status(200).json([...posts]);
   } catch (e: any) {

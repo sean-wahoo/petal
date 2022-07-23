@@ -12,7 +12,7 @@
   transform: translateX(240px);
   opacity: 0;
   animation: slide-in cubic-bezier(0, 0.66, 0.2, 1) 0.2s forwards;
-  font-family: 'Poppins';
+  font-family: "Poppins";
 
   > ul {
     margin: 0;
@@ -40,7 +40,7 @@
 }
 @keyframes slide-in {
   25% {
-    opacity: 0
+    opacity: 0;
   }
   to {
     transform: translateX(0);

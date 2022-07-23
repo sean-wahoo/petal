@@ -1,5 +1,5 @@
-import mysql from 'mysql2/promise'
-import bluebird from 'bluebird'
+import mysql from "mysql2/promise";
+import bluebird from "bluebird";
 
 const connection = await mysql.createConnection({
   user: process.env.DBUSER,
@@ -9,6 +9,6 @@ const connection = await mysql.createConnection({
   port: 3306,
   Promise: bluebird,
   rowsAsArray: true,
-})
+});
 
-export default connection
+export default connection;

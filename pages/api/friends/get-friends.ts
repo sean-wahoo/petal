@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { user_id } = req.query
+    const { user_id } = req.query;
     const friend_data = await prisma.friends.findMany({
       select: {
         friend_id: true,
@@ -13,29 +13,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             user_id: true,
             display_name: true,
             image_url: true,
-          }
+          },
         },
         recipient: {
           select: {
             user_id: true,
             display_name: true,
             image_url: true,
-          }
+          },
         },
         status: true,
         created_at: true,
-        updated_at: true
+        updated_at: true,
       },
       where: {
         OR: [
           {
-            sender_user_id: user_id as string
+            sender_user_id: user_id as string,
           },
           {
-            recipient_user_id: user_id as string
-          }
-        ]
-      }
+            recipient_user_id: user_id as string,
+          },
+        ],
+      },
     });
 
     return res.status(200).json(friend_data);
@@ -46,8 +46,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       error_code: e.code,
       error_message: e.message,
     });
-  }
-  finally {
+  } finally {
     prisma.$disconnect();
   }
-}
+};

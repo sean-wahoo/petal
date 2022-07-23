@@ -33,7 +33,9 @@ interface IndexProps extends SessionProps {
 }
 
 interface RateProps {
- rate_id: string, rate_kind: string, user_rate_id: string 
+  rate_id: string;
+  rate_kind: string;
+  user_rate_id: string;
 }
 
 interface PostProps {
@@ -48,7 +50,7 @@ interface PostProps {
   downs: number;
   created_at: string;
   updated_at: string;
-  rated_post: RateProps[]
+  rated_post: RateProps[];
 }
 
 interface CommentProps {
@@ -63,7 +65,7 @@ interface CommentProps {
   content: object;
   created_at: string;
   replies: CommentProps[];
-  rated_comment: RateProps[]
+  rated_comment: RateProps[];
 }
 
 interface PostPageProps extends SessionProps {
@@ -79,14 +81,17 @@ interface PostCardProps extends SessionProps {
 
 interface RegisterSuccess extends Success {
   type: string;
-  been_welcomed: boolean
+  been_welcomed: boolean;
 }
 
 interface RegisterError extends Error {
   type: string;
 }
 
-interface RegisterResponse extends RegisterSuccess, RegisterError, SessionData { }
+interface RegisterResponse
+  extends RegisterSuccess,
+    RegisterError,
+    SessionData {}
 
 interface LoginSuccess extends Success {
   type: string;
@@ -97,7 +102,7 @@ interface LoginError extends Error {
   type: string;
 }
 
-interface LoginResponse extends LoginSuccess, LoginError, SessionData { }
+interface LoginResponse extends LoginSuccess, LoginError, SessionData {}
 
 interface SessionSuccess extends Success, SessionData {
   display_name: string;
@@ -106,16 +111,16 @@ interface SessionSuccess extends Success, SessionData {
   email: string;
 }
 
-interface SessionError extends Error { }
+interface SessionError extends Error {}
 
 interface LogoutData {
   user_id: string;
   session_id: string;
 }
 
-interface LogoutSuccess extends Success { }
+interface LogoutSuccess extends Success {}
 
-interface LogoutError extends Error { }
+interface LogoutError extends Error {}
 
 // props
 interface ErrorMessageProps {
@@ -138,30 +143,30 @@ interface ProfileProps {
   };
 }
 interface ProfileDataProps {
-    user_id: string;
-    display_name: string;
-    email: string;
-    created_at: string;
-    updated_at: string;
-    image_url: string;
-    date_of_birth: string;
-    tagline: string;
+  user_id: string;
+  display_name: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+  image_url: string;
+  date_of_birth: string;
+  tagline: string;
 }
 interface FriendProps {
-  friend_id: string
-  sender: ProfileDataProps
-  recipient: ProfileDataProps
+  friend_id: string;
+  sender: ProfileDataProps;
+  recipient: ProfileDataProps;
   status: string;
   created_at: string;
   updated_at: string;
 }
 
 interface ProfilePageProps extends SessionProps {
-  profile_data: ProfileDataProps
-  friends_data: FriendProps[]
+  profile_data: ProfileDataProps;
+  friends_data: FriendProps[];
 }
 
-interface CreatePostPageProps extends SessionProps { }
+interface CreatePostPageProps extends SessionProps {}
 
 interface CreateCommentProps extends SessionProps {
   parent_id: string;
@@ -174,21 +179,20 @@ interface EditorProps {
   parent_id?: string;
 }
 
-interface ProfileDataSuccess extends Success { }
-interface ProfileDataError extends Error { }
+interface ProfileDataSuccess extends Success {}
+interface ProfileDataError extends Error {}
 
-interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError { }
+interface ProfileDataResponse extends ProfileDataSuccess, ProfileDataError {}
 
 interface FriendDataSuccess extends Success {}
-interface FriendDataError extends Error { }
+interface FriendDataError extends Error {}
 
-interface FriendDataResponse extends FriendDataSuccess, FriendDataError { }
-
+interface FriendDataResponse extends FriendDataSuccess, FriendDataError {}
 
 interface RateButtonsProps {
   post_id?: string;
   comment_id?: string;
-  rate_info: RateProps[] 
+  rate_info: RateProps[];
   user_id: string;
 }
 
@@ -220,5 +224,5 @@ export type {
   CreateCommentProps,
   CommentProps,
   RateProps,
-  FriendDataResponse
+  FriendDataResponse,
 };

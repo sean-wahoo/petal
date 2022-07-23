@@ -29,7 +29,7 @@ export default async function getComments(
               },
             },
             created_at: true,
-            rated_comment: true
+            rated_comment: true,
           },
           where: {
             parent_id: parent_id as string,
@@ -66,7 +66,7 @@ export default async function getComments(
           },
         },
         created_at: true,
-        rated_comment: true
+        rated_comment: true,
       },
       where: {
         parent_id: parent_id as string,

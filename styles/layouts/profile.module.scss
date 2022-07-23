@@ -28,7 +28,7 @@
       margin-left: auto;
       cursor: pointer;
     }
-    
+
     form {
       display: none;
     }
@@ -36,7 +36,6 @@
     @media screen and (max-width: map-get($breakpoints, "xl")) {
       margin-inline: 0;
     }
-
 
     li {
       &.disabled {
@@ -89,7 +88,6 @@
         }
       }
 
-
       .display_name {
         font-size: 1.4rem;
         margin: 0;
@@ -116,8 +114,7 @@
         cursor: pointer;
 
         &.active {
-          border-color: var(--text-color)
-
+          border-color: var(--text-color);
         }
       }
     }

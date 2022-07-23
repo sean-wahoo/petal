@@ -14,11 +14,9 @@ TimeAgo.addLocale(en);
  *
  * @returns ID of logged out user
  */
-export const logout = async (
-  user_id: string
-): Promise<LogoutSuccess> => {
+export const logout = async (user_id: string): Promise<LogoutSuccess> => {
   const cookies = new Cookies();
-  const session_token = cookies.get('session_token')
+  const session_token = cookies.get("session_token");
   await destroySession(session_token);
   cookies.remove("session_token");
 
@@ -30,7 +28,7 @@ export const logout = async (
  *
  * @param isoDate Date to format as an ISO timestamp
  *
- * @returns string representing a timestamp in past tense with different units 
+ * @returns string representing a timestamp in past tense with different units
  *
  */
 export const getFormattedTimestamp = (isoDate: string) => {
@@ -68,7 +66,8 @@ export const getApiUrl = () => {
  *
  */
 export const revalidate = async (path: string) => {
-  await axios.get(`/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}&path=${path}`);
+  await axios.get(
+    `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}&path=${path}`
+  );
   return;
-}
-
+};

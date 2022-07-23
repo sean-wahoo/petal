@@ -4,25 +4,25 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const prisma = new PrismaClient();
   try {
-    const { friend_id } = req.body
+    const { friend_id } = req.body;
     const current_friend_data = await prisma.friends.findFirst({
       select: {
-        status: true
+        status: true,
       },
       where: {
-        friend_id
-      }
+        friend_id,
+      },
     });
-    if (!current_friend_data || current_friend_data?.status === 'sent') {
-      throw { code: 'not-friends', message: "Not Friends!" }
+    if (!current_friend_data || current_friend_data?.status === "sent") {
+      throw { code: "not-friends", message: "Not Friends!" };
     }
 
     const friend_accepted = await prisma.friends.delete({
       where: {
-        friend_id
-      }
-    })
-    return res.json({ friend_accepted })
+        friend_id,
+      },
+    });
+    return res.json({ friend_accepted });
   } catch (e: any) {
     console.error({ e });
     res.status(500).json({
@@ -32,7 +32,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       type: e.type,
     });
   } finally {
-    prisma.$disconnect()
+    prisma.$disconnect();
   }
-}
-
+};
