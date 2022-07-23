@@ -120,11 +120,16 @@ const isSessionValid = async (session_token: SessionData) => {
  * @returns JWT token containing user's session data
  */
 const syncSession = async (user_id: string) => {
+  console.log({
+    syncSession: `${getApiUrl()}/api/users/get-user?user_id=${user_id}`,
+  });
   let data: any = await fetch(
     `${getApiUrl()}/api/users/get-user?user_id=${user_id}`
   );
   data = await data.json();
+  console.log({ data });
   const token = encodeSessionToken(data as SessionData);
+  console.log({ token });
   return token;
 };
 
