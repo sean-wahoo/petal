@@ -1,11 +1,11 @@
 import styles from "styles/components/navbar.module.scss";
 import { useEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
-import Image from "next/image";
+import Image from "next/future/image";
 import Link from "next/link";
 import type { SessionData } from "lib/types";
 import Skeleton from "react-loading-skeleton";
-import Dropdown from "./Dropdown";
+import Dropdown from "components/Dropdown";
 import { logout } from "lib/utils";
 
 const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
@@ -46,6 +46,7 @@ const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
           width={48}
           height={48}
           id="profile-image"
+          priority={true}
           className={styles.profile_image}
           onClick={() => {
             setShowDropdown(!showDropdown);

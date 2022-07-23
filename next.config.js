@@ -17,6 +17,8 @@ module.exports = {
   },
   reactStrictMode: true,
   experimental: {
-    runtime: 'nodejs'
+    images: {
+       allowFutureImage: true 
+    }
   }
 }
