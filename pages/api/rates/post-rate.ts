@@ -7,7 +7,9 @@ export default async function postRate(
 ) {
   const prisma = new PrismaClient();
   try {
-    const { rate_kind, user_rate_id, post_rate_id, remove_rate } = req.body;
+    const { rate_kind, user_rate_id, post_rate_id, remove_rate } = JSON.parse(
+      req.body
+    );
 
     if (remove_rate) {
       const data = await prisma.post_rates.delete({

@@ -3,7 +3,6 @@ import { destroySession } from "lib/session";
 import Cookies from "universal-cookie";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
-import axios from "axios";
 
 TimeAgo.addLocale(en);
 
@@ -64,8 +63,11 @@ export const getApiUrl = () => {
  *
  */
 export const revalidate = async (path: string) => {
-  await axios.get(
-    `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}&path=${path}`
+  await fetch(
+    `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}&path=${path}`,
+    {
+      method: "GET",
+    }
   );
   return;
 };

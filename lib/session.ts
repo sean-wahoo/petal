@@ -1,5 +1,4 @@
 import type { SessionData } from "lib/types";
-import axios from "axios";
 import { getApiUrl } from "lib/utils";
 import * as jose from "jose";
 
@@ -131,15 +130,12 @@ const syncSession = async (user_id: string) => {
 
 const destroySession = async (session_id: string): Promise<void> => {
   try {
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_REDIS_API_URL}/del/${session_id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
-        },
-        body: JSON.stringify({ session_id }),
-      }
-    );
+    await fetch(`${process.env.NEXT_PUBLIC_REDIS_API_URL}/del/${session_id}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
+      },
+      body: JSON.stringify({ session_id }),
+    });
   } catch (e: any) {
     console.error({ e });
   }

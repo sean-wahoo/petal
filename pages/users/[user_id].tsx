@@ -3,7 +3,6 @@ import { NextPage, GetStaticPaths, GetStaticProps } from "next";
 import styles from "styles/layouts/profile.module.scss";
 import type { ProfilePageProps } from "lib/types";
 import { getApiUrl } from "lib/utils";
-import axios from "axios";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "lib/useSession";
@@ -53,9 +52,12 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
 
   const sendRequest = async () => {
     const [data, error] = await resolver(
-      axios.post(`${getApiUrl()}/api/friends/send-request`, {
-        sender_user_id: session?.user_id,
-        recipient_user_id: profile_data?.user_id,
+      fetch(`${getApiUrl()}/api/friends/send-request`, {
+        method: "POST",
+        body: JSON.stringify({
+          sender_user_id: session?.user_id,
+          recipient_user_id: profile_data?.user_id,
+        }),
       })
     );
     if (error) console.error(error);
@@ -66,8 +68,11 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
 
   const acceptFriend = async () => {
     const [data, error] = await resolver(
-      axios.post(`${getApiUrl()}/api/friends/accept-request`, {
-        friend_id: current_user_friend_data?.friend_id,
+      fetch(`${getApiUrl()}/api/friends/accept-request`, {
+        method: "POST",
+        body: JSON.stringify({
+          friend_id: current_user_friend_data?.friend_id,
+        }),
       })
     );
     if (error) console.error(error);
@@ -78,8 +83,11 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
 
   const removeFriend = async () => {
     const [data, error] = await resolver(
-      axios.post(`${getApiUrl()}/api/friends/remove-friend`, {
-        friend_id: current_user_friend_data?.friend_id,
+      fetch(`${getApiUrl()}/api/friends/remove-friend`, {
+        method: "POST",
+        body: JSON.stringify({
+          friend_id: current_user_friend_data?.friend_id,
+        }),
       })
     );
     if (error) console.error(error);
@@ -166,8 +174,11 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
                     session?.user_id
                   );
                   [data, error] = await resolver(
-                    axios.patch(
-                      `/api/users/profile-data/update-profile-image?user_id=${data.user_id}&image_url=${data.image_url}`
+                    fetch(
+                      `/api/users/profile-data/update-profile-image?user_id=${data.user_id}&image_url=${data.image_url}`,
+                      {
+                        method: "PATCH",
+                      }
                     )
                   );
                   updateSession({ ...session, image_url: data.image_url });

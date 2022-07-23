@@ -8,7 +8,7 @@ export default async function createPost(
 ) {
   const prisma = new PrismaClient();
   try {
-    const { title, content, author_user_id } = req.body;
+    const { title, content, author_user_id } = JSON.parse(req.body);
     let post_id = await nanoid(11);
     post_id = `post-${post_id}`;
     const new_post = await prisma.posts.create({

@@ -6,7 +6,6 @@ import styles from "styles/components/create_comment.module.scss";
 import util_styles from "styles/utils.module.scss";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
-import axios from "axios";
 
 const CreateComment: React.FC<CreateCommentProps> = ({
   session,
@@ -41,10 +40,13 @@ const CreateComment: React.FC<CreateCommentProps> = ({
     if (checkValidity()) {
       setDisabled(true);
       const [data, error] = await resolver(
-        axios.post("/api/comments/leave-comment", {
-          content,
-          author_user_id: session?.user_id,
-          parent_id,
+        fetch("/api/comments/leave-comment", {
+          method: "POST",
+          body: JSON.stringify({
+            content,
+            author_user_id: session?.user_id,
+            parent_id,
+          }),
         })
       );
       if (error) console.error({ error });

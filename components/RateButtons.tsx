@@ -1,7 +1,6 @@
 import { RateButtonsProps } from "lib/types";
 import { useEffect, useState } from "react";
 import styles from "styles/components/rate_buttons.module.scss";
-import axios from "axios";
 import { getApiUrl } from "lib/utils";
 
 const RateButtons: React.FC<RateButtonsProps> = ({
@@ -57,18 +56,24 @@ const RateButtons: React.FC<RateButtonsProps> = ({
       if (isDown) {
         setDown(false);
         setDowns(downs - 1);
-        await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
-          rate_kind: "down",
-          user_rate_id: user_id,
-          [`${ratee_type.type}_rate_id`]: ratee_type.id,
-          remove_rate: true,
+        await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+          method: "POST",
+          body: JSON.stringify({
+            rate_kind: "down",
+            user_rate_id: user_id,
+            [`${ratee_type.type}_rate_id`]: ratee_type.id,
+            remove_rate: true,
+          }),
         });
       }
-      await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
-        rate_kind: "up",
-        user_rate_id: user_id,
-        [`${ratee_type.type}_rate_id`]: ratee_type.id,
-        remove_rate: isUp,
+      await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+        method: "POST",
+        body: JSON.stringify({
+          rate_kind: "up",
+          user_rate_id: user_id,
+          [`${ratee_type.type}_rate_id`]: ratee_type.id,
+          remove_rate: isUp,
+        }),
       });
     } catch (e: any) {
       console.error("Up Failed!", e);
@@ -81,18 +86,24 @@ const RateButtons: React.FC<RateButtonsProps> = ({
       if (isUp) {
         setUp(false);
         setUps(ups - 1);
-        await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
-          rate_kind: "up",
-          user_rate_id: user_id,
-          [`${ratee_type.type}_rate_id`]: ratee_type.id,
-          remove_rate: true,
+        await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+          method: "POST",
+          body: JSON.stringify({
+            rate_kind: "up",
+            user_rate_id: user_id,
+            [`${ratee_type.type}_rate_id`]: ratee_type.id,
+            remove_rate: true,
+          }),
         });
       }
-      await axios.post(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
-        rate_kind: "down",
-        user_rate_id: user_id,
-        [`${ratee_type.type}_rate_id`]: ratee_type.id,
-        remove_rate: isDown,
+      await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
+        method: "POST",
+        body: JSON.stringify({
+          rate_kind: "down",
+          user_rate_id: user_id,
+          [`${ratee_type.type}_rate_id`]: ratee_type.id,
+          remove_rate: isDown,
+        }),
       });
     } catch (e: any) {
       console.error("Down Failed!", e);

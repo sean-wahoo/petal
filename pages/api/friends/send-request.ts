@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const prisma = new PrismaClient();
   try {
-    const { sender_user_id, recipient_user_id } = req.body;
+    const { sender_user_id, recipient_user_id } = JSON.parse(req.body);
     const current_friend_data = await prisma.friends.findFirst({
       select: {
         status: true,

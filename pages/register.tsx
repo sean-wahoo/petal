@@ -10,7 +10,6 @@ import ErrorMessage from "components/ErrorMessage";
 import Link from "next/link";
 import Layout from "components/Layout";
 import { resolver } from "lib/promises";
-import axios from "axios";
 import { encodeSessionToken } from "lib/session";
 
 const Register: NextPage = () => {
@@ -27,7 +26,13 @@ const Register: NextPage = () => {
 
   const onRegisterSubmit: () => void = async () => {
     const [data, error]: RegisterResponse[] = await resolver(
-      axios.post("/api/auth/register", { email, password })
+      fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
     );
     if (error || !data) {
       setError({ error_message: error.error_message, type: error.type });

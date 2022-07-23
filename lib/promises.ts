@@ -1,5 +1,3 @@
-import { AxiosResponse } from "axios";
-
 /**
  *
  * Function to be used for SWR data fetching
@@ -21,10 +19,11 @@ export const fetcher = (...args: any) =>
  * @returns Successful call response or error
  *
  */
-export const resolver = async (promise: Promise<AxiosResponse<any, any>>) => {
+export const resolver = async (promise: Promise<Response>) => {
   try {
     let res = await Promise.resolve(promise);
-    return [res.data, null];
+    res = await res.json();
+    return [res, null];
   } catch (e: any) {
     console.error({ e });
     return [null, e.response.data];

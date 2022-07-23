@@ -7,7 +7,6 @@ import { JSONContent } from "@tiptap/react";
 import { FormEvent, useRef, useState } from "react";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useSession } from "lib/useSession";
 
@@ -42,10 +41,13 @@ const CreatePostPage: NextPage<CreatePostPageProps> = () => {
     if (checkValidity()) {
       setDisabled(true);
       const [data, error] = await resolver(
-        axios.post("/api/posts/create-post", {
-          title,
-          content,
-          author_user_id: session?.user_id,
+        fetch("/api/posts/create-post", {
+          method: "POST",
+          body: JSON.stringify({
+            title,
+            content,
+            author_user_id: session?.user_id,
+          }),
         })
       );
       if (error) throw error;

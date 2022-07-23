@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import type { ErrorMessageProps, LoginResponse } from "lib/types";
 import { resolver } from "lib/promises";
-import axios from "axios";
 import { useState, useRef } from "react";
 import styles from "styles/layouts/login.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +27,13 @@ const Login: NextPage = () => {
 
   const onLoginSubmit: () => void = async () => {
     const [data, error]: LoginResponse[] = await resolver(
-      axios.post("/api/auth/login", { email, password })
+      fetch("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
     );
     if (error || !data) {
       setError({ error_message: error.error_message, type: error.type });

@@ -1,4 +1,3 @@
-import axios from "axios";
 import Layout from "components/Layout";
 import { SessionData, SessionProps } from "lib/types";
 import { useSession } from "lib/useSession";
@@ -59,7 +58,9 @@ const Welcome: NextPage<SessionProps> = () => {
   };
   const handleContinue: () => void = async () => {
     try {
-      await axios.patch(`/api/users/welcome-user?user_id=${session?.user_id}`);
+      await fetch(`/api/users/welcome-user?user_id=${session?.user_id}`, {
+        method: "PATCH",
+      });
       updateSession({ ...(session as SessionData), been_welcomed: true });
     } catch (e: any) {
       console.error({ e });

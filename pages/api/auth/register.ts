@@ -13,7 +13,7 @@ export default async function register(
   const prisma = new PrismaClient();
 
   try {
-    const { email, password }: AuthData = req.body;
+    const { email, password }: AuthData = JSON.parse(req.body);
 
     if (email.length === 0 || password.length === 0) {
       throw { message: "Please provide an email and password!" };

@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { email, password }: AuthData = req.body;
+    const { email, password }: AuthData = JSON.parse(req.body);
 
     if (email.length === 0 || password.length === 0) {
       throw { message: "Please provide a email and password!" };
