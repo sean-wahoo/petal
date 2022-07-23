@@ -43,7 +43,6 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       image_url: numRowsWithEmail[0].image_url,
     };
     await updateSessionDataRedis(session_data);
-    console.log({ cache_key });
     await prisma.users.update({
       where: { user_id: numRowsWithEmail[0].user_id },
       data: { cache_key: cache_key as string },

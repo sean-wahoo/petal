@@ -62,7 +62,7 @@ const Welcome: NextPage<SessionProps> = () => {
       await axios.patch(`/api/users/welcome-user?user_id=${session?.user_id}`);
       updateSession({ ...(session as SessionData), been_welcomed: true });
     } catch (e: any) {
-      console.log({ e });
+      console.error({ e });
     }
   };
   return (

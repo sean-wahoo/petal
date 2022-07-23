@@ -40,8 +40,6 @@ const RateButtons: React.FC<RateButtonsProps> = ({
     );
   }, [user_id]);
 
-  console.log({ isUp, ups });
-
   const ratee_type = post_id
     ? {
         type: "post",
@@ -73,7 +71,7 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         remove_rate: isUp,
       });
     } catch (e: any) {
-      console.log("Up Failed!", e);
+      console.error("Up Failed!", e);
     }
   };
   const onDown = async () => {
@@ -97,7 +95,7 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         remove_rate: isDown,
       });
     } catch (e: any) {
-      console.log("Down Failed!", e);
+      console.error("Down Failed!", e);
     }
   };
 

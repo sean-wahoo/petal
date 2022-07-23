@@ -17,7 +17,7 @@ export default async function updateProfileImage(
 
     return res.json({ ...updated_user });
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     res.status(500).json(e);
   } finally {
     prisma.$disconnect();

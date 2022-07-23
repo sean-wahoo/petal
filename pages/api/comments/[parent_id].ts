@@ -83,7 +83,7 @@ export default async function getComments(
         return comment;
       })
     );
-    console.log({ serverComments: comments });
+    console.error({ serverComments: comments });
     return res.status(200).json([...comments]);
   } catch (e: any) {
     console.error({ e });

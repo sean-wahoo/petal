@@ -9,8 +9,6 @@ export default async function postRate(
   try {
     const { rate_kind, user_rate_id, post_rate_id, remove_rate } = req.body;
 
-    console.log({ rate_kind, user_rate_id, post_rate_id, remove_rate });
-
     if (remove_rate) {
       const data = await prisma.post_rates.delete({
         where: {

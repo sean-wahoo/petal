@@ -39,7 +39,7 @@ const decodeSessionToken: (token: string) => Promise<SessionData> = async (
     );
     return payload;
   } catch (e: any) {
-    console.log({ e });
+    console.error({ e });
     return e;
   }
 };

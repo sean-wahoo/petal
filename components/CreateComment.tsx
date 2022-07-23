@@ -47,7 +47,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
           parent_id,
         })
       );
-      if (error) console.log({ error });
+      if (error) console.error({ error });
       if (data) {
         window.location.reload();
       }

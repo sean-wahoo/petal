@@ -110,7 +110,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   });
 
   post = JSON.parse(JSON.stringify(post));
-  console.log({ post });
 
   prisma.$disconnect();
   return {

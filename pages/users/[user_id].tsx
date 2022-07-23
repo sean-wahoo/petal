@@ -62,7 +62,6 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
     if (data) {
       setFriendStatus("currentUserSender");
     }
-    console.log({ data, error });
   };
 
   const acceptFriend = async () => {
@@ -75,7 +74,6 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
     if (data) {
       setFriendStatus("accepted");
     }
-    console.log({ data, error });
   };
 
   const removeFriend = async () => {
@@ -88,7 +86,6 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
     if (data) {
       setFriendStatus(null);
     }
-    console.log({ data, error });
   };
 
   const friend_buttons = () => {
