@@ -151,7 +151,7 @@ const ProfilePage: NextPage<ProfilePageProps> = ({
                   context?.drawImage(image, 0, 0);
                   const newFileUrl = canvas.toDataURL("image/webp", 0.6);
                   const imageBlob = (() => {
-                    const byteString = atob(newFileUrl.split(",")[1]);
+                    const byteString = window.atob(newFileUrl.split(",")[1]);
                     const mimeString = newFileUrl
                       .split(",")[0]
                       .split(":")[1]
