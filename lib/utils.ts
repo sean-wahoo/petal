@@ -53,7 +53,11 @@ export const getFormattedTimestamp = (isoDate: string) => {
  */
 export const getApiUrl = () => {
   const dev = process.env.NODE_ENV !== "production";
-  return dev ? process.env.NEXT_PUBLIC_DEV_ROOT_API_URL : "";
+  return dev
+    ? process.env.NEXT_PUBLIC_DEV_ROOT_API_URL
+    : process.env.RAILWAY_STATIC_URL
+    ? process.env.RAILWAY_STATIC_URL
+    : "";
 };
 
 /**
