@@ -15,7 +15,7 @@ export default async function middleware(req: NextRequest) {
     if (!session_token_encoded) {
       // if any route besides login and register
       if (!["/login", "/register"].includes(pathname)) {
-        return NextResponse.redirect(new URL("/login", req.url));
+        return NextResponse.rewrite(new URL("/login", req.url));
       }
       // if login or register
       return NextResponse.next();
@@ -29,7 +29,7 @@ export default async function middleware(req: NextRequest) {
 
     if (["/login", "/register"].includes(pathname)) {
       return isAuth
-        ? NextResponse.redirect(new URL("/", req.url))
+        ? NextResponse.rewrite(new URL("/", req.url))
         : NextResponse.next();
     }
 
@@ -37,7 +37,7 @@ export default async function middleware(req: NextRequest) {
       if (!isAuth) return NextResponse.next();
       return session_token_decoded?.been_welcomed === true
         ? NextResponse.next()
-        : NextResponse.redirect(new URL("/login", req.url));
+        : NextResponse.rewrite(new URL("/login", req.url));
     }
 
     const sessionIsValid = await isSessionValid(session_token_decoded);
@@ -50,8 +50,8 @@ export default async function middleware(req: NextRequest) {
 
     return NextResponse.next();
   } catch (e: any) {
-    console.error("Something went wrong with authentication!", e);
+    console.error("Something went wrong with authentication!", e, e.stack);
     req.cookies.delete("session_token");
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.rewrite(new URL("/login", req.url));
   }
 }
