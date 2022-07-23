@@ -4,9 +4,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 8080",
+    "start": "next start",
     "lint": "next lint",
-    "prod": "next build && next start -p 8080"
+    "prod": "next build && next start"
   },
   "browser": {
     "child_process": false
