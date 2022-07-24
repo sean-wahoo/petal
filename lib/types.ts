@@ -134,6 +134,9 @@ interface LayoutProps {
   is_auth: boolean;
   session?: SessionData;
   showNavbar?: boolean;
+  updateSession?:
+    | ((newSession: SessionData) => Promise<string>)
+    | ((_: any) => void);
 }
 interface ProfileProps {
   session: {
@@ -164,6 +167,7 @@ interface FriendProps {
 interface ProfilePageProps extends SessionProps {
   profile_data: ProfileDataProps;
   friends_data: FriendProps[];
+  fetched_at?: Date;
 }
 
 interface CreatePostPageProps extends SessionProps {}
@@ -225,4 +229,5 @@ export type {
   CommentProps,
   RateProps,
   FriendDataResponse,
+  FriendProps,
 };

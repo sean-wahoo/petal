@@ -4,26 +4,27 @@ import { CommentProps, RateProps, SessionData } from "lib/types";
 import { getFormattedTimestamp } from "lib/utils";
 import styles from "styles/components/comment.module.scss";
 import RateButtons from "components/RateButtons";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import CreateComment from "components/CreateComment";
 import Skeleton from "react-loading-skeleton";
+import { SessionContext } from "./Layout";
 
 const Comment: React.FC<{
   loading: boolean;
   comment?: CommentProps;
-  session: SessionData;
-}> = ({ comment, session, loading }) => {
+}> = ({ comment, loading }) => {
+  const data = useContext(SessionContext);
+  const session = data?.session as SessionData;
   const [replyActive, setReplyActive] = useState<boolean>(false);
   const editor = useEditor({
     editable: false,
     content: comment?.content,
     extensions: [StarterKit],
   });
-  session = useMemo(() => session, [session]);
   comment = useMemo(() => comment, [comment]);
   useEffect(() => {
-    if (!loading) {
-      editor?.commands?.setContent(comment?.content as any);
+    if (!loading && editor && !editor.isDestroyed) {
+      editor.commands.setContent(comment?.content as any);
     }
   }, [comment, loading]);
 
@@ -71,14 +72,7 @@ const Comment: React.FC<{
       )}
       {!!comment?.replies?.length &&
         comment.replies.map((reply, i) => {
-          return (
-            <Comment
-              key={i}
-              loading={false}
-              comment={reply}
-              session={session}
-            />
-          );
+          return <Comment key={i} loading={false} comment={reply} />;
         })}
     </div>
   );

@@ -1,5 +1,5 @@
 import styles from "styles/components/navbar.module.scss";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 import Image from "next/future/image";
 import Link from "next/link";
@@ -7,8 +7,12 @@ import type { SessionData } from "lib/types";
 import Skeleton from "react-loading-skeleton";
 import Dropdown from "components/Dropdown";
 import { logout } from "lib/utils";
+import { SessionContext } from "components/Layout";
 
-const Navbar: React.FC<{ session: SessionData }> = ({ session }) => {
+const Navbar = () => {
+  const data = useContext(SessionContext);
+  const session = data?.session as SessionData;
+
   const [prev, setPrev] = useState<number>(0);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const navRef = useRef<HTMLElement>(null);

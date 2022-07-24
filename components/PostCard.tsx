@@ -2,22 +2,29 @@ import styles from "styles/components/post_card.module.scss";
 import { PostCardProps, RateProps } from "lib/types";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { getFormattedTimestamp } from "lib/utils";
 import Link from "next/link";
 import RateButtons from "components/RateButtons";
 import Skeleton from "react-loading-skeleton";
-import { useSession } from "lib/useSession";
+import { SessionContext } from "./Layout";
 
 export default function PostCard({ post, loading }: PostCardProps) {
   const [seeMoreButton, setSeeMoreButton] = useState<boolean>(false);
   const parentRef = useRef<HTMLDivElement>(null);
-  const { session } = useSession();
+  const data = useContext(SessionContext);
+  const session = data?.session;
 
   const isOverflown = (child: any, parent: any) => {
     return child?.clientHeight > parent?.clientHeight;
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     const editorElement = document.getElementById(`editor-${post?.post_id}`);
     const editorParent = document.getElementById(`parent-${post?.post_id}`);
     if (isOverflown(editorElement, editorParent)) {
@@ -32,10 +39,10 @@ export default function PostCard({ post, loading }: PostCardProps) {
   });
 
   useEffect(() => {
-    if (!loading) {
-      editor?.commands?.setContent(post?.content as any);
+    if (!loading && editor && !editor.isDestroyed) {
+      editor.commands.setContent(post?.content as any);
     }
-  }, [post]);
+  }, [post, loading]);
 
   return (
     <article className={styles.post_card}>
