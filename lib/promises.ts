@@ -21,11 +21,25 @@ export const fetcher = (...args: any) =>
  */
 export const resolver = async (promise: Promise<Response>) => {
   try {
-    let res = await Promise.resolve(promise);
+    let res: any = await promise;
+    if (res.status !== 200) {
+      res = await res.json();
+      throw {
+        response: {
+          data: {
+            message: res.message,
+            type: res.type,
+            code: res.code,
+          },
+        },
+      };
+    }
+
     res = await res.json();
     return [res, null];
   } catch (e: any) {
     console.error({ e });
+
     return [null, e.response.data];
   }
 };

@@ -56,11 +56,10 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       cache_key,
     } as LoginResponse);
   } catch (e: any) {
-    console.error({ e });
-    res.status(500).json({
-      is_error: true,
-      error_code: e.code,
-      error_message: e.message,
+    console.log({ e });
+    return res.status(500).json({
+      code: e.code,
+      message: e.message,
       type: e.type,
     } as LoginResponse);
   } finally {

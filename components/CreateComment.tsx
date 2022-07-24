@@ -1,16 +1,16 @@
 import { JSONContent } from "@tiptap/react";
 import Editor from "components/Editor";
-import { CreateCommentProps } from "lib/types";
-import { FormEvent, useState } from "react";
+import { CreateCommentProps, SessionData } from "lib/types";
+import { FormEvent, useContext, useState } from "react";
 import styles from "styles/components/create_comment.module.scss";
 import util_styles from "styles/utils.module.scss";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
+import { SessionContext } from "./Layout";
 
-const CreateComment: React.FC<CreateCommentProps> = ({
-  session,
-  parent_id,
-}) => {
+const CreateComment: React.FC<CreateCommentProps> = ({ parent_id }) => {
+  const data = useContext(SessionContext);
+  const session = data?.session as SessionData;
   const parent_type = parent_id.split("-")[0];
   const [disabled, setDisabled] = useState<boolean>(false);
   const [contentErrorMessage, setContentErrorMessage] = useState<string>("");
@@ -76,7 +76,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
         parent_id={parent_id}
       />
       {contentErrorMessage.length > 0 && (
-        <ErrorMessage error_message={contentErrorMessage} />
+        <ErrorMessage message={contentErrorMessage} />
       )}
       <button
         disabled={disabled}

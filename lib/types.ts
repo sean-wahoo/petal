@@ -5,9 +5,9 @@ interface Success {
 }
 
 interface Error {
-  is_error: boolean;
-  error_code: string;
-  error_message: string;
+  code: string;
+  message: string;
+  type?: string;
 }
 
 interface AuthData {
@@ -124,7 +124,7 @@ interface LogoutError extends Error {}
 
 // props
 interface ErrorMessageProps {
-  error_message: string;
+  message: string;
   type?: string;
 }
 
@@ -134,6 +134,9 @@ interface LayoutProps {
   is_auth: boolean;
   session?: SessionData;
   showNavbar?: boolean;
+  updateSession?:
+    | ((newSession: SessionData) => Promise<string>)
+    | ((_: any) => void);
 }
 interface ProfileProps {
   session: {
@@ -164,6 +167,7 @@ interface FriendProps {
 interface ProfilePageProps extends SessionProps {
   profile_data: ProfileDataProps;
   friends_data: FriendProps[];
+  fetched_at?: Date;
 }
 
 interface CreatePostPageProps extends SessionProps {}
@@ -225,4 +229,5 @@ export type {
   CommentProps,
   RateProps,
   FriendDataResponse,
+  FriendProps,
 };

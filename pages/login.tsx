@@ -19,7 +19,7 @@ const Login: NextPage = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<ErrorMessageProps>({
-    error_message: "",
+    message: "",
     type: "",
   });
   const emailRef = useRef<HTMLInputElement>(null);
@@ -35,12 +35,13 @@ const Login: NextPage = () => {
         }),
       })
     );
+    console.log({ data, error });
     if (error || !data) {
-      setError({ error_message: error.error_message, type: error.type });
+      setError({ message: error.message, type: error.type });
       error.type === "email" &&
-        emailRef.current?.setCustomValidity(error.error_message);
+        emailRef.current?.setCustomValidity(error.message);
       error.type === "password" &&
-        passwordRef.current?.setCustomValidity(error.error_message);
+        passwordRef.current?.setCustomValidity(error.message);
       return;
     }
     const cookies = new Cookies();
@@ -69,7 +70,7 @@ const Login: NextPage = () => {
               onInvalid={(e: React.BaseSyntheticEvent) => {
                 e.preventDefault();
                 setError({
-                  error_message: e.target.validationMessage.replace(
+                  message: e.target.validationMessage.replace(
                     / *\([^)]*\) */g,
                     ""
                   ),
@@ -83,17 +84,14 @@ const Login: NextPage = () => {
                     ? ""
                     : "Please provide a valid email address"
                 );
-                if (error.type === "email")
-                  setError({ error_message: "", type: "" });
+                if (error.type === "email") setError({ message: "", type: "" });
               }}
               placeholder="email@address.com"
               id="email"
               ref={emailRef}
               className={styles.login__emailInput}
             />
-            {error.type === "email" && (
-              <ErrorMessage error_message={error.error_message} />
-            )}
+            {error.type === "email" && <ErrorMessage message={error.message} />}
           </div>
           <div className={styles.login__inputGroup}>
             <label htmlFor="password">Password</label>
@@ -103,7 +101,7 @@ const Login: NextPage = () => {
                 onInvalid={(e: React.BaseSyntheticEvent) => {
                   e.preventDefault();
                   setError({
-                    error_message: e.target.validationMessage.replace(
+                    message: e.target.validationMessage.replace(
                       / *\([^)]*\) */g,
                       ""
                     ),
@@ -119,7 +117,7 @@ const Login: NextPage = () => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setPassword(e.currentTarget.value);
                   if (error.type === "password") {
-                    setError({ error_message: "", type: "" });
+                    setError({ message: "", type: "" });
                     e.target.setCustomValidity("");
                   }
                 }}
@@ -132,7 +130,7 @@ const Login: NextPage = () => {
               />
             </div>
             {error.type === "password" && (
-              <ErrorMessage error_message={error.error_message} />
+              <ErrorMessage message={error.message} />
             )}
           </div>
           <button className={styles.login__loginButton} type="submit">

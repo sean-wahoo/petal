@@ -24,8 +24,8 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
   });
 
   useEffect(() => {
-    if (post) {
-      if (editor?.commands) editor?.commands?.setContent(post?.content);
+    if (post && editor && !editor.isDestroyed) {
+      editor.commands.setContent(post?.content);
     }
   }, [post]);
 
@@ -61,21 +61,10 @@ const PostPage: NextPage<PostPageProps> = ({ post }) => {
             />
             {!comments
               ? [...Array(12).keys()].map((_, i) => (
-                  <Comment
-                    loading={true}
-                    key={i}
-                    session={session as SessionData}
-                  />
+                  <Comment loading={true} key={i} />
                 ))
               : comments.map((comment: any, i: number) => {
-                  return (
-                    <Comment
-                      loading={false}
-                      key={i}
-                      comment={comment}
-                      session={session as SessionData}
-                    />
-                  );
+                  return <Comment loading={false} key={i} comment={comment} />;
                 })}
           </section>
         </article>

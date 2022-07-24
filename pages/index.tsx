@@ -11,7 +11,7 @@ import { useSession } from "lib/useSession";
 
 // sean-reichel-chv6-development.vercel.com
 const Index: NextPage<IndexProps> = () => {
-  const { session } = useSession();
+  const { session, updateSession } = useSession();
 
   const { data: posts, error: posts_error } = useSWR(
     `${getApiUrl()}/api/posts/get-posts`,
@@ -24,7 +24,12 @@ const Index: NextPage<IndexProps> = () => {
     setLoading(!posts);
   }, [posts]);
   return (
-    <Layout session={session} title="Petal - Home" is_auth={true}>
+    <Layout
+      session={session}
+      title="Petal - Home"
+      is_auth={true}
+      updateSession={updateSession}
+    >
       <main className={styles.index}>
         {loading
           ? [...Array(12).keys()].map((_, i) => {
@@ -33,7 +38,7 @@ const Index: NextPage<IndexProps> = () => {
           : posts.map((post: PostProps) => {
               return (
                 <PostCard
-                  session={session}
+                  // session={session}
                   loading={loading}
                   key={post.post_id}
                   post={post}
