@@ -47,7 +47,7 @@ const Login: NextPage = () => {
     const cookies = new Cookies();
     const token = await encodeSessionToken(data);
     cookies.set("session_token", token);
-    // Router.reload();
+    Router.reload();
   };
 
   return (
