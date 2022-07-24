@@ -5,9 +5,9 @@ interface Success {
 }
 
 interface Error {
-  is_error: boolean;
-  error_code: string;
-  error_message: string;
+  code: string;
+  message: string;
+  type?: string;
 }
 
 interface AuthData {
@@ -124,7 +124,7 @@ interface LogoutError extends Error {}
 
 // props
 interface ErrorMessageProps {
-  error_message: string;
+  message: string;
   type?: string;
 }
 

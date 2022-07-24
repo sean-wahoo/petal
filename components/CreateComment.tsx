@@ -76,7 +76,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({ parent_id }) => {
         parent_id={parent_id}
       />
       {contentErrorMessage.length > 0 && (
-        <ErrorMessage error_message={contentErrorMessage} />
+        <ErrorMessage message={contentErrorMessage} />
       )}
       <button
         disabled={disabled}
