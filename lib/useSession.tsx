@@ -53,7 +53,7 @@ const useSession = () => {
         };
       const newSessionToken = await encodeSessionToken(newSession);
       const cookies = new Cookies();
-      cookies.set("session_token", newSessionToken, { path: "/" });
+      cookies.set("session_token", newSessionToken);
       setSession(newSession);
       return newSession.cache_key;
     };
