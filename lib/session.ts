@@ -27,10 +27,10 @@ const encodeSessionToken: (session: SessionData) => Promise<string> = async (
  *
  * @returns JSON object representing a user's session
  */
-const decodeSessionToken: (token: string) => Promise<SessionData> = async (
-  token: string
-) => {
+const decodeSessionToken = async (token: string | undefined) => {
   try {
+    if (token === undefined)
+      throw { message: "Token not found!", code: "token-not-found" };
     const key = process.env.NEXT_PUBLIC_JWT_SIGNING_KEY as string;
     const { payload } = await jose.jwtVerify(
       token,
@@ -38,6 +38,7 @@ const decodeSessionToken: (token: string) => Promise<SessionData> = async (
     );
     return payload;
   } catch (e: any) {
+    if (e.code === "token-not-found") return;
     console.error({ e });
     return e;
   }
@@ -131,6 +132,7 @@ const syncSession = async (user_id: string) => {
 const destroySession = async (session_id: string): Promise<void> => {
   try {
     await fetch(`${process.env.NEXT_PUBLIC_REDIS_API_URL}/del/${session_id}`, {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_REDIS_API_TOKEN}`,
       },
