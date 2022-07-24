@@ -5,7 +5,6 @@ import Navbar from "components/Navbar";
 import styles from "styles/components/layout.module.scss";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useSession } from "lib/useSession";
-import { useRouter } from "next/router";
 
 export const SessionContext = React.createContext<
   | {
@@ -72,14 +71,8 @@ const LayoutFallback = ({ title }: any) => {
 };
 
 export default ({ children, title, is_auth }: LayoutProps) => {
-  const router = useRouter();
   const { session, updateSession } = useSession();
-  if (!session && is_auth) {
-    return <LayoutFallback title={title} />;
-  }
-  if (!session && !is_auth) {
-    router.push("/login");
-  }
+  if (!session && is_auth) return <LayoutFallback title={title} />;
   return (
     <Layout
       children={children}
@@ -88,6 +81,5 @@ export default ({ children, title, is_auth }: LayoutProps) => {
       session={session as SessionData}
       updateSession={updateSession}
     />
-    // <LayoutFallback title={title} />
   );
 };
