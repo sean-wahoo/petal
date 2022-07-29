@@ -8,23 +8,23 @@ export default async function leaveComment(
 ) {
   const prisma = new PrismaClient();
   try {
-    const { content, author_user_id, parent_id } = JSON.parse(req.body);
-    const is_reply = parent_id.split("-")[0] === "comment";
-    const comment_id = `comment-${await nanoid(11)}`;
-    const new_comment = await prisma.comments.create({
+    const { content, authorUserId, parentId } = JSON.parse(req.body);
+    const isReply = parentId.split("-")[0] === "comment";
+    const commentId = `comment-${await nanoid(11)}`;
+    const new_comment = await prisma.comment.create({
       data: {
-        comment_id,
+        commentId,
         author: {
           connect: {
-            user_id: author_user_id,
+            id: authorUserId,
           },
         },
-        parent_id,
+        parentId,
         content,
-        is_edited: false,
+        isEdited: false,
         ups: 0,
         downs: 0,
-        is_reply,
+        isReply,
       },
     });
     return res.status(200).json({ commment: new_comment });

@@ -7,33 +7,34 @@ export default async function commentRate(
 ) {
   const prisma = new PrismaClient();
   try {
-    const { rate_kind, user_rate_id, comment_rate_id, remove_rate } =
-      JSON.parse(req.body);
+    const { rateKind, userRateId, commentRateId, removeRate } = JSON.parse(
+      req.body
+    );
 
-    if (remove_rate) {
-      const data = await prisma.comment_rates.delete({
+    if (removeRate) {
+      const data = await prisma.commentRate.delete({
         where: {
-          user_rate_id_comment_rate_id: {
-            user_rate_id,
-            comment_rate_id,
+          userRateId_commentRateId: {
+            userRateId,
+            commentRateId,
           },
         },
       });
       return res.status(200).json({ message: "success-rate-delete", data });
     }
-    const data = await prisma.comment_rates.upsert({
+    const data = await prisma.commentRate.upsert({
       create: {
-        rate_kind,
-        user_rate_id,
-        comment_rate_id,
+        rateKind,
+        userRateId,
+        commentRateId,
       },
       update: {
-        rate_kind,
+        rateKind,
       },
       where: {
-        user_rate_id_comment_rate_id: {
-          user_rate_id,
-          comment_rate_id,
+        userRateId_commentRateId: {
+          userRateId,
+          commentRateId,
         },
       },
     });

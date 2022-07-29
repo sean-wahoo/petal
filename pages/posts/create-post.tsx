@@ -1,5 +1,4 @@
 import Layout from "components/Layout";
-import { CreatePostPageProps } from "lib/types";
 import { NextPage } from "next";
 import styles from "styles/layouts/create_post.module.scss";
 import Editor from "components/Editor";
@@ -8,10 +7,10 @@ import { FormEvent, useRef, useState } from "react";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
 import { useRouter } from "next/router";
-import { useSession } from "lib/useSession";
+import { useSession } from "next-auth/react";
 
-const CreatePostPage: NextPage<CreatePostPageProps> = () => {
-  const { session } = useSession();
+const CreatePostPage = () => {
+  const { data: session } = useSession();
 
   const titleRef = useRef(null);
   const [content, setContent] = useState<JSONContent>({});
@@ -46,7 +45,7 @@ const CreatePostPage: NextPage<CreatePostPageProps> = () => {
           body: JSON.stringify({
             title,
             content,
-            author_user_id: session?.user_id,
+            authorUserId: session?.user?.id,
           }),
         })
       );
@@ -58,7 +57,7 @@ const CreatePostPage: NextPage<CreatePostPageProps> = () => {
   };
 
   return (
-    <Layout session={session} title="Petal - Create Post" is_auth={true}>
+    <Layout title="Petal - Create Post" is_auth={true}>
       <main className={styles.create_post}>
         <form onSubmit={submitNewPost}>
           <label htmlFor="title-input">Post Title</label>

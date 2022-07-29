@@ -1,26 +1,7 @@
-import type { LogoutSuccess } from "lib/types";
-import { destroySession } from "lib/session";
-import Cookies from "universal-cookie";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 
 TimeAgo.addLocale(en);
-
-/**
- * Destroys session in both databases and removes session_token cookie
- *
- * @param user_id A user's ID
- *
- * @returns ID of logged out user
- */
-export const logout = async (user_id: string): Promise<LogoutSuccess> => {
-  const cookies = new Cookies();
-  const session_token = cookies.get("session_token");
-  await destroySession(session_token);
-  cookies.remove("session_token");
-
-  return { user_id } as LogoutSuccess;
-};
 
 /**
  * Returns a string representing a timestamp in past tense with different units

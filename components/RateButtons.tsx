@@ -2,51 +2,51 @@ import { RateButtonsProps } from "lib/types";
 import { useEffect, useState } from "react";
 import styles from "styles/components/rate_buttons.module.scss";
 import { getApiUrl } from "lib/utils";
+import { signIn, useSession } from "next-auth/react";
 
 const RateButtons: React.FC<RateButtonsProps> = ({
-  post_id,
-  comment_id,
-  rate_info,
-  user_id,
+  postId,
+  commentId,
+  rateInfo,
+  id,
 }) => {
+  const { data: session } = useSession();
   const [ups, setUps] = useState<number>(
-    rate_info.filter((rate) => rate.rate_kind === "up").length || 0
+    rateInfo.filter((rate) => rate.rateKind === "up").length || 0
   );
   const [downs, setDowns] = useState<number>(
-    rate_info.filter((rate) => rate.rate_kind === "down").length || 0
+    rateInfo.filter((rate) => rate.rateKind === "down").length || 0
   );
   const [isUp, setUp] = useState<boolean>(
-    !!rate_info.find(
-      (rate) => rate.rate_kind === "up" && rate.user_rate_id === user_id
-    )
+    !!rateInfo.find((rate) => rate.rateKind === "up" && rate.userRateId === id)
   );
   const [isDown, setDown] = useState<boolean>(
-    !!rate_info.find(
-      (rate) => rate.rate_kind === "down" && rate.user_rate_id === user_id
+    !!rateInfo.find(
+      (rate) => rate.rateKind === "down" && rate.userRateId === id
     )
   );
 
   useEffect(() => {
     setUp(
-      !!rate_info.find(
-        (rate) => rate.rate_kind === "up" && rate.user_rate_id === user_id
+      !!rateInfo.find(
+        (rate) => rate.rateKind === "up" && rate.userRateId === id
       )
     );
     setDown(
-      !!rate_info.find(
-        (rate) => rate.rate_kind === "down" && rate.user_rate_id === user_id
+      !!rateInfo.find(
+        (rate) => rate.rateKind === "down" && rate.userRateId === id
       )
     );
-  }, [user_id]);
+  }, [id]);
 
-  const ratee_type = post_id
+  const ratee_type = postId
     ? {
         type: "post",
-        id: post_id,
+        id: postId,
       }
     : {
         type: "comment",
-        id: comment_id,
+        id: commentId,
       };
 
   const onUp = async () => {
@@ -59,8 +59,8 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
           method: "POST",
           body: JSON.stringify({
-            rate_kind: "down",
-            user_rate_id: user_id,
+            rateKind: "down",
+            userRateId: id,
             [`${ratee_type.type}_rate_id`]: ratee_type.id,
             remove_rate: true,
           }),
@@ -69,8 +69,8 @@ const RateButtons: React.FC<RateButtonsProps> = ({
       await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
         method: "POST",
         body: JSON.stringify({
-          rate_kind: "up",
-          user_rate_id: user_id,
+          rateKind: "up",
+          userRateId: id,
           [`${ratee_type.type}_rate_id`]: ratee_type.id,
           remove_rate: isUp,
         }),
@@ -89,8 +89,8 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
           method: "POST",
           body: JSON.stringify({
-            rate_kind: "up",
-            user_rate_id: user_id,
+            rateKind: "up",
+            userRateId: id,
             [`${ratee_type.type}_rate_id`]: ratee_type.id,
             remove_rate: true,
           }),
@@ -99,8 +99,8 @@ const RateButtons: React.FC<RateButtonsProps> = ({
       await fetch(`${getApiUrl()}/api/rates/${ratee_type.type}-rate`, {
         method: "POST",
         body: JSON.stringify({
-          rate_kind: "down",
-          user_rate_id: user_id,
+          rateKind: "down",
+          userRateId: id,
           [`${ratee_type.type}_rate_id`]: ratee_type.id,
           remove_rate: isDown,
         }),
@@ -139,7 +139,7 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         viewBox="0 0 24 24"
         width="24"
         height="24"
-        onClick={() => onUp()}
+        onClick={session ? () => onUp() : () => signIn()}
       >
         {upPaths[isUp ? 1 : 0]}
       </svg>
@@ -149,7 +149,7 @@ const RateButtons: React.FC<RateButtonsProps> = ({
         viewBox="0 0 24 24"
         width="24"
         height="24"
-        onClick={() => onDown()}
+        onClick={session ? () => onDown() : () => signIn()}
       >
         {downPaths[isDown ? 1 : 0]}
       </svg>

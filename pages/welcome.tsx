@@ -1,12 +1,12 @@
 import Layout from "components/Layout";
-import { SessionData, SessionProps } from "lib/types";
-import { useSession } from "lib/useSession";
-import { NextPage } from "next";
 import { useState } from "react";
 import styles from "styles/layouts/welcome.module.scss";
+import { getSession, useSession } from "next-auth/react";
+import { GetServerSideProps } from "next";
+import { PrismaClient } from "@prisma/client";
 
-const Welcome: NextPage<SessionProps> = () => {
-  const { session, updateSession } = useSession();
+export default function Welcome() {
+  const { data: session } = useSession({ required: true });
   const [pageNum, setPageNum] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
   const headerText = [
@@ -58,10 +58,9 @@ const Welcome: NextPage<SessionProps> = () => {
   };
   const handleContinue: () => void = async () => {
     try {
-      await fetch(`/api/users/welcome-user?user_id=${session?.user_id}`, {
+      await fetch(`/api/users/welcome-user?id=${session?.user?.id}`, {
         method: "PATCH",
       });
-      updateSession({ ...(session as SessionData), been_welcomed: true });
     } catch (e: any) {
       console.error({ e });
     }
@@ -80,6 +79,34 @@ const Welcome: NextPage<SessionProps> = () => {
       </main>
     </Layout>
   );
-};
+}
 
-export default Welcome;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const prisma = new PrismaClient();
+  const session = await getSession(context);
+  console.log({ session });
+  if (session) {
+    const user = await prisma.user.findMany({
+      where: {
+        id: session?.user?.id as string,
+      },
+      select: {
+        beenWelcomed: true,
+      },
+    });
+    prisma.$disconnect();
+
+    if (user[0].beenWelcomed) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  }
+
+  return {
+    props: { beenWelcomed: true },
+  };
+};

@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { LayoutProps, SessionData } from "lib/types";
+import React from "react";
+import { LayoutProps } from "lib/types";
 import Head from "next/head";
 import Navbar from "components/Navbar";
 import styles from "styles/components/layout.module.scss";
@@ -9,7 +9,6 @@ export default function Layout({
   children,
   title,
   is_auth,
-  session,
   showNavbar = true,
 }: LayoutProps) {
   return (
@@ -21,7 +20,7 @@ export default function Layout({
         <Head>
           <title>{title}</title>
         </Head>
-        {is_auth && showNavbar && <Navbar session={session as any} />}
+        {is_auth && showNavbar && <Navbar />}
         {children}
       </SkeletonTheme>
     </div>

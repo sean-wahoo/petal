@@ -3,18 +3,17 @@ import { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { user_id } = req.query;
-    const user_data = await prisma.users.findFirst({
+    const { id } = req.query;
+    const user_data = await prisma.user.findFirst({
       select: {
-        user_id: true,
-        been_welcomed: true,
+        id: true,
+        beenWelcomed: true,
         email: true,
-        cache_key: true,
-        image_url: true,
-        display_name: true,
+        image: true,
+        name: true,
       },
       where: {
-        user_id: user_id as string,
+        id: id as string,
       },
     });
     return res.status(200).json({ ...user_data });

@@ -3,9 +3,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const user_ids = await prisma.users.findMany({
+    const user_ids = await prisma.user.findMany({
       select: {
-        user_id: true,
+        id: true,
       },
     });
     return res.status(200).json(user_ids);

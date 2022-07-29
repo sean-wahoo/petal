@@ -4,13 +4,13 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const prisma = new PrismaClient();
   try {
-    const { friend_id } = JSON.parse(req.body);
-    const current_friend_data = await prisma.friends.findFirst({
+    const { friendId } = JSON.parse(req.body);
+    const current_friend_data = await prisma.friend.findFirst({
       select: {
         status: true,
       },
       where: {
-        friend_id,
+        friendId,
       },
     });
     if (!current_friend_data) {
@@ -23,15 +23,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         break;
     }
 
-    const friend_accepted = await prisma.friends.update({
+    const friend_accepted = await prisma.friend.update({
       where: {
-        friend_id,
+        friendId,
       },
       data: {
         status: "accepted",
       },
       select: {
-        friend_id: true,
+        friendId: true,
         status: true,
       },
     });

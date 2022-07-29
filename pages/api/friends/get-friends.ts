@@ -5,34 +5,34 @@ const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { user_id } = req.query;
-    const friend_data = await prisma.friends.findMany({
+    const friend_data = await prisma.friend.findMany({
       select: {
-        friend_id: true,
+        friendId: true,
         sender: {
           select: {
-            user_id: true,
-            display_name: true,
-            image_url: true,
+            id: true,
+            name: true,
+            image: true,
           },
         },
         recipient: {
           select: {
-            user_id: true,
-            display_name: true,
-            image_url: true,
+            id: true,
+            name: true,
+            image: true,
           },
         },
         status: true,
-        created_at: true,
-        updated_at: true,
+        createdAt: true,
+        updatedAt: true,
       },
       where: {
         OR: [
           {
-            sender_user_id: user_id as string,
+            senderUserId: user_id as string,
           },
           {
-            recipient_user_id: user_id as string,
+            recipientUserId: user_id as string,
           },
         ],
       },

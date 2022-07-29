@@ -4,6 +4,7 @@
   align-items: center;
   > svg {
     cursor: pointer;
+
     fill: var(--text-color);
     &.up {
       fill: hsl(133, 57%, 45%);

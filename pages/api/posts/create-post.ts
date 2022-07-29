@@ -8,20 +8,20 @@ export default async function createPost(
 ) {
   const prisma = new PrismaClient();
   try {
-    const { title, content, author_user_id } = JSON.parse(req.body);
-    let post_id = await nanoid(11);
-    post_id = `post-${post_id}`;
-    const new_post = await prisma.posts.create({
+    const { title, content, authorUserId } = JSON.parse(req.body);
+    let postId = await nanoid(11);
+    postId = `post-${postId}`;
+    const new_post = await prisma.post.create({
       data: {
-        post_id,
+        postId,
         author: {
           connect: {
-            user_id: author_user_id,
+            id: authorUserId,
           },
         },
         title,
         content,
-        is_edited: true,
+        isEdited: true,
         ups: 0,
         downs: 0,
       },

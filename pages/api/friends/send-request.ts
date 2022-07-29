@@ -5,18 +5,18 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const prisma = new PrismaClient();
   try {
-    const { sender_user_id, recipient_user_id } = JSON.parse(req.body);
-    const current_friend_data = await prisma.friends.findFirst({
+    const { senderUserId, recipientUserId } = JSON.parse(req.body);
+    const current_friend_data = await prisma.friend.findFirst({
       select: {
         status: true,
       },
       where: {
         OR: [
           {
-            sender_user_id,
+            senderUserId,
           },
           {
-            recipient_user_id,
+            recipientUserId,
           },
         ],
       },
@@ -34,12 +34,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       default:
         break;
     }
-    const friend_id = `friend-${await nanoid(11)}`;
-    const friend = await prisma.friends.create({
+    const friendId = `friend-${await nanoid(11)}`;
+    const friend = await prisma.friend.create({
       data: {
-        friend_id,
-        sender_user_id,
-        recipient_user_id,
+        friendId,
+        senderUserId,
+        recipientUserId,
         status: "sent",
       },
     });

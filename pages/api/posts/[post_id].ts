@@ -8,25 +8,25 @@ export default async function getPost(
   const prisma = new PrismaClient();
   try {
     const { post_id } = req.query;
-    const post = await prisma.posts.findUnique({
+    const post = await prisma.post.findUnique({
       select: {
-        post_id: true,
+        postId: true,
         author: {
           select: {
-            user_id: true,
-            display_name: true,
+            id: true,
+            name: true,
           },
         },
         title: true,
         content: true,
         ups: true,
         downs: true,
-        created_at: true,
-        updated_at: true,
-        rated_post: true,
+        createdAt: true,
+        updatedAt: true,
+        ratedPost: true,
       },
       where: {
-        post_id: post_id as string,
+        postId: post_id as string,
       },
     });
     return res.status(200).json(post);

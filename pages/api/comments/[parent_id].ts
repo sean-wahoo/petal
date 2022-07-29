@@ -14,33 +14,33 @@ export default async function getComments(
     const searchCommentsRecursively = async (parent_id: string, i: number) => {
       let replies: any = [];
       if (i > 0) {
-        comments = await prisma.comments.findMany({
+        comments = await prisma.comment.findMany({
           select: {
-            comment_id: true,
-            parent_id: true,
+            commentId: true,
+            parentId: true,
             ups: true,
             downs: true,
-            is_reply: true,
+            isReply: true,
             content: true,
             author: {
               select: {
-                user_id: true,
-                display_name: true,
+                id: true,
+                name: true,
               },
             },
-            created_at: true,
-            rated_comment: true,
+            createdAt: true,
+            ratedComment: true,
           },
           where: {
-            parent_id: parent_id as string,
-            is_reply: true,
+            parentId: parent_id as string,
+            isReply: true,
           },
           take: 12,
         });
         replies = await Promise.all(
           comments.map(async (comment: any) => {
             const replies = await searchCommentsRecursively(
-              comment.comment_id,
+              comment.commentId,
               i - 1
             );
             comment.replies = replies;
@@ -51,26 +51,26 @@ export default async function getComments(
       return replies;
     };
     let comments = [];
-    const first_level_comments = await prisma.comments.findMany({
+    const first_level_comments = await prisma.comment.findMany({
       select: {
-        comment_id: true,
-        parent_id: true,
+        commentId: true,
+        parentId: true,
         ups: true,
         downs: true,
-        is_reply: true,
+        isReply: true,
         content: true,
         author: {
           select: {
-            user_id: true,
-            display_name: true,
+            id: true,
+            name: true,
           },
         },
-        created_at: true,
-        rated_comment: true,
+        createdAt: true,
+        ratedComment: true,
       },
       where: {
-        parent_id: parent_id as string,
-        is_reply: false,
+        parentId: parent_id as string,
+        isReply: false,
       },
       take: 12,
     });
@@ -78,12 +78,11 @@ export default async function getComments(
 
     comments = await Promise.all(
       comments.map(async (comment: any) => {
-        const replies = await searchCommentsRecursively(comment.comment_id, 2);
+        const replies = await searchCommentsRecursively(comment.commentId, 2);
         comment.replies = replies;
         return comment;
       })
     );
-    console.error({ serverComments: comments });
     return res.status(200).json([...comments]);
   } catch (e: any) {
     console.error({ e });

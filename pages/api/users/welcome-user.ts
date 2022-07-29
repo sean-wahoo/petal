@@ -3,13 +3,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { user_id } = req.query;
-    await prisma.users.update({
+    const { id } = req.query;
+    await prisma.user.update({
       where: {
-        user_id: user_id as string,
+        id: id as string,
       },
       data: {
-        been_welcomed: true,
+        beenWelcomed: true,
       },
     });
     return res.status(200).json({ message: "success" });

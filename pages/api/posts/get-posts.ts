@@ -7,27 +7,28 @@ export default async function getPosts(
 ) {
   const prisma = new PrismaClient();
   try {
-    const posts = await prisma.posts.findMany({
+    const posts = await prisma.post.findMany({
       select: {
-        post_id: true,
+        postId: true,
         author: {
           select: {
-            user_id: true,
-            display_name: true,
+            id: true,
+            name: true,
           },
         },
         title: true,
         content: true,
-        created_at: true,
-        updated_at: true,
-        rated_post: {
+        createdAt: true,
+        updatedAt: true,
+        ratedPost: {
           select: {
-            rate_kind: true,
-            user_rate_id: true,
+            rateKind: true,
+            userRateId: true,
           },
         },
       },
     });
+    console.log({ posts });
     return res.status(200).json([...posts]);
   } catch (e: any) {
     console.error({ e });

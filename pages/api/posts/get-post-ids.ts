@@ -3,9 +3,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const post_ids = await prisma.posts.findMany({
+    const post_ids = await prisma.post.findMany({
       select: {
-        post_id: true,
+        postId: true,
       },
     });
     return res.status(200).json(post_ids);

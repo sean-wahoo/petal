@@ -7,12 +7,12 @@ export default async function updateProfileImage(
 ) {
   const prisma = new PrismaClient();
   try {
-    const { user_id, image_url } = req.query;
+    const { id, image } = req.query;
 
-    const updated_user = await prisma.users.update({
-      where: { user_id: user_id as string },
-      data: { image_url: image_url as string },
-      select: { email: true, user_id: true, image_url: true },
+    const updated_user = await prisma.user.update({
+      where: { id: id as string },
+      data: { image: image as string },
+      select: { email: true, id: true, image: true },
     });
 
     return res.json({ ...updated_user });

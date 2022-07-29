@@ -5,21 +5,21 @@ const prisma = new PrismaClient();
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { user_id } = req.query;
-    const profile_data = await prisma.users.findFirst({
+    const { id } = req.query;
+    const profile_data = await prisma.user.findFirst({
       select: {
-        user_id: true,
+        id: true,
         email: true,
-        updated_at: true,
-        created_at: true,
-        image_url: true,
-        display_name: true,
-        date_of_birth: true,
-        tagline: true,
+        updatedAt: true,
+        createdAt: true,
+        image: true,
+        name: true,
+        dateOfBirth: true,
+        description: true,
         sender: true,
         recipient: true,
       },
-      where: { user_id: user_id as string },
+      where: { id: id as string },
     });
     if (profile_data === null) {
       throw { message: "user-not-found" };

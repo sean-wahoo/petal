@@ -4,22 +4,22 @@ import type { NextApiRequest, NextApiResponse } from "next";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const prisma = new PrismaClient();
   try {
-    const { friend_id } = JSON.parse(req.body);
-    const current_friend_data = await prisma.friends.findFirst({
+    const { friendId } = JSON.parse(req.body);
+    const current_friend_data = await prisma.friend.findFirst({
       select: {
         status: true,
       },
       where: {
-        friend_id,
+        friendId,
       },
     });
     if (!current_friend_data || current_friend_data?.status === "sent") {
       throw { code: "not-friends", message: "Not Friends!" };
     }
 
-    const friend_accepted = await prisma.friends.delete({
+    const friend_accepted = await prisma.friend.delete({
       where: {
-        friend_id,
+        friendId,
       },
     });
     return res.json({ friend_accepted });

@@ -1,24 +1,22 @@
 import { JSONContent } from "@tiptap/react";
 import Editor from "components/Editor";
-import { CreateCommentProps } from "lib/types";
 import { FormEvent, useState } from "react";
 import styles from "styles/components/create_comment.module.scss";
 import util_styles from "styles/utils.module.scss";
 import ErrorMessage from "components/ErrorMessage";
 import { resolver } from "lib/promises";
+import { signIn, useSession } from "next-auth/react";
 
-const CreateComment: React.FC<CreateCommentProps> = ({
-  session,
-  parent_id,
-}) => {
-  const parent_type = parent_id.split("-")[0];
+const CreateComment = ({ parentId }: { parentId: string }) => {
+  const { data: session } = useSession();
+  const parent_type = parentId.split("-")[0];
   const [disabled, setDisabled] = useState<boolean>(false);
   const [contentErrorMessage, setContentErrorMessage] = useState<string>("");
   const [content, setContent] = useState<JSONContent>({});
 
   const updateEditorContent = (json: JSONContent) => {
     const editorElement = document.querySelectorAll(
-      `div[data-editor-parent_id=${parent_id}] > div.ProseMirror`
+      `div[data-editor-parent_id=${parentId}] > div.ProseMirror`
     )[0];
     setContentErrorMessage("");
     editorElement?.classList.remove(styles.invalid_content);
@@ -26,7 +24,7 @@ const CreateComment: React.FC<CreateCommentProps> = ({
   };
   const checkValidity: () => boolean = () => {
     const editorElement = document.querySelectorAll(
-      `div[data-editor-parent_id=${parent_id}] > div.ProseMirror`
+      `div[data-editor-parent_id=${parentId}] > div.ProseMirror`
     )[0];
     if (Object.keys(content).length === 0 || !content?.content?.[0].content) {
       editorElement?.classList.add(styles.invalid_content);
@@ -44,8 +42,8 @@ const CreateComment: React.FC<CreateCommentProps> = ({
           method: "POST",
           body: JSON.stringify({
             content,
-            author_user_id: session?.user_id,
-            parent_id,
+            authorUserId: session?.user?.id,
+            parentId,
           }),
         })
       );
@@ -69,22 +67,34 @@ const CreateComment: React.FC<CreateCommentProps> = ({
   };
   return (
     <form className={styles.create_comment} onSubmit={leaveComment}>
-      <Editor
-        updateEditorContent={updateEditorContent}
-        label={parent_data[parent_type].label}
-        type={parent_data[parent_type].type}
-        parent_id={parent_id}
-      />
+      {session && (
+        <Editor
+          updateEditorContent={updateEditorContent}
+          label={parent_data[parent_type].label}
+          type={parent_data[parent_type].type}
+          parent_id={parentId}
+        />
+      )}
       {contentErrorMessage.length > 0 && (
         <ErrorMessage error_message={contentErrorMessage} />
       )}
-      <button
-        disabled={disabled}
-        className={util_styles.accent_button}
-        type="submit"
-      >
-        {parent_data[parent_type].button_text}
-      </button>
+      {session ? (
+        <button
+          disabled={disabled}
+          className={util_styles.accent_button}
+          type={session === null ? "button" : "submit"}
+        >
+          {parent_data[parent_type].button_text}
+        </button>
+      ) : (
+        <button
+          onClick={() => signIn()}
+          type="button"
+          className={util_styles.accent_button}
+        >
+          Sign in to leave a comment!
+        </button>
+      )}
     </form>
   );
 };
