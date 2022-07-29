@@ -1,14 +1,14 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import CreateComment from "components/CreateComment";
-import Layout from "components/Layout";
-import RateButtons from "components/RateButtons";
-import { fetcher } from "lib/promises";
-import { PostPageProps } from "lib/types";
-import { getApiUrl, getFormattedTimestamp } from "lib/utils";
+import CreateComment from "src/components/CreateComment";
+import Layout from "src/components/Layout";
+import RateButtons from "src/components/RateButtons";
+import { fetcher } from "src/lib/promises";
+import { PostPageProps } from "src/lib/types";
+import { getApiUrl, getFormattedTimestamp } from "src/lib/utils";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import styles from "styles/layouts/post_page.module.scss";
-import { LoadingComment } from "components/Comment";
+import { LoadingComment } from "src/components/Comment";
 import { Suspense, useEffect } from "react";
 import useSWR from "swr";
 import { PrismaClient } from "@prisma/client";
@@ -18,7 +18,7 @@ import dynamic from "next/dynamic";
 const PostPage: NextPage<PostPageProps> = ({ post }) => {
   const { data: session } = useSession();
 
-  const Comment = dynamic(() => import("components/Comment"), {});
+  const Comment = dynamic(() => import("src/components/Comment"), {});
   const editor = useEditor({
     editable: false,
     content: post.content,

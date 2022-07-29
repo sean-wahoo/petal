@@ -1,4 +1,4 @@
-import Layout from "components/Layout";
+import Layout from "src/components/Layout";
 import { useState } from "react";
 import styles from "styles/layouts/welcome.module.scss";
 import { getSession, useSession } from "next-auth/react";

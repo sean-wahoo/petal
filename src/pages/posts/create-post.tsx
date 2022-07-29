@@ -1,11 +1,11 @@
-import Layout from "components/Layout";
+import Layout from "src/components/Layout";
 import { NextPage } from "next";
 import styles from "styles/layouts/create_post.module.scss";
-import Editor from "components/Editor";
+import Editor from "src/components/Editor";
 import { JSONContent } from "@tiptap/react";
 import { FormEvent, useRef, useState } from "react";
-import ErrorMessage from "components/ErrorMessage";
-import { resolver } from "lib/promises";
+import ErrorMessage from "src/components/ErrorMessage";
+import { resolver } from "src/lib/promises";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 

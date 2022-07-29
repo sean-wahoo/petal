@@ -1,10 +1,10 @@
 import { JSONContent } from "@tiptap/react";
-import Editor from "components/Editor";
+import Editor from "src/components/Editor";
 import { FormEvent, useState } from "react";
 import styles from "styles/components/create_comment.module.scss";
 import util_styles from "styles/utils.module.scss";
-import ErrorMessage from "components/ErrorMessage";
-import { resolver } from "lib/promises";
+import ErrorMessage from "src/components/ErrorMessage";
+import { resolver } from "src/lib/promises";
 import { signIn, useSession } from "next-auth/react";
 
 const CreateComment = ({ parentId }: { parentId: string }) => {

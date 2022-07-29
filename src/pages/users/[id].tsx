@@ -1,17 +1,17 @@
-import Layout from "components/Layout";
+import Layout from "src/components/Layout";
 import { NextPage, GetStaticPaths, GetStaticProps } from "next";
 import styles from "styles/layouts/profile.module.scss";
-import type { ProfilePageProps } from "lib/types";
-import { getApiUrl } from "lib/utils";
+import type { ProfilePageProps } from "src/lib/types";
+import { getApiUrl } from "src/lib/utils";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import Dropdown from "components/Dropdown";
-import { resolver } from "lib/promises";
-import { upload } from "lib/bucket";
-import { revalidate } from "lib/utils";
+import Dropdown from "src/components/Dropdown";
+import { resolver } from "src/lib/promises";
+import { upload } from "src/lib/bucket";
+import { revalidate } from "src/lib/utils";
 import { PrismaClient } from "@prisma/client";
 
 const ProfilePage: NextPage<ProfilePageProps> = ({

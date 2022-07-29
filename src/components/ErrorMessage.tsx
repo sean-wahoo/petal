@@ -1,4 +1,4 @@
-import { ErrorMessageProps } from "lib/types";
+import { ErrorMessageProps } from "src/lib/types";
 import React from "react";
 import styles from "styles/components/error_message.module.scss";
 

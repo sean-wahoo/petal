@@ -4,7 +4,7 @@ import debounce from "lodash.debounce";
 import Image from "next/future/image";
 import Link from "next/link";
 import Skeleton from "react-loading-skeleton";
-import Dropdown from "components/Dropdown";
+import Dropdown from "src/components/Dropdown";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Session } from "next-auth";
 

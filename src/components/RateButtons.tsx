@@ -1,7 +1,7 @@
-import { RateButtonsProps } from "lib/types";
+import { RateButtonsProps } from "src/lib/types";
 import { useEffect, useState } from "react";
 import styles from "styles/components/rate_buttons.module.scss";
-import { getApiUrl } from "lib/utils";
+import { getApiUrl } from "src/lib/utils";
 import { signIn, useSession } from "next-auth/react";
 
 const RateButtons: React.FC<RateButtonsProps> = ({

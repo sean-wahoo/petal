@@ -1,5 +1,5 @@
 import styles from "styles/layouts/login.module.scss";
-import Layout from "components/Layout";
+import Layout from "src/components/Layout";
 import { GetServerSideProps } from "next";
 import {
   ClientSafeProvider,
