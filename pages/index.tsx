@@ -1,14 +1,14 @@
-import type { PostProps } from "src/lib/types";
+import type { PostProps } from "lib/types";
 import styles from "styles/layouts/index.module.scss";
-import Layout from "src/components/Layout";
-import { fetcher } from "src/lib/promises";
-import { getApiUrl } from "src/lib/utils";
+import Layout from "components/Layout";
+import { fetcher } from "lib/promises";
+import { getApiUrl } from "lib/utils";
 import useSWR from "swr";
 import { Suspense } from "react";
-import { LoadingPostCard } from "src/components/PostCard";
+import { LoadingPostCard } from "components/PostCard";
 import dynamic from "next/dynamic";
 
-const PostCard = dynamic(() => import("src/components/PostCard"), {
+const PostCard = dynamic(() => import("components/PostCard"), {
   suspense: true,
 });
 

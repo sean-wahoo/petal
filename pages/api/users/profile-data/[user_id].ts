@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { ProfileDataResponse } from "src/lib/types";
+import { ProfileDataResponse } from "lib/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 

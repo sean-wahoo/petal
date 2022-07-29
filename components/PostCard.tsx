@@ -1,11 +1,11 @@
 import styles from "styles/components/post_card.module.scss";
-import { PostProps, RateProps } from "src/lib/types";
+import { PostProps, RateProps } from "lib/types";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
-import { getFormattedTimestamp } from "src/lib/utils";
+import { getFormattedTimestamp } from "lib/utils";
 import Link from "next/link";
-import RateButtons from "src/components/RateButtons";
+import RateButtons from "components/RateButtons";
 import Skeleton from "react-loading-skeleton";
 import { useSession } from "next-auth/react";
 

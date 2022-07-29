@@ -1,11 +1,11 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { CommentProps, RateProps, SessionData } from "src/lib/types";
-import { getFormattedTimestamp } from "src/lib/utils";
+import { CommentProps, RateProps, SessionData } from "lib/types";
+import { getFormattedTimestamp } from "lib/utils";
 import styles from "styles/components/comment.module.scss";
-import RateButtons from "src/components/RateButtons";
+import RateButtons from "components/RateButtons";
 import { useState } from "react";
-import CreateComment from "src/components/CreateComment";
+import CreateComment from "components/CreateComment";
 import Skeleton from "react-loading-skeleton";
 import { useSession } from "next-auth/react";
 

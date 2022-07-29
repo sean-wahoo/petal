@@ -1,7 +1,7 @@
 import React from "react";
-import { LayoutProps } from "src/lib/types";
+import { LayoutProps } from "lib/types";
 import Head from "next/head";
-import Navbar from "src/components/Navbar";
+import Navbar from "components/Navbar";
 import styles from "styles/components/layout.module.scss";
 import { SkeletonTheme } from "react-loading-skeleton";
 
