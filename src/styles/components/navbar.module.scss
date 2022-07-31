@@ -1,0 +1,39 @@
+.navbar {
+  position: fixed;
+  width: 100%;
+  background-color: var(--nav-bg);
+  padding: 1rem 2.5rem;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.4s ease-in-out;
+  border-bottom: 1px solid var(--bg-border);
+  z-index: 20;
+
+  &.hidden {
+    transform: translateY(-100%);
+  }
+
+  a {
+    font-size: 1.2rem;
+    color: var(--accent-2);
+  }
+
+  .profile_image {
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 0.2rem;
+    object-fit: cover;
+  }
+  .image_login_area {
+    height: 50px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    margin-inline: 1.2rem;
+    place-self: center;
+    font-size: larger;
+    cursor: pointer;
+  }
+}

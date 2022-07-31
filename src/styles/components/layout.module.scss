@@ -1,0 +1,24 @@
+.layout {
+  display: flex;
+  flex-flow: column nowrap;
+  min-height: 100vh;
+
+  > :not(nav, footer) {
+    flex-grow: 1;
+    padding-top: calc(48px + 4rem);
+    overflow-y: hidden;
+  }
+}
+
+.overlay {
+  z-index: 1000;
+  position: absolute;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  background-color: red;
+
+  .layout {
+    position: relative;
+  }
+}
