@@ -69,7 +69,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
         setDowns(downs - 1);
         switch (rateeType.type) {
           case "post": {
-            postRateMutation.mutate({
+            await postRateMutation.mutateAsync({
               rateKind: "down",
               userRateId: id,
               removeRate: true,
@@ -78,7 +78,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
             break;
           }
           case "comment": {
-            commentRateMutation.mutate({
+            await commentRateMutation.mutateAsync({
               rateKind: "down",
               userRateId: id,
               removeRate: true,
@@ -90,7 +90,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
       }
       switch (rateeType.type) {
         case "post": {
-          postRateMutation.mutate({
+          await postRateMutation.mutateAsync({
             rateKind: "up",
             userRateId: id,
             removeRate: isUp,
@@ -99,7 +99,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
           break;
         }
         case "comment": {
-          commentRateMutation.mutate({
+          await commentRateMutation.mutateAsync({
             rateKind: "up",
             userRateId: id,
             removeRate: isUp,
@@ -121,7 +121,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
         setUps(ups - 1);
         switch (rateeType.type) {
           case "post": {
-            postRateMutation.mutate({
+            await postRateMutation.mutateAsync({
               rateKind: "up",
               userRateId: id,
               removeRate: true,
@@ -130,7 +130,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
             break;
           }
           case "comment": {
-            commentRateMutation.mutate({
+            await commentRateMutation.mutateAsync({
               rateKind: "up",
               userRateId: id,
               removeRate: true,
@@ -142,7 +142,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
       }
       switch (rateeType.type) {
         case "post": {
-          postRateMutation.mutate({
+          await postRateMutation.mutateAsync({
             rateKind: "down",
             userRateId: id,
             removeRate: isDown,
@@ -151,7 +151,7 @@ const RateButtons: React.FC<RateButtonProps> = ({
           break;
         }
         case "comment": {
-          commentRateMutation.mutate({
+          await commentRateMutation.mutateAsync({
             rateKind: "down",
             userRateId: id,
             removeRate: isDown,
