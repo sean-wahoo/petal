@@ -1,6 +1,7 @@
 import { prisma } from "src/utils/prisma";
 import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
+import { revalidate } from "src/utils/helpers";
 
 export default createRouter()
   .mutation("commentRate", {
@@ -59,7 +60,7 @@ export default createRouter()
           },
         });
       }
-      return await prisma.postRate.upsert({
+      const post = await prisma.postRate.upsert({
         create: {
           rateKind,
           userRateId,
@@ -75,5 +76,6 @@ export default createRouter()
           },
         },
       });
+      await revalidate(`/posts/${postRateId}`);
     },
   });
