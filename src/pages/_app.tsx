@@ -19,7 +19,7 @@ export default withTRPC<AppRouter>({
   config() {
     const url =
       process.env.NODE_ENV === "production"
-        ? `https://${process.env.RAILWAY_STATIC_URL}/api/trpc`
+        ? `https://${process.env.NEXT_PUBLIC_RAILWAY_STATIC_URL}/api/trpc`
         : "http://localhost:3000/api/trpc";
     return {
       url,
