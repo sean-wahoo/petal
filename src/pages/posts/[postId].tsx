@@ -44,8 +44,6 @@ const PostPage = ({
   const { data: session } = useSession();
   const post = trpc.useQuery(["post.byId", { postId }]);
 
-  if (!post.data) return <div>loading...</div>;
-
   const editor = useEditor({
     editable: false,
     content: post.data?.content as Content,
@@ -57,6 +55,7 @@ const PostPage = ({
       editor?.commands.setContent(post.data?.content as Content);
     }
   }, [post]);
+  if (!post.data) return <div>loading...</div>;
 
   const c = trpc.useQuery([
     "comment.getByParentId",
