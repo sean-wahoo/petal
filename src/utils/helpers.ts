@@ -36,9 +36,9 @@ export const getApiUrl = () => {
   const dev = process.env.NODE_ENV !== "production";
   return dev
     ? process.env.NEXT_PUBLIC_DEV_ROOT_API_URL
-    : process.env.RAILWAY_STATIC_URL
-    ? `https://${process.env.RAILWAY_STATIC_URL}`
-    : "";
+    : process.env.NEXT_PUBLIC_RAILWAY_STATIC_URL
+    ? `https://${process.env.NEXT_PUBLIC_RAILWAY_STATIC_URL}`
+    : "http://localhost:3000";
 };
 
 /**
@@ -49,7 +49,9 @@ export const getApiUrl = () => {
  */
 export const revalidate = async (path: string) => {
   await fetch(
-    `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}&path=${path}`,
+    `${getApiUrl()}/api/revalidate?secret=${
+      process.env.NEXT_PUBLIC_REVALIDATION_SECRET
+    }&path=${path}`,
     {
       method: "GET",
     }
