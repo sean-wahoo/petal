@@ -1,0 +1,78 @@
+@use "src/styles/theme";
+@import "react-loading-skeleton/dist/skeleton.css";
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 13.5px;
+  min-width: 100vw;
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  color-scheme: var(--color-scheme);
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:active,
+  input:-webkit-autofill:focus {
+    box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    caret-color: var(--text-color) !important;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@mixin dark-mode {
+  @media (prefers-color-scheme: dark) {
+    --accent-4: #{theme.$accent-4--dark};
+    --accent-5: #{theme.$accent-5--dark};
+    --primary-bg: #{theme.$bg--dark};
+    --text-color: #{theme.$text--dark};
+    --text-accent: #{theme.$text-accent--dark};
+    --input-bg: #{theme.$input-bg--dark};
+    --input-bg-2: #{theme.$input-bg-2--dark};
+    --bg-shapes: url(#{theme.$bg-shapes--dark});
+    --nav-bg: #{theme.$nav-bg--dark};
+    --bg-border: #{theme.$bg-border--dark};
+    --color-scheme: #{theme.$color-scheme--dark};
+  }
+}
+%dark-mode {
+  @include dark-mode;
+}
+
+.dark-mode {
+  @extend %dark-mode;
+}
+:root {
+  --primary-bg: #{theme.$bg--light};
+  --text-color: #{theme.$text--light};
+  --text-accent: #{theme.$text-accent--light};
+  --accent-bg: #{theme.$accent-bg};
+  --accent-1: #{theme.$accent-1};
+  --accent-2: #{theme.$accent-2};
+  --accent-3: #{theme.$accent-3};
+  --accent-4: #{theme.$accent-4--light};
+  --accent-5: #{theme.$accent-5--light};
+  --input-bg: #{theme.$input-bg--light};
+  --input-bg-2: #{theme.$input-bg-2--light};
+  --bg-shapes: url(#{theme.$bg-shapes--light});
+  --error-text: #{theme.$error-text};
+  --nav-bg: #{theme.$nav-bg--light};
+  --bg-border: #{theme.$bg-border--light};
+  --color-scheme: #{theme.$color-scheme--light};
+
+  @include dark-mode;
+}
