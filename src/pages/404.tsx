@@ -7,7 +7,7 @@ const Custom404 = () => {
   return (
     <Layout title="Petal - Page not found">
       <main className={styles.custom404}>
-        <h1>We couldn't find what you were looking for!</h1>
+        <h1>We couldn&apos;t find what you were looking for!</h1>
         <button onClick={() => router.back()}>
           Back to the land of the living
         </button>

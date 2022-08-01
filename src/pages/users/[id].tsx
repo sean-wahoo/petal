@@ -65,7 +65,6 @@ const ProfilePage = ({
 
   const sendRequest = () => {
     sendRequestMutation.mutate({
-      senderUserId: session?.user?.id as string,
       recipientUserId: profileData.data?.id as string,
     });
     if (sendRequestMutation.data && sendRequestMutation.status === "success")
@@ -179,7 +178,6 @@ const ProfilePage = ({
                     session!.user!.id
                   );
                   updateProfileImageMutation.mutate({
-                    id: data.id,
                     image: data.image,
                   });
                   if (
@@ -276,7 +274,7 @@ export const getStaticProps = async (
 ) => {
   const ssg = createSSGHelpers({
     router: appRouter,
-    ctx: null,
+    ctx: context as any,
   });
   const id = context.params?.id as string;
   await ssg.fetchQuery("user.byId", { id });
