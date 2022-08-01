@@ -1,6 +1,7 @@
 import { prisma } from "src/utils/prisma";
 import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
+import * as trpc from "@trpc/server";
 
 export default createRouter()
   .query("byId", {
@@ -8,7 +9,7 @@ export default createRouter()
       id: z.string(),
     }),
     async resolve({ input }) {
-      return prisma.user.findFirst({
+      const user = await prisma.user.findFirst({
         select: {
           id: true,
           email: true,
@@ -23,6 +24,13 @@ export default createRouter()
         },
         where: { id: input.id },
       });
+      if (!user) {
+        throw new trpc.TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found!",
+        });
+      }
+      return user;
     },
   })
   .mutation("updateProfileImage", {
@@ -32,11 +40,18 @@ export default createRouter()
     }),
     async resolve({ input }) {
       const { id, image } = input;
-      return await prisma.user.update({
+      const user = await prisma.user.update({
         where: { id },
         data: { image },
         select: { id: true, image: true, email: true },
       });
+      if (!user) {
+        throw new trpc.TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found!",
+        });
+      }
+      return user;
     },
   })
   .mutation("welcomeUser", {
@@ -45,9 +60,16 @@ export default createRouter()
     }),
     async resolve({ input }) {
       const { id } = input;
-      return await prisma.user.update({
+      const user = await prisma.user.update({
         where: { id },
         data: { beenWelcomed: true },
       });
+      if (!user) {
+        throw new trpc.TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found!",
+        });
+      }
+      return user;
     },
   });

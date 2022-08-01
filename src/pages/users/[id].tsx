@@ -287,7 +287,7 @@ export const getStaticProps = async (
       trpcState: JSON.parse(JSON.stringify(ssg.dehydrate())),
       id,
     },
-    revalidate: 1,
+    revalidate: 60,
   };
 };
 
@@ -302,7 +302,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   });
   return {
     paths,
-    fallback: "blocking",
+    fallback: false,
   };
 };
 

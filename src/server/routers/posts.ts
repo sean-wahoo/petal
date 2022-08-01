@@ -2,10 +2,15 @@ import { prisma } from "src/utils/prisma";
 import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
 import { nanoid } from "nanoid/async";
+import { TRPCError } from "@trpc/server";
 
 export default createRouter()
   .query("getAll", {
     async resolve() {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "User not found!",
+      });
       return prisma.post.findMany({
         select: {
           postId: true,
