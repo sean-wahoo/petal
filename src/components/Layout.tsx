@@ -7,14 +7,12 @@ import { SkeletonTheme } from "react-loading-skeleton";
 interface LayoutProps {
   children: ReactNode;
   title: string;
-  is_auth: boolean;
   showNavbar?: boolean;
 }
 
 export default function Layout({
   children,
   title,
-  is_auth,
   showNavbar = true,
 }: LayoutProps) {
   return (
@@ -26,7 +24,7 @@ export default function Layout({
         <Head>
           <title>{title}</title>
         </Head>
-        {is_auth && showNavbar && <Navbar />}
+        {showNavbar && <Navbar />}
         {children}
       </SkeletonTheme>
     </div>

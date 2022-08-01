@@ -19,7 +19,7 @@ const Index = () => {
       });
 
   return (
-    <Layout title="Petal - Home" is_auth={true}>
+    <Layout title="Petal - Home">
       <main className={styles.index}>
         <Suspense
           fallback={[...Array(12).keys()].map((_, i) => (

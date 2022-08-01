@@ -68,7 +68,7 @@ const PostPage = ({
         return <Comment key={i} comment={comment} />;
       });
   return (
-    <Layout title={`Petal - ${post.data.title}`} is_auth={true}>
+    <Layout title={`Petal - ${post.data.title}`}>
       <main className={styles.post_page}>
         <article className={styles.post_info}>
           <header className={styles.header}>
@@ -103,7 +103,7 @@ export const getStaticProps = async (
 ) => {
   const ssg = createSSGHelpers({
     router: appRouter,
-    ctx: null,
+    ctx: context as any,
   });
   const postId = context.params?.postId as string;
   await ssg.fetchQuery("post.byId", { postId });
@@ -129,7 +129,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: "blocking",
+    fallback: false,
   };
 };
 

@@ -41,7 +41,6 @@ const CreateComment = ({ parentId }: { parentId: string }) => {
       setDisabled(true);
       leaveCommentMutation.mutate({
         content: content as any,
-        authorUserId: session?.user?.id as string,
         parentId,
       });
     }

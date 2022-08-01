@@ -204,7 +204,7 @@ const ProfilePage = ({
   };
 
   return (
-    <Layout title={`${profileData.data?.name} - Petal`} is_auth={true}>
+    <Layout title={`${profileData.data?.name} - Petal`}>
       <main className={styles.profile_page}>
         <article className={styles.user_info}>
           {session !== null && (
