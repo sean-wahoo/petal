@@ -3,15 +3,12 @@ import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
 import { nanoid } from "nanoid/async";
 import { TRPCError } from "@trpc/server";
+import { getUserSession } from "../_app";
 
 export default createRouter()
   .query("getAll", {
     async resolve() {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "User not found!",
-      });
-      return prisma.post.findMany({
+      return await prisma.post.findMany({
         select: {
           postId: true,
           author: {
@@ -41,7 +38,7 @@ export default createRouter()
       postId: z.string(),
     }),
     async resolve({ input }) {
-      return await prisma.post.findUnique({
+      const post = await prisma.post.findUnique({
         select: {
           postId: true,
           author: {
@@ -62,23 +59,30 @@ export default createRouter()
           postId: input.postId,
         },
       });
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found!",
+        });
+      }
+      return post;
     },
   })
   .mutation("createPost", {
     input: z.object({
       title: z.string(),
       content: z.any(),
-      authorUserId: z.string(),
     }),
-    async resolve({ input }) {
-      const { title, content, authorUserId } = input;
+    async resolve({ input, ctx }) {
+      const session = await getUserSession(ctx);
+      const { title, content } = input;
       const postId = `post-${await nanoid(11)}`;
       return await prisma.post.create({
         data: {
           postId,
           author: {
             connect: {
-              id: authorUserId,
+              id: session?.id as string,
             },
           },
           title,

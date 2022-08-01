@@ -44,7 +44,6 @@ const CreatePostPage = () => {
       createPostMutation.mutate({
         title,
         content,
-        authorUserId: session?.user?.id as string,
       });
       if (createPostMutation.data && createPostMutation.status === "success")
         router.push(`/posts/${createPostMutation.data.postId}`);
@@ -53,7 +52,7 @@ const CreatePostPage = () => {
   };
 
   return (
-    <Layout title="Petal - Create Post" is_auth={true}>
+    <Layout title="Petal - Create Post">
       <main className={styles.create_post}>
         <form onSubmit={submitNewPost}>
           <label htmlFor="title-input">Post Title</label>

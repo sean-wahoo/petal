@@ -2,6 +2,8 @@ import { prisma } from "src/utils/prisma";
 import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
 import { nanoid } from "nanoid/async";
+import { TRPCError } from "@trpc/server";
+import { getUserSession } from "../_app";
 
 export default createRouter()
   .query("byUserId", {
@@ -45,11 +47,11 @@ export default createRouter()
   })
   .mutation("sendRequest", {
     input: z.object({
-      senderUserId: z.string(),
       recipientUserId: z.string(),
     }),
-    async resolve({ input }) {
-      const { senderUserId, recipientUserId } = input;
+    async resolve({ input, ctx }) {
+      const session = await getUserSession(ctx);
+      const { recipientUserId } = input;
       const currentFriendData = await prisma.friend.findFirst({
         select: {
           status: true,
@@ -57,24 +59,30 @@ export default createRouter()
         where: {
           OR: [
             {
-              senderUserId,
+              senderUserId: session?.id as string,
             },
             {
-              recipientUserId,
+              recipientUserId: session?.id as string,
             },
           ],
         },
       });
       switch (currentFriendData?.status) {
         case "sent":
-          throw {
-            code: "request-already-sent",
+          throw new TRPCError({
+            code: "BAD_REQUEST",
             message: "Request already sent!",
-          };
+          });
         case "pending":
-          throw { code: "request-pending", message: "Request pending!" };
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Request is pending!",
+          });
         case "accepted":
-          throw { code: "already-friends", message: "Already friends!" };
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You are already friends!",
+          });
         default:
           break;
       }
@@ -82,7 +90,7 @@ export default createRouter()
       return await prisma.friend.create({
         data: {
           friendId,
-          senderUserId,
+          senderUserId: session?.id as string,
           recipientUserId,
           status: "sent",
         },
@@ -93,22 +101,35 @@ export default createRouter()
     input: z.object({
       friendId: z.string(),
     }),
-    async resolve({ input }) {
+    async resolve({ input, ctx }) {
+      const session = await getUserSession(ctx);
       const { friendId } = input;
+      const id = getUserSession(ctx);
+
       const currentFriendData = await prisma.friend.findFirst({
         select: {
           status: true,
         },
         where: {
           friendId,
+          OR: [
+            { senderUserId: session?.id as string },
+            { recipientUserId: session?.id as string },
+          ],
         },
       });
       if (!currentFriendData) {
-        throw { code: "no-friend-request", message: "No friend request!" };
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No friend request!",
+        });
       }
       switch (currentFriendData.status) {
         case "accepted":
-          throw { code: "already-friends", message: "Already friends!" };
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You are already friends!",
+          });
         default:
           break;
       }
@@ -126,7 +147,8 @@ export default createRouter()
     input: z.object({
       friendId: z.string(),
     }),
-    async resolve({ input }) {
+    async resolve({ input, ctx }) {
+      const session = await getUserSession(ctx);
       const { friendId } = input;
       const currentFriendData = await prisma.friend.findFirst({
         select: {
@@ -134,10 +156,17 @@ export default createRouter()
         },
         where: {
           friendId,
+          OR: [
+            { senderUserId: session?.id as string },
+            { recipientUserId: session?.id as string },
+          ],
         },
       });
       if (!currentFriendData || currentFriendData?.status === "sent") {
-        throw { code: "not-friends", message: "Not Friends!" };
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Not friends!",
+        });
       }
       return await prisma.friend.delete({
         where: { friendId },
