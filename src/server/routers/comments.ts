@@ -2,6 +2,7 @@ import { prisma } from "src/utils/prisma";
 import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
 import { nanoid } from "nanoid/async";
+import { getUserSession } from "../_app";
 
 export default createRouter()
   .query("getByParentId", {
@@ -94,11 +95,11 @@ export default createRouter()
   .mutation("leaveComment", {
     input: z.object({
       content: z.any().refine((val) => !!val),
-      authorUserId: z.string(),
       parentId: z.string(),
     }),
-    async resolve({ input }) {
-      const { content, authorUserId, parentId } = input;
+    async resolve({ input, ctx }) {
+      const session = await getUserSession(ctx);
+      const { content, parentId } = input;
       const isReply = parentId.split("-")[0] === "comment";
       const commentId = `comment-${await nanoid(11)}`;
       return await prisma.comment.create({
@@ -106,7 +107,7 @@ export default createRouter()
           commentId,
           author: {
             connect: {
-              id: authorUserId,
+              id: session?.id as string,
             },
           },
           parentId,

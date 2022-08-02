@@ -16,7 +16,7 @@ export default function Login({
   const router = useRouter();
   const { callbackUrl } = router.query;
   return (
-    <Layout title="Petal - Login" is_auth={false}>
+    <Layout title="Petal - Login">
       <main className={styles.login}>
         <h1>Login to Petal</h1>
         <div className={styles.login__inputArea}>

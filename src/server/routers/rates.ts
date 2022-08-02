@@ -2,6 +2,7 @@ import { prisma } from "src/utils/prisma";
 import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
 import { revalidate } from "src/utils/helpers";
+import { TRPCError } from "@trpc/server";
 
 export default createRouter()
   .mutation("commentRate", {
@@ -23,7 +24,7 @@ export default createRouter()
           },
         });
       }
-      return await prisma.commentRate.upsert({
+      const commentRate = await prisma.commentRate.upsert({
         create: {
           rateKind,
           userRateId,
@@ -39,6 +40,13 @@ export default createRouter()
           },
         },
       });
+      if (!commentRate) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment rate not found!",
+        });
+      }
+      return commentRate;
     },
   })
   .mutation("postRate", {
@@ -60,7 +68,7 @@ export default createRouter()
           },
         });
       }
-      const post = await prisma.postRate.upsert({
+      const postRate = await prisma.postRate.upsert({
         create: {
           rateKind,
           userRateId,
@@ -76,6 +84,13 @@ export default createRouter()
           },
         },
       });
+      if (!postRate) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post rate not found!",
+        });
+      }
       await revalidate(`/posts/${postRateId}`);
+      return postRate;
     },
   });

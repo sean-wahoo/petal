@@ -2,6 +2,7 @@ import { prisma } from "src/utils/prisma";
 import { createRouter } from "src/server/createRouter";
 import { z } from "zod";
 import * as trpc from "@trpc/server";
+import { getUserSession } from "../_app";
 
 export default createRouter()
   .query("byId", {
@@ -35,13 +36,13 @@ export default createRouter()
   })
   .mutation("updateProfileImage", {
     input: z.object({
-      id: z.string(),
       image: z.string().url(),
     }),
-    async resolve({ input }) {
-      const { id, image } = input;
+    async resolve({ input, ctx }) {
+      const { image } = input;
+      const session = await getUserSession(ctx);
       const user = await prisma.user.update({
-        where: { id },
+        where: { id: session?.id as string },
         data: { image },
         select: { id: true, image: true, email: true },
       });
@@ -54,14 +55,11 @@ export default createRouter()
       return user;
     },
   })
-  .mutation("welcomeUser", {
-    input: z.object({
-      id: z.string(),
-    }),
-    async resolve({ input }) {
-      const { id } = input;
+  .query("welcomeUser", {
+    async resolve({ ctx }) {
+      const session = await getUserSession(ctx);
       const user = await prisma.user.update({
-        where: { id },
+        where: { id: session?.id as string },
         data: { beenWelcomed: true },
       });
       if (!user) {

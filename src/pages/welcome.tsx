@@ -1,16 +1,14 @@
 import Layout from "src/components/Layout";
 import { useState } from "react";
 import styles from "src/styles/layouts/welcome.module.scss";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { PrismaClient } from "@prisma/client";
 import { trpc } from "src/utils/trpc";
 
 export default function Welcome() {
-  const { data: session } = useSession({ required: true });
   const [pageNum, setPageNum] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
-  const welcomeUserMutation = trpc.useMutation(["user.welcomeUser"]);
   const headerText = [
     <h1 key="h-1" className={styles.header_text}>
       Welcome to <i>Petal</i>
@@ -60,15 +58,13 @@ export default function Welcome() {
   };
   const handleContinue: () => void = async () => {
     try {
-      welcomeUserMutation.mutate({
-        id: session?.user?.id as string,
-      });
+      trpc.useQuery(["user.welcomeUser"]);
     } catch (e: any) {
       console.error({ e });
     }
   };
   return (
-    <Layout title="Petal - Welcome" is_auth={true} showNavbar={false}>
+    <Layout title="Petal - Welcome" showNavbar={false}>
       <main className={styles.welcome}>
         {headerText[pageNum]}
         {bodyText[pageNum]}

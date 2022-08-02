@@ -1,0 +1,20 @@
+@use "src/styles/theme" as *;
+
+.custom404 {
+  display: flex;
+  flex-flow: column nowrap;
+  color: var(--text-color);
+  width: min(100% - 40px, map-get($spacing, "main"));
+  margin-inline: auto;
+  justify-content: flex-start;
+  min-height: 100vh;
+  align-items: center;
+
+  h1 {
+    text-align: center;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
