@@ -1,0 +1,91 @@
+@use "src/styles/theme" as *;
+
+.welcome {
+  padding-inline: 4rem;
+  display: flex;
+  flex-flow: column nowrap;
+  @include medium {
+    width: 100%;
+    text-align: center;
+  }
+  .header_text {
+    font-family: Galada;
+    font-size: clamp(3rem, 10vw, 8rem);
+    margin-bottom: 0.2rem;
+    transform: translateX(-42px);
+    opacity: 0;
+
+    animation: slide_in;
+    animation-timing-function: cubic-bezier(0.27, 0.67, 0.18, 0.98);
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-delay: 0.05s;
+
+    i {
+      font-style: normal;
+      color: var(--accent-2);
+    }
+  }
+  .body_text {
+    font-size: clamp(1rem, 4vw, 2.6rem);
+    line-height: 1.5;
+    font-family: Gafata;
+    transform: translateX(-42px);
+    opacity: 0;
+
+    animation: slide_in;
+    animation-timing-function: cubic-bezier(0.27, 0.67, 0.18, 0.98);
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-delay: 0.1s;
+
+    i {
+      font-style: normal;
+      color: var(--accent-2);
+    }
+  }
+  .pages_row {
+    display: flex;
+    width: 120px;
+    margin: auto auto 3rem;
+    justify-content: space-between;
+
+    span {
+      cursor: pointer;
+      background-color: var(--accent-2);
+      opacity: 0.4;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      transition: 0.1s ease;
+
+      &.on_page {
+        opacity: 1;
+      }
+    }
+  }
+  .continue {
+    padding: 0.4rem;
+    position: absolute;
+    color: var(--accent-2);
+    inset: auto 2rem 2rem auto;
+    font-size: 2rem;
+    font-family: Gafata;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@keyframes slide_in {
+  from {
+    opacity: 0;
+    transform: translateX(-42px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}

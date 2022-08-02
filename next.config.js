@@ -12,7 +12,7 @@ module.exports = {
     return config
   },
   images: {
-    domains: ['avatars.dicebear.com', 'chv6-filestorage.s3.amazonaws.com', 'chv6-filestorage.s3.us-east-2.amazonaws.com'],
+    domains: ['lh3.googleusercontent.com', 'cdn.discordapp.com', 'avatars.dicebear.com', 'chv6-filestorage.s3.amazonaws.com', 'chv6-filestorage.s3.us-east-2.amazonaws.com'],
     minimumCacheTTL: 0,
   },
   reactStrictMode: true,

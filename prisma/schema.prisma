@@ -7,103 +7,140 @@ datasource db {
   url      = env("FQDBHOST")
 }
 
-model users {
-  user_id        String                     @id @db.VarChar(24)
-  email          String                     @unique @db.VarChar(54)
-  password       String?                    @db.Text
-  been_welcomed  Boolean                    @default(false) @db.Bit(1)
-  updated_at     DateTime                   @default(now()) @db.Timestamp(0)
-  created_at     DateTime                   @default(now()) @db.Timestamp(0)
-  cache_key      String?                    @unique @db.VarChar(24)
-  image_url      String                     @db.Text
-  display_name   String                     @db.Text
-  tagline        String                     @default("Super cool tagline") @db.VarChar(64)
-  date_of_birth  DateTime                   @default(now()) @db.Timestamp(0)
-  posts          posts[]
-  comments       comments[]
-  sender         friends[]                  @relation("sender")
-  recipient      friends[]                  @relation("recipient")
-  topic_user_rel topic_user_relationships[]
-  post_rater     post_rates[]
-  comment_rater  comment_rates[]
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
-model posts {
-  post_id        String       @id @db.VarChar(24)
-  author         users        @relation(fields: [author_user_id], references: [user_id])
-  author_user_id String       @db.VarChar(24)
-  title          String       @db.Text
-  content        Json
-  is_edited      Boolean      @default(false) @db.Bit(1)
-  ups            Int          @default(0) @db.Int
-  downs          Int          @default(0) @db.Int
-  created_at     DateTime     @default(now()) @db.Timestamp(0)
-  updated_at     DateTime     @default(now()) @db.Timestamp(0)
-  rated_post     post_rates[]
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model comments {
-  comment_id     String          @id @db.VarChar(24)
-  author         users           @relation(fields: [author_user_id], references: [user_id])
-  author_user_id String          @db.VarChar(24)
-  content        Json
-  parent_id      String          @db.VarChar(24)
-  is_reply       Boolean         @db.Bit(1)
-  is_edited      Boolean         @db.Bit(1)
-  ups            Int             @db.Int
-  downs          Int             @db.Int
-  created_at     DateTime        @default(now()) @db.Timestamp(0)
-  updated_at     DateTime        @default(now()) @db.Timestamp(0)
-  rated_comment  comment_rates[]
+model User {
+  id                    String                  @id @default(cuid())
+  name                  String
+  email                 String?                 @unique
+  emailVerified         DateTime?
+  image                 String?
+  accounts              Account[]
+  sessions              Session[]
+  Post                  Post[]
+  Comment               Comment[]
+  PostRate              PostRate[]
+  CommentRate           CommentRate[]
+  TopicUserRelationship TopicUserRelationship[]
+  description           String?                 @db.Text
+  beenWelcomed          Boolean                 @default(false)
+  sender                Friend[]                @relation("sender")
+  recipient             Friend[]                @relation("recipient")
+  dateOfBirth           DateTime?               @db.Timestamp(0)
+  createdAt             DateTime                @default(now()) @db.Timestamp(0)
+  updatedAt             DateTime                @updatedAt @db.Timestamp(0)
 }
 
-model friends {
-  friend_id         String   @id @db.VarChar(24)
-  sender            users    @relation(name: "sender", fields: [sender_user_id], references: [user_id])
-  sender_user_id    String   @db.VarChar(24)
-  recipient         users    @relation(name: "recipient", fields: [recipient_user_id], references: [user_id])
-  recipient_user_id String   @db.VarChar(24)
-  status            String   @db.VarChar(12)
-  created_at        DateTime @default(now()) @db.Timestamp(0)
-  updated_at        DateTime @default(now()) @db.Timestamp(0)
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
-model topics {
-  topic_id       String                     @id @db.VarChar(24)
-  name           String                     @db.VarChar(52)
-  topic_user_rel topic_user_relationships[]
+model Post {
+  postId       String     @id @db.VarChar(24)
+  author       User       @relation(fields: [authorUserId], references: [id])
+  authorUserId String
+  title        String     @db.Text
+  content      Json
+  isEdited     Boolean    @default(false) @db.Bit(1)
+  ups          Int        @default(0) @db.Int
+  downs        Int        @default(0) @db.Int
+  createdAt    DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime   @updatedAt @db.Timestamp(0)
+  ratedPost    PostRate[]
 }
 
-model post_rates {
-  rate_kind    String   @db.VarChar(24)
-  post_rater   users    @relation(fields: [user_rate_id], references: [user_id])
-  user_rate_id String   @db.VarChar(24)
-  rated_post   posts    @relation(fields: [post_rate_id], references: [post_id])
-  post_rate_id String   @db.VarChar(24)
-  created_at   DateTime @default(now()) @db.Timestamp(0)
-  updated_at   DateTime @default(now()) @db.Timestamp(0)
-
-  @@id([user_rate_id, post_rate_id])
+model Comment {
+  commentId    String        @id @db.VarChar(24)
+  author       User          @relation(fields: [authorUserId], references: [id])
+  authorUserId String
+  content      Json
+  parentId     String        @db.VarChar(24)
+  isReply      Boolean       @db.Bit(1)
+  isEdited     Boolean       @db.Bit(1)
+  ups          Int           @db.Int
+  downs        Int           @db.Int
+  createdAt    DateTime      @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime      @updatedAt @db.Timestamp(0)
+  ratedComment CommentRate[]
 }
 
-model comment_rates {
-  rate_kind       String   @db.VarChar(24)
-  comment_rater   users    @relation(fields: [user_rate_id], references: [user_id])
-  user_rate_id    String   @db.VarChar(24)
-  rated_comment   comments @relation(fields: [comment_rate_id], references: [comment_id])
-  comment_rate_id String   @db.VarChar(24)
-  created_at      DateTime @default(now()) @db.Timestamp(0)
-  updated_at      DateTime @default(now()) @db.Timestamp(0)
-
-  @@id([user_rate_id, comment_rate_id])
+model Friend {
+  friendId        String   @id @db.VarChar(24)
+  sender          User     @relation(name: "sender", fields: [senderUserId], references: [id])
+  senderUserId    String
+  recipient       User     @relation(name: "recipient", fields: [recipientUserId], references: [id])
+  recipientUserId String
+  status          String   @db.VarChar(12)
+  createdAt       DateTime @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime @updatedAt @db.Timestamp(0)
+  userId          String?
 }
 
-model topic_user_relationships {
-  user     users  @relation(fields: [user_id], references: [user_id])
-  user_id  String @db.VarChar(24)
-  topic    topics @relation(fields: [topic_id], references: [topic_id])
-  topic_id String @db.VarChar(24)
-  status   String @default("joined") @db.VarChar(24)
+model Topic {
+  topicId      String                  @id @db.VarChar(24)
+  name         String                  @db.VarChar(52)
+  topicUserRel TopicUserRelationship[]
+}
 
-  @@id([user_id, topic_id])
+model PostRate {
+  rateKind   String   @db.VarChar(24)
+  postRater  User     @relation(fields: [userRateId], references: [id])
+  userRateId String
+  ratedPost  Post     @relation(fields: [postRateId], references: [postId])
+  postRateId String   @db.VarChar(24)
+  createdAt  DateTime @default(now()) @db.Timestamp(0)
+  updatedAt  DateTime @updatedAt @db.Timestamp(0)
+
+  @@id([userRateId, postRateId])
+}
+
+model CommentRate {
+  rateKind      String   @db.VarChar(24)
+  commentRater  User     @relation(fields: [userRateId], references: [id])
+  userRateId    String
+  ratedComment  Comment  @relation(fields: [commentRateId], references: [commentId])
+  commentRateId String   @db.VarChar(24)
+  createdAt     DateTime @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime @updatedAt @db.Timestamp(0)
+
+  @@id([userRateId, commentRateId])
+}
+
+model TopicUserRelationship {
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  topic   Topic  @relation(fields: [topicId], references: [topicId])
+  topicId String @db.VarChar(24)
+  status  String @default("joined") @db.VarChar(24)
+
+  @@id([userId, topicId])
 }
