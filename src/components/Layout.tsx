@@ -7,16 +7,14 @@ import { SkeletonTheme } from "react-loading-skeleton";
 interface LayoutProps {
   children: ReactNode;
   title: string;
-  is_auth: boolean;
   showNavbar?: boolean;
 }
 
 export default function Layout({
   children,
   title,
-  is_auth,
   showNavbar = true,
-}: LayoutProps) => {
+}: LayoutProps) {
   return (
     <div className={styles.layout}>
       <SkeletonTheme
@@ -26,23 +24,9 @@ export default function Layout({
         <Head>
           <title>{title}</title>
         </Head>
-        {is_auth && showNavbar && <Navbar />}
+        {showNavbar && <Navbar />}
         {children}
       </SkeletonTheme>
     </div>
   );
-};
-
-export default ({ children, title, is_auth }: LayoutProps) => {
-  const { session, updateSession } = useSession();
-  if (!session && is_auth) return <LayoutFallback title={title} />;
-  return (
-    <Layout
-      children={children}
-      title={title}
-      is_auth={is_auth}
-      session={session as SessionData}
-      updateSession={updateSession}
-    />
-  );
-};
+}
